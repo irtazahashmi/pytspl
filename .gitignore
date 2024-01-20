@@ -1,0 +1,11 @@
+# cache
+__pycache__/
+
+# DS_Store
+**/.DS_Store
+
+# toponetx
+toponetx
+
+# venv
+thesis_venv
