@@ -3,5 +3,6 @@ hypernetx==1.2.5
 matplotlib
 networkx
 pandas
+pytest
 scipy
 trimesh
