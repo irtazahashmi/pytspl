@@ -36,7 +36,7 @@ class TestSimplicialComplex:
         assert sc.nodes == {0, 1, 2, 3, 4}
 
     def test_is_connected(self, sc: SimplicialComplexNetwork):
-        assert sc.is_connected()
+        assert sc.is_connected
 
     def test_identity_matrix(self, sc: SimplicialComplexNetwork):
         nodes = 5
