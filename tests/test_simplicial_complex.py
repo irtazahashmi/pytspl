@@ -99,3 +99,15 @@ class TestSimplicialComplex:
         )
 
         assert np.array_equal(lap_mat_1, L_1)
+
+    def test_hodge_laplacian_matrix_lower_upper(
+        self, sc: SimplicialComplexNetwork
+    ):
+        # Lk = L(k, upper) + L(k, lower)
+        k = 1
+        L_1_calculated = sc.upper_laplacian_matrix(
+            rank=k
+        ) + sc.lower_laplacian_matrix(rank=k)
+        assert np.array_equal(
+            sc.hodge_laplacian_matrix(rank=k), L_1_calculated
+        )
