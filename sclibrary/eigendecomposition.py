@@ -31,7 +31,7 @@ def get_curl_eigenvectors(upper_lap_mat: np.ndarray) -> tuple:
     """
     eigenvectors, eigenvalues = _get_eigendecomposition(upper_lap_mat)
     # get columns with non-zero eigenvalues
-    u_c = eigenvectors[:, np.where(eigenvalues != 0)[0]]
+    u_c = eigenvectors[:, np.where(eigenvalues > 0)[0]]
     return u_c, eigenvalues
 
 
@@ -48,7 +48,7 @@ def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
     """
     eigenvectors, eigenvalues = _get_eigendecomposition(lower_lap_mat)
     # get columns with non-zero eigenvalues
-    u_g = eigenvectors[:, np.where(eigenvalues != 0)[0]]
+    u_g = eigenvectors[:, np.where(eigenvalues > 0)[0]]
     return u_g, eigenvalues
 
 
