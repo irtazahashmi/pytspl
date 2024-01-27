@@ -31,3 +31,9 @@ To run all the **unit tests**, run the following command:
 ```console
 $ python3 -m pytest tests/
 ```
+
+To get the test coverage report, run the following command:
+
+```console
+$ coverage run --source=sclibrary -m pytest -v tests && coverage report -m
+```

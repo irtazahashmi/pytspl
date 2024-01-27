@@ -1,5 +1,4 @@
 import numpy as np
-import sympy
 
 
 def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:
@@ -10,11 +9,13 @@ def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:
         hodgle_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
 
     Returns:
-        u_h (np.ndarray): The harmonic eigenvectors U(H)
-        lambda_vals (np.ndarray): The eigenvalues of the Hodge Laplacian
+        u_h (np.ndarray): The harmonic eigenvectors U(H).
+        eigenvalues (np.ndarray): The eigenvalues of the Hodge Laplacian.
     """
-    u_h, lambda_vals = _get_eigenvectors(hodgle_lap_mat)
-    return u_h, lambda_vals
+    eigenvectors, eigenvalues = _get_eigendecomposition(hodgle_lap_mat)
+    # get columns with zero eigenvalues
+    u_h = eigenvectors[:, np.where(eigenvalues == 0)[0]]
+    return u_h, eigenvalues
 
 
 def get_curl_eigenvectors(upper_lap_mat: np.ndarray) -> tuple:
@@ -28,8 +29,10 @@ def get_curl_eigenvectors(upper_lap_mat: np.ndarray) -> tuple:
         u_c (np.ndarray): The curl eigenvectors U(C)
         lambda_vals (np.ndarray): The eigenvalues of the upper Laplacian
     """
-    u_c, lambda_vals = _get_eigenvectors(upper_lap_mat)
-    return u_c, lambda_vals
+    eigenvectors, eigenvalues = _get_eigendecomposition(upper_lap_mat)
+    # get columns with non-zero eigenvalues
+    u_c = eigenvectors[:, np.where(eigenvalues != 0)[0]]
+    return u_c, eigenvalues
 
 
 def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
@@ -43,11 +46,13 @@ def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
         u_g (np.ndarray): The gradient eigenvectors U(G)
         lambda_vals (np.ndarray): The eigenvalues of the lower Laplacian
     """
-    u_g, lambda_vals = _get_eigenvectors(lower_lap_mat)
-    return u_g, lambda_vals
+    eigenvectors, eigenvalues = _get_eigendecomposition(lower_lap_mat)
+    # get columns with non-zero eigenvalues
+    u_g = eigenvectors[:, np.where(eigenvalues != 0)[0]]
+    return u_g, eigenvalues
 
 
-def _get_eigenvectors(lap_mat: np.ndarray) -> tuple:
+def _get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
     """
     Calculate the eigenvectors of the Laplacian matrix using eigendecomposition.
 
@@ -55,33 +60,19 @@ def _get_eigenvectors(lap_mat: np.ndarray) -> tuple:
     L(k) = U(k) * lambda(k) * U(k).T
 
     Args:
-        lap_mat (np.ndarray): The Laplacian matrix L(k),
+        lap_mat (np.ndarray): The Laplacian matrix L(k).
+        tolerance (float): The tolerance for eigenvalues to be considered zero.
 
     Returns:
         eigenvectors (np.ndarray): The eigenvectors U(k)
-        eigenvalues (np.ndarray): The eigenvalues lambda(k)
+        eigenvalues (np.ndarray): The eigenvalues.
     """
     eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
-    # remove small values due to numerical errors
-    tolerance = 0.1 / np.abs(eigenvalues).max()
-    eigenvectors[np.abs(eigenvectors) < tolerance] = 0
-    lambda_values = np.diag(eigenvalues)
-    lambda_values[lambda_values < 1e-3] = 0
-    # L(k) = U(k) * lambda(k) * U(k).T
+    eigenvalues[eigenvalues < tolerance] = 0
+    lambda_matrix = np.diag(eigenvalues)
+    # verify L(k) = U(k) * lambda(k) * U(k).T
     assert np.allclose(
-        np.rint(eigenvectors @ lambda_values @ np.linalg.inv(eigenvectors)),
+        np.rint(eigenvectors @ lambda_matrix @ eigenvectors.T),
         lap_mat,
     )
-    return eigenvectors, lambda_values
-
-
-def get_matrix_image(matrix: np.ndarray) -> tuple:
-    """
-    Calculate the image of a matrix.
-
-    Args:
-        matrix (np.ndarray): The matrix to calculate the image of.
-    """
-    matrix_t = sympy.Matrix(matrix.T)
-    rref_matrix, pivot_columns = matrix_t.rref()
-    return rref_matrix, pivot_columns
+    return eigenvectors, eigenvalues

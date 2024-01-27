@@ -5,8 +5,8 @@ from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 
 @pytest.fixture
-def edge_list():
-    yield [
+def sc():
+    edge_list = [
         (0, 1),
         (0, 2),
         (1, 2),
@@ -17,10 +17,6 @@ def edge_list():
         [1, 2, 3],
         [1, 3, 4],
     ]
-
-
-@pytest.fixture
-def sc(edge_list):
     yield SimplicialComplexNetwork(edge_list=edge_list)
 
 
@@ -110,4 +106,18 @@ class TestSimplicialComplex:
         ) + sc.lower_laplacian_matrix(rank=k)
         assert np.array_equal(
             sc.hodge_laplacian_matrix(rank=k), L_1_calculated
+        )
+
+    def test_hodge_laplacian_matrix_is_orthogonal(
+        self, sc: SimplicialComplexNetwork
+    ):
+        k = 1
+        l_1 = sc.hodge_laplacian_matrix(rank=k)
+        l_1_u = sc.upper_laplacian_matrix(rank=k)
+        l_1_l = sc.lower_laplacian_matrix(rank=k)
+        # L(k) = L(k, upper) + L(k, lower)
+        assert np.allclose(l_1, l_1_u + l_1_l)
+        # dot(L(k), L(k, upper), L(k, lower)) = 0
+        assert np.array_equal(
+            np.dot(l_1, np.dot(l_1_u, l_1_l)), np.zeros((7, 7))
         )

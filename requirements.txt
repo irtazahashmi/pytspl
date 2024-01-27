@@ -4,6 +4,5 @@ matplotlib
 networkx
 pandas
 pytest
-sympy
 scipy
 trimesh
