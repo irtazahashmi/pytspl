@@ -91,3 +91,33 @@ class GraphDataReader:
         # create graph
         G = nx.from_numpy_matrix(np.array(adjacency))
         return ExtendedGraph(G)
+
+    @staticmethod
+    def get_coordinates(
+        filename: str,
+        node_id_col: str,
+        x_col: str,
+        y_col: str,
+        delimeter: str = ",",
+    ) -> dict:
+        """
+        Reads a csv file and returns a dictionary of coordinates.
+
+        Args:
+            filename (str): The name of the csv file.
+            node_id_col (str): The name of the column containing the node ids.
+            x_col (str): The name of the column containing the x coordinates.
+            y_col (str): The name of the column containing the y coordinates.
+            delimeter (str, optional): The delimeter used in the csv file. Defaults to ",".
+
+        Returns:
+            dict: A dictionary of coordinates (node_id : (x, y)).
+        """
+        coordinates = pd.read_csv(filename, sep=delimeter)
+        # create a dictionary of coordinates (node_id : (x, y))
+        return dict(
+            zip(
+                coordinates[node_id_col],
+                zip(coordinates[x_col], coordinates[y_col]),
+            )
+        )

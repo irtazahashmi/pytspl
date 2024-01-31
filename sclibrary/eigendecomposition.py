@@ -1,6 +1,6 @@
 import numpy as np
 
-"""Module for eigendecomposition."""
+"""Module for eigendecomposition"""
 
 
 def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:
@@ -71,10 +71,4 @@ def _get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
     """
     eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
     eigenvalues[eigenvalues < tolerance] = 0
-    lambda_matrix = np.diag(eigenvalues)
-    # verify L(k) = U(k) * lambda(k) * U(k).T
-    assert np.allclose(
-        np.rint(eigenvectors @ lambda_matrix @ eigenvectors.T),
-        lap_mat,
-    )
     return eigenvectors, eigenvalues

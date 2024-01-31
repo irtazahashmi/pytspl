@@ -16,7 +16,7 @@ class SimplicialComplexNetwork:
 
         Args:
             simplices (list): List of simplices of the simplicial complex.
-            pos (dict, optional): Dictionary of positions d:(x,y) is used for placing
+            pos (dict, optional): Dict of positions [node_id : (x, y)] is used for placing
             the 0-simplices. The standard nx spring layour is used otherwise.
             Defaults to None.
         """
@@ -134,7 +134,7 @@ class SimplicialComplexNetwork:
         Draws a simplicial complex upto 2D from a list of simplices.
 
         Args:
-            simplices (list[list[int]]):
+            simplices (list):
                 List of simplices to draw. Sub-simplices are not needed (only maximal).
                 For example, the 2-simplex [1,2,3] will automatically generate the three
                 1-simplices [1,2],[2,3],[1,3] and the three 0-simplices [1],[2],[3].
@@ -189,27 +189,21 @@ class SimplicialComplexNetwork:
             ax.set_ylim([-1.1, 1.1])
         else:
             # set it according to pos
-            ax.set_xlim(
-                [
-                    min([x[0] for x in self.pos.values()]),
-                    max([x[0] for x in self.pos.values()]),
-                ]
-            )
-            ax.set_ylim(
-                [
-                    min([x[1] for x in self.pos.values()]),
-                    max([x[1] for x in self.pos.values()]),
-                ]
-            )
+            min_x = min([x[0] for x in self.pos.values()])
+            max_x = max([x[0] for x in self.pos.values()])
+            min_y = min([x[1] for x in self.pos.values()])
+            max_y = max([x[1] for x in self.pos.values()])
+            ax.set_xlim([min_x, max_x])
+            ax.set_ylim([min_y, max_y])
 
         ax.get_xaxis().set_ticks([])
         ax.get_yaxis().set_ticks([])
         ax.axis("off")
 
         # draw the edges
-        for i, j in edges:
-            (x0, y0) = self.pos[i]
-            (x1, y1) = self.pos[j]
+        for src_id, dest_id in edges:
+            (x0, y0) = self.pos[src_id]
+            (x1, y1) = self.pos[dest_id]
             line = plt.Line2D(
                 [x0, x1], [y0, y1], color="black", zorder=1, lw=0.7
             )
@@ -231,13 +225,19 @@ class SimplicialComplexNetwork:
             ax.add_patch(tri)
 
         # draw the nodes
-        for i in nodes:
-            (x, y) = self.pos[i]
+        for node_id in nodes:
+            (x, y) = self.pos[node_id]
+            radius = 0.02
+
+            if self.pos:
+                # radius depending on x, y
+                radius = 0.02 * max(max_x - min_x, max_y - min_y) / 2
+
             circ = plt.Circle(
                 [x, y],
-                radius=0.02,
+                radius=radius,
                 zorder=3,
-                lw=0.5,
+                lw=3,
                 edgecolor="Black",
                 facecolor="#ff7f0e",
             )

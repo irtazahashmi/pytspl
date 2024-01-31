@@ -54,13 +54,12 @@ class ExtendedGraph(nx.Graph):
 
         return conditional_tri
 
-    @property
-    def simplicies(self, conditional_triangles=False) -> list:
+    def simplicies(self, conditional_triangles=True) -> list:
         """
         Returns a list of simplicies in the graph.
 
         Args:
-            conditional_triangles (bool, optional): If True, returns triangles that satisfy the condition. Defaults to False.
+            conditional_triangles (bool, optional): If True, returns triangles that satisfy the condition. Defaults to True.
 
         Returns:
             list: List of simplicies.

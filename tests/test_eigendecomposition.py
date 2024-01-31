@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from sclibrary.eigendecomposition import (
+    _get_eigendecomposition,
     get_curl_eigenvectors,
     get_gradient_eigenvectors,
     get_harmonic_eigenvectors,
@@ -82,4 +83,20 @@ class TestEigendecomoposition:
         assert np.allclose(
             np.round(u_c.T @ u_g, decimals=3),
             np.zeros((u_c.shape[1], u_g.shape[1])),
+        )
+
+    def test_eigendecomposition(self, sc: SimplicialComplexNetwork):
+        k = 1
+        l_1 = sc.hodge_laplacian_matrix(rank=k)
+
+        tolerance = 1e-03
+        eigenvectors, eigenvalues = _get_eigendecomposition(
+            l_1, tolerance=tolerance
+        )
+        lambda_matrix = np.diag(eigenvalues)
+        # verify L(k) = U(k) * lambda(k) * U(k).T
+        assert np.allclose(
+            eigenvectors @ lambda_matrix @ eigenvectors.T,
+            l_1,
+            atol=tolerance,
         )
