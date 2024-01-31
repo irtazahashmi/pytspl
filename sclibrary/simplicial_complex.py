@@ -10,17 +10,17 @@ from toponetx.classes import SimplicialComplex
 
 
 class SimplicialComplexNetwork:
-    def __init__(self, edge_list: list, pos: dict = None):
+    def __init__(self, simplices: list, pos: dict = None):
         """
         Creates a simplicial complex network from edge list.
 
         Args:
-            edge_list (list): List of edges. Each edge is a tuple of two nodes.
+            simplices (list): List of simplices of the simplicial complex.
             pos (dict, optional): Dictionary of positions d:(x,y) is used for placing
             the 0-simplices. The standard nx spring layour is used otherwise.
             Defaults to None.
         """
-        self.sc = SimplicialComplex(edge_list)
+        self.sc = SimplicialComplex(simplices=simplices)
         self.pos = pos
 
     @property

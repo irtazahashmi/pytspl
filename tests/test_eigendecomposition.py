@@ -22,7 +22,7 @@ def sc():
         [1, 2, 3],
         [1, 3, 4],
     ]
-    yield SimplicialComplexNetwork(edge_list=edge_list)
+    yield SimplicialComplexNetwork(simplices=edge_list)
 
 
 class TestEigendecomoposition:

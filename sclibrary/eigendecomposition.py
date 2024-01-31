@@ -1,5 +1,7 @@
 import numpy as np
 
+"""Module for eigendecomposition."""
+
 
 def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:
     """
