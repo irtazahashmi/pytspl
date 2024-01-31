@@ -37,9 +37,9 @@ class ExtendedGraph(nx.Graph):
         conditional_tri = []
         for a, b, c in triangle_nodes:
             if (
-                self.get_edge_data(a, b)
-                and self.get_edge_data(b, c)
-                and self.get_edge_data(a, c)
+                self.get_edge_data(a, b)["weight"]
+                and self.get_edge_data(b, c)["weight"]
+                and self.get_edge_data(a, c)["weight"]
             ):
                 dist_ab = self.get_edge_data(a, b)["weight"]
                 dist_ac = self.get_edge_data(a, c)["weight"]

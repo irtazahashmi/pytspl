@@ -14,7 +14,7 @@ class GraphDataReader:
         delimeter: str,
         src_col: str,
         dest_col: str,
-        weight_col: str = "",
+        feature_cols: list = None,
     ) -> ExtendedGraph:
         """
         Reads a csv file and returns a graph.
@@ -24,7 +24,7 @@ class GraphDataReader:
             delimeter (str): The delimeter used in the csv file.
             src_col (str): The name of the column containing the source nodes.
             dest_col (str): The name of the column containing the destination nodes.
-            weight_col (str, optional): The name of the weight column. Defaults to "".
+            feature_cols (list, optional): The names of the feature columns. Defaults to None.
 
         Returns:
             ExtendedGraph: The graph read from the csv file.
@@ -36,10 +36,12 @@ class GraphDataReader:
         # add edges
         for _, row in df.iterrows():
             G.add_edge(row[src_col], row[dest_col])
-        # add weights if any
-        if weight_col:
-            for _, row in df.iterrows():
-                G[row[src_col]][row[dest_col]]["weight"] = row[weight_col]
+
+        # add features if any
+        if feature_cols:
+            for col in feature_cols:
+                for _, row in df.iterrows():
+                    G[row[src_col]][row[dest_col]][col] = row[col]
 
         return ExtendedGraph(G)
 
