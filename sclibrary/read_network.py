@@ -4,10 +4,10 @@ import pandas as pd
 
 from sclibrary.extended_graph import ExtendedGraph
 
-"""Module for reading graph data."""
+"""Module for reading graph network data."""
 
 
-class GraphDataReader:
+class NetworkReader:
     @staticmethod
     def read_csv(
         filename: str,
@@ -30,6 +30,44 @@ class GraphDataReader:
             ExtendedGraph: The graph read from the csv file.
         """
         df = pd.read_csv(filename, sep=delimeter)
+
+        # Create a graph
+        G = nx.Graph()
+        # add edges
+        for _, row in df.iterrows():
+            G.add_edge(row[src_col], row[dest_col])
+
+        # add features if any
+        if feature_cols:
+            for col in feature_cols:
+                for _, row in df.iterrows():
+                    G[row[src_col]][row[dest_col]][col] = row[col]
+
+        return ExtendedGraph(G)
+
+    @staticmethod
+    def read_tntp(
+        filename: str,
+        delimeter: str,
+        src_col: str,
+        dest_col: str,
+        feature_cols: list = None,
+    ) -> ExtendedGraph:
+        """
+        Reads a tntp file and returns a graph.
+
+        Args:
+            filename (str): The name of the tntp file.
+            delimeter (str): The delimeter used in the tntp file.
+            src_col (str): The name of the column containing the source nodes.
+            dest_col (str): The name of the column containing the destination nodes.
+            feature_cols (list, optional): The names of the feature columns. Defaults to None.
+
+        Returns:
+            ExtendedGraph: The graph read from the tntp file.
+        """
+        df = pd.read_csv(filename, sep=delimeter, skiprows=5)
+        df.drop(columns=["~ ", ";"], inplace=True)
 
         # Create a graph
         G = nx.Graph()

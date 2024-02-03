@@ -129,7 +129,7 @@ class SimplicialComplexNetwork:
         hodge_lap_mat = self.sc.hodge_laplacian_matrix(rank=rank).todense()
         return np.squeeze(np.asarray(hodge_lap_mat))
 
-    def draw_2d(self, ax=None) -> None:
+    def draw_2d(self, ax=None, node_radius: float = 0.02) -> None:
         """
         Draws a simplicial complex upto 2D from a list of simplices.
 
@@ -142,6 +142,7 @@ class SimplicialComplexNetwork:
                 up to D=2 will be drawn.
 
             ax (matplotlib.pyplot.axes, optional): Defaults to None.
+            node_radius (float, optional): Radius of the nodes. Defaults to 0.02.
         """
         # generate 0-simplices
         nodes = list(set(itertools.chain(*self.simplices)))
@@ -180,7 +181,7 @@ class SimplicialComplexNetwork:
             ax = plt.gca()
 
         if self.pos is None:
-            # Creating a graph if pos is not given
+            # Using spring layout
             G = nx.Graph()
             G.add_edges_from(edges)
             self.pos = nx.spring_layout(G)
@@ -188,6 +189,9 @@ class SimplicialComplexNetwork:
             ax.set_xlim([-1.1, 1.1])
             ax.set_ylim([-1.1, 1.1])
         else:
+            # radius depending on x, y
+            node_radius = 0.02 * max(max_x - min_x, max_y - min_y) / 2
+
             # set it according to pos
             min_x = min([x[0] for x in self.pos.values()])
             max_x = max([x[0] for x in self.pos.values()])
@@ -227,15 +231,9 @@ class SimplicialComplexNetwork:
         # draw the nodes
         for node_id in nodes:
             (x, y) = self.pos[node_id]
-            radius = 0.02
-
-            if self.pos:
-                # radius depending on x, y
-                radius = 0.02 * max(max_x - min_x, max_y - min_y) / 2
-
             circ = plt.Circle(
                 [x, y],
-                radius=radius,
+                radius=node_radius,
                 zorder=3,
                 lw=3,
                 edgecolor="Black",
