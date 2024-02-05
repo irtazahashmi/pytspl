@@ -5,4 +5,5 @@ networkx
 pandas
 pytest
 scipy
+# toponetx
 trimesh

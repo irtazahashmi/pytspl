@@ -1,9 +1,6 @@
-import itertools
-
-import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
 
+from sclibrary.sc_plot import SCPlot
 from toponetx.classes import SimplicialComplex
 
 """Module to analyze simplicial complex data."""
@@ -21,7 +18,7 @@ class SimplicialComplexNetwork:
             Defaults to None.
         """
         self.sc = SimplicialComplex(simplices=simplices)
-        self.pos = pos
+        self.plot = SCPlot(sc=self, pos=pos)
 
     @property
     def shape(self) -> tuple:
@@ -128,115 +125,3 @@ class SimplicialComplexNetwork:
         """
         hodge_lap_mat = self.sc.hodge_laplacian_matrix(rank=rank).todense()
         return np.squeeze(np.asarray(hodge_lap_mat))
-
-    def draw_2d(self, ax=None, node_radius: float = 0.02) -> None:
-        """
-        Draws a simplicial complex upto 2D from a list of simplices.
-
-        Args:
-            simplices (list):
-                List of simplices to draw. Sub-simplices are not needed (only maximal).
-                For example, the 2-simplex [1,2,3] will automatically generate the three
-                1-simplices [1,2],[2,3],[1,3] and the three 0-simplices [1],[2],[3].
-                When a higher order simplex is entered only its sub-simplices
-                up to D=2 will be drawn.
-
-            ax (matplotlib.pyplot.axes, optional): Defaults to None.
-            node_radius (float, optional): Radius of the nodes. Defaults to 0.02.
-        """
-        # generate 0-simplices
-        nodes = list(set(itertools.chain(*self.simplices)))
-
-        # generate 1-simplices
-        edges = list(
-            set(
-                itertools.chain(
-                    *[
-                        [
-                            tuple(sorted((i, j)))
-                            for i, j in itertools.combinations(simplex, 2)
-                        ]
-                        for simplex in self.simplices
-                    ]
-                )
-            )
-        )
-
-        # generate 2-simplices
-        triangles = list(
-            set(
-                itertools.chain(
-                    *[
-                        [
-                            tuple(sorted((i, j, k)))
-                            for i, j, k in itertools.combinations(simplex, 3)
-                        ]
-                        for simplex in self.simplices
-                    ]
-                )
-            )
-        )
-
-        if ax is None:
-            ax = plt.gca()
-
-        if self.pos is None:
-            # Using spring layout
-            G = nx.Graph()
-            G.add_edges_from(edges)
-            self.pos = nx.spring_layout(G)
-            # set it to a square
-            ax.set_xlim([-1.1, 1.1])
-            ax.set_ylim([-1.1, 1.1])
-        else:
-            # radius depending on x, y
-            node_radius = 0.02 * max(max_x - min_x, max_y - min_y) / 2
-
-            # set it according to pos
-            min_x = min([x[0] for x in self.pos.values()])
-            max_x = max([x[0] for x in self.pos.values()])
-            min_y = min([x[1] for x in self.pos.values()])
-            max_y = max([x[1] for x in self.pos.values()])
-            ax.set_xlim([min_x, max_x])
-            ax.set_ylim([min_y, max_y])
-
-        ax.get_xaxis().set_ticks([])
-        ax.get_yaxis().set_ticks([])
-        ax.axis("off")
-
-        # draw the edges
-        for src_id, dest_id in edges:
-            (x0, y0) = self.pos[src_id]
-            (x1, y1) = self.pos[dest_id]
-            line = plt.Line2D(
-                [x0, x1], [y0, y1], color="black", zorder=1, lw=0.7
-            )
-            ax.add_line(line)
-
-        # fill the triangles
-        for i, j, k in triangles:
-            (x0, y0) = self.pos[i]
-            (x1, y1) = self.pos[j]
-            (x2, y2) = self.pos[k]
-            tri = plt.Polygon(
-                [[x0, y0], [x1, y1], [x2, y2]],
-                edgecolor="black",
-                facecolor=plt.cm.Blues(0.6),
-                zorder=2,
-                alpha=0.4,
-                lw=0.5,
-            )
-            ax.add_patch(tri)
-
-        # draw the nodes
-        for node_id in nodes:
-            (x, y) = self.pos[node_id]
-            circ = plt.Circle(
-                [x, y],
-                radius=node_radius,
-                zorder=3,
-                lw=3,
-                edgecolor="Black",
-                facecolor="#ff7f0e",
-            )
-            ax.add_patch(circ)

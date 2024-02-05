@@ -80,7 +80,7 @@ class ExtendedGraph(nx.Graph):
         # remove 3 nodes cliques
         simplicies = [x for x in cliques if len(x) <= 2]
 
-        # add simplicies based on condition
+        # add 2-simplicies based on condition
         if condition == "all":
             simplicies.extend(self.triangles())
         else:
