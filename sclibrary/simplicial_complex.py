@@ -1,24 +1,20 @@
 import numpy as np
 
-from sclibrary.sc_plot import SCPlot
 from toponetx.classes import SimplicialComplex
 
 """Module to analyze simplicial complex data."""
 
 
 class SimplicialComplexNetwork:
-    def __init__(self, simplices: list, pos: dict = None):
+    def __init__(self, simplices: list):
         """
         Creates a simplicial complex network from edge list.
 
         Args:
             simplices (list): List of simplices of the simplicial complex.
-            pos (dict, optional): Dict of positions [node_id : (x, y)] is used for placing
-            the 0-simplices. The standard nx spring layour is used otherwise.
             Defaults to None.
         """
         self.sc = SimplicialComplex(simplices=simplices)
-        self.plot = SCPlot(sc=self, pos=pos)
 
     @property
     def shape(self) -> tuple:
@@ -36,8 +32,19 @@ class SimplicialComplexNetwork:
         return set(node for (node,) in self.sc.nodes)
 
     @property
-    def simplices(self):
-        return self.sc.simplices
+    def edges(self) -> list[tuple]:
+        """Returns the set of edges in the simplicial complex"""
+        simplices = self.simplices
+        edges = [simplex for simplex in simplices if len(simplex) == 2]
+        # sort
+        edges.sort(key=lambda tup: tup[0])
+        return edges
+
+    @property
+    def simplices(self) -> list[tuple]:
+        simplices = set(simplex for simplex in self.sc.simplices)
+        simplices = [tuple(simplex) for simplex in simplices]
+        return simplices
 
     @property
     def is_connected(self) -> bool:
