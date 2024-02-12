@@ -1,9 +1,11 @@
 import itertools
 from collections.abc import Iterable
+from numbers import Number
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
 
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
@@ -113,16 +115,19 @@ class SCPlot:
 
         self._init_axes(ax=ax)
 
-        if cmap is not None:
-            assert isinstance(cmap, mpl.colors.Colormap)
-        else:
-            cmap = plt.get_cmap()
+        if np.iterable(node_color) and np.alltrue(
+            [isinstance(c, Number) for c in node_color]
+        ):
+            if cmap is not None:
+                assert isinstance(cmap, mpl.colors.Colormap)
+            else:
+                cmap = plt.get_cmap()
 
-        if vmin is None:
-            # for more contrast
-            edge_vmin = min(node_color) - abs(min(node_color)) * 0.5
-        if vmax is None:
-            edge_vmax = max(node_color)
+            if vmin is None:
+                # for more contrast
+                vmin = min(node_color) - abs(min(node_color)) * 0.5
+            if vmax is None:
+                vmax = max(node_color)
 
         nodes = self._get_nodes()
 
@@ -140,7 +145,7 @@ class SCPlot:
 
         # add colorbar
         color_map = mpl.cm.ScalarMappable(cmap=cmap)
-        color_map.set_clim(vmin=edge_vmin, vmax=edge_vmax)
+        color_map.set_clim(vmin=vmin, vmax=vmax)
         fig = ax.get_figure()
         fig.colorbar(mappable=color_map, ax=ax)
 
@@ -195,16 +200,19 @@ class SCPlot:
         fig = ax.get_figure()
         self._init_axes(ax=ax)
 
-        if edge_cmap is not None:
-            assert isinstance(edge_cmap, mpl.colors.Colormap)
-        else:
-            edge_cmap = plt.get_cmap()
+        if np.iterable(edge_color) and np.alltrue(
+            [isinstance(c, Number) for c in edge_color]
+        ):
+            if edge_cmap is not None:
+                assert isinstance(edge_cmap, mpl.colors.Colormap)
+            else:
+                edge_cmap = plt.get_cmap()
 
-        if edge_vmin is None:
-            # for more contrast
-            edge_vmin = min(edge_color) - abs(min(edge_color)) * 0.5
-        if edge_vmax is None:
-            edge_vmax = max(edge_color)
+            if edge_vmin is None:
+                # for more contrast
+                edge_vmin = min(edge_color) - abs(min(edge_color)) * 0.5
+            if edge_vmax is None:
+                edge_vmax = max(edge_color)
 
         edges = self._get_edges()
 
@@ -320,4 +328,4 @@ class SCPlot:
 
         if with_labels:
             # draw the labels
-            self.draw_node_labels(ax=ax)
+            self.draw_node_labels()
