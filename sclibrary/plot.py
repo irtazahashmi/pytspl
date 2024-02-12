@@ -98,7 +98,10 @@ class SCPlot:
         self,
         node_size: int = 300,
         node_color: str = "#ff7f0e",
-        edgecolor: str = "black",
+        node_edge_colors: str = "black",
+        cmap=plt.cm.Blues,
+        vmin=None,
+        vmax=None,
         alpha: float = 0.8,
         margins=None,
         with_labels: bool = False,
@@ -110,17 +113,36 @@ class SCPlot:
 
         self._init_axes(ax=ax)
 
+        if cmap is not None:
+            assert isinstance(cmap, mpl.colors.Colormap)
+        else:
+            cmap = plt.get_cmap()
+
+        if vmin is None:
+            # for more contrast
+            edge_vmin = min(node_color) - abs(min(node_color)) * 0.5
+        if vmax is None:
+            edge_vmax = max(node_color)
+
         nodes = self._get_nodes()
 
-        ax.scatter(
+        node_collection = ax.scatter(
             [self.pos[node_id][0] for node_id in nodes],
             [self.pos[node_id][1] for node_id in nodes],
             s=node_size,
             c=node_color,
-            edgecolor=edgecolor,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            edgecolors=node_edge_colors,
             alpha=alpha,
-            zorder=2,
         )
+
+        # add colorbar
+        color_map = mpl.cm.ScalarMappable(cmap=cmap)
+        color_map.set_clim(vmin=edge_vmin, vmax=edge_vmax)
+        fig = ax.get_figure()
+        fig.colorbar(mappable=color_map, ax=ax)
 
         if margins is not None:
             if isinstance(margins, Iterable):
@@ -130,6 +152,8 @@ class SCPlot:
 
         if with_labels:
             self.draw_node_labels()
+
+        node_collection.set_zorder(2)
 
     def draw_node_labels(
         self,
