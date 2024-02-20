@@ -20,7 +20,7 @@ def get_divergence(
     return divergence
 
 
-def get_gradient_flow(
+def get_gradient_component(
     incidence_matrix: np.ndarray,
     flow: np.ndarray,
     round_fig: bool = True,
@@ -47,7 +47,7 @@ def get_gradient_flow(
     return gradient_flow
 
 
-def get_curl_flow(
+def get_curl_component(
     incidence_matrix: np.ndarray,
     flow: np.ndarray,
     round_fig: bool = True,
@@ -74,7 +74,7 @@ def get_curl_flow(
     return curl_flow
 
 
-def get_harmonic_flow(
+def get_harmonic_component(
     incidence_matrix_b1: np.ndarray,
     incidence_matrix_b2: np.ndarray,
     flow: np.ndarray,
@@ -92,11 +92,11 @@ def get_harmonic_flow(
     Returns:
         np.ndarray: The harmonic flow.
     """
-    gradient_flow = get_gradient_flow(
+    gradient_flow = get_gradient_component(
         incidence_matrix_b1, flow, round_fig=False
     )
 
-    curl_flow = get_curl_flow(incidence_matrix_b2, flow, round_fig=False)
+    curl_flow = get_curl_component(incidence_matrix_b2, flow, round_fig=False)
 
     harmonic_flow = flow - gradient_flow - curl_flow
 
