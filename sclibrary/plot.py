@@ -64,7 +64,7 @@ class SCPlot:
 
     def _get_edges(self):
         # generate 1-simplices
-        return list(
+        edges = list(
             set(
                 itertools.chain(
                     *[
@@ -77,6 +77,9 @@ class SCPlot:
                 )
             )
         )
+        # sort the edges
+        edges = sorted(edges, key=lambda x: (x[0], x[1]))
+        return edges
 
     def _get_triangles(self):
         # generate 2-simplices
@@ -129,6 +132,12 @@ class SCPlot:
             if vmax is None:
                 vmax = max(node_color)
 
+            # add colorbar
+            color_map = mpl.cm.ScalarMappable(cmap=cmap)
+            color_map.set_clim(vmin=vmin, vmax=vmax)
+            fig = ax.get_figure()
+            fig.colorbar(mappable=color_map, ax=ax)
+
         nodes = self._get_nodes()
 
         node_collection = ax.scatter(
@@ -142,12 +151,6 @@ class SCPlot:
             edgecolors=node_edge_colors,
             alpha=alpha,
         )
-
-        # add colorbar
-        color_map = mpl.cm.ScalarMappable(cmap=cmap)
-        color_map.set_clim(vmin=vmin, vmax=vmax)
-        fig = ax.get_figure()
-        fig.colorbar(mappable=color_map, ax=ax)
 
         if margins is not None:
             if isinstance(margins, Iterable):
@@ -214,11 +217,28 @@ class SCPlot:
             if edge_vmax is None:
                 edge_vmax = max(edge_color)
 
+            # add colorbar
+            color_map = mpl.cm.ScalarMappable(
+                cmap=edge_cmap,
+            )
+
+            color_map.set_clim(vmin=edge_vmin, vmax=edge_vmax)
+            fig.colorbar(
+                mappable=color_map,
+                ax=ax,
+            )
+
         edges = self._get_edges()
 
         if directed:
             graph = nx.DiGraph()
             graph.add_edges_from(edges)
+
+            # reorder the edges to match the order of the edge colors
+            edge_color = [
+                edge_color[edges.index(edge)] for edge in list(graph.edges())
+            ]
+
             nx.draw_networkx_edges(
                 graph,
                 pos=self.pos,
@@ -229,17 +249,6 @@ class SCPlot:
                 edge_cmap=edge_cmap,
                 edge_vmin=edge_vmin,
                 edge_vmax=edge_vmax,
-                ax=ax,
-            )
-
-            # add colorbar
-            color_map = mpl.cm.ScalarMappable(
-                cmap=edge_cmap,
-            )
-
-            color_map.set_clim(vmin=edge_vmin, vmax=edge_vmax)
-            fig.colorbar(
-                mappable=color_map,
                 ax=ax,
             )
 
@@ -266,9 +275,9 @@ class SCPlot:
                 [[x0, y0], [x1, y1], [x2, y2]],
                 edgecolor="k",
                 facecolor=plt.cm.Blues(0.4),
-                alpha=0.4,
+                alpha=0.3,
                 lw=0.5,
-                zorder=1,
+                zorder=0,
             )
             ax.add_patch(tri)
 
@@ -329,3 +338,28 @@ class SCPlot:
         if with_labels:
             # draw the labels
             self.draw_node_labels()
+
+    def draw_flow(self, flow: list, ax=None) -> None:
+        if ax is None:
+            ax = plt.gca()
+
+        self._init_axes(ax=ax)
+
+        # get edge labels
+        edges = self.sc.edges
+        edge_labels = {}
+        for i in range(len(edges)):
+            edge_labels[edges[i][0], edges[i][1]] = flow[i]
+
+        # plot nodes and edges
+        self.draw_sc_nodes()
+        self.draw_sc_edges(
+            edge_color=list(edge_labels.values()),
+            edge_width=10,
+            directed=True,
+            arrowsize=30,
+        )
+
+        # plot labels
+        self.draw_node_labels(font_size=7)
+        self.draw_edge_labels(edge_labels=edge_labels, font_size=15)
