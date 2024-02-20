@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary.hodgedecomposition import get_harmonic_flow
+from sclibrary.hodgedecomposition import *
 from sclibrary.network_reader import NetworkReader
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
@@ -36,9 +36,31 @@ def flow():
 class TestHodgeDecompostion:
 
     def test_harmonic_component_condition(self, sc, flow):
+        # L1@f_h = 0
         B1 = sc.incidence_matrix(rank=1)
         B2 = sc.incidence_matrix(rank=2)
         f_h = get_harmonic_flow(B1, B2, flow, round_fig=False)
         L1 = B1.T @ B1
-        # L1@h = 0
         assert np.allclose(L1 @ f_h, 0)
+
+        # L1L @ f_h = 0
+        L1L = sc.lower_laplacian_matrix(rank=1)
+        assert np.allclose(L1L @ f_h, 0)
+
+        # L1U @ f_h = 0
+        L1U = sc.upper_laplacian_matrix(rank=1)
+        assert np.allclose(L1U @ f_h, 0)
+
+    def test_curl_component(self, sc, flow):
+        # L1L@f_c = 0
+        B2 = sc.incidence_matrix(rank=2)
+        f_c = get_curl_flow(B2, flow, round_fig=False)
+        L1L = sc.lower_laplacian_matrix(rank=1)
+        assert np.allclose(L1L @ f_c, 0)
+
+    def test_gradient_component(self, sc, flow):
+        # L1U@f_g = 0
+        B1 = sc.incidence_matrix(rank=1)
+        f_g = get_gradient_flow(B1, flow, round_fig=False)
+        L1U = sc.upper_laplacian_matrix(rank=1)
+        assert np.allclose(L1U @ f_g, 0)
