@@ -56,6 +56,18 @@ class TestSimplicialComplex:
         assert adj_mat_0.shape == (nodes, nodes)
         assert adj_mat.shape == (num_edges, num_edges)
 
+    def test_laplacian_matrix(self, sc: SimplicialComplexNetwork):
+        nodes = 5
+        lap_mat = sc.laplacian_matrix()
+        assert lap_mat.shape == (nodes, nodes)
+        # sum of each row is 0
+        assert np.allclose(np.sum(lap_mat, axis=1), np.zeros(5))
+        # sum of each column is 0
+        assert np.allclose(np.sum(lap_mat, axis=0), np.zeros(5))
+        # Laplacian matrix = B1@B1.T
+        expected = sc.incidence_matrix(rank=1) @ sc.incidence_matrix(rank=1).T
+        assert np.array_equal(lap_mat, expected)
+
     def test_lower_laplacian_matrix(self, sc: SimplicialComplexNetwork):
         # L(k, l) = Bk.T * Bk
         nodes, edges, triangles = 5, 7, 2
