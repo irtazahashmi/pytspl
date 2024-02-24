@@ -11,18 +11,13 @@ def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:
         hodgle_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
 
     Returns:
-        u_h (np.ndarray): The harmonic eigenvectors U(H).
+        u_h (np.ndarray): The harmonic  eigenvectors U(H).
         eigenvalues (np.ndarray): The eigenvalues of the Hodge Laplacian.
     """
     eigenvectors, eigenvalues = _get_eigendecomposition(hodgle_lap_mat)
     # get columns with zero eigenvalues
-    u_h = eigenvectors[:, np.where(eigenvalues == 0)[0]]
-    u_h = u_h.astype(np.float64)
-
-    eigenvalues = np.asarray(
-        [ev for ev in eigenvalues if ev == 0], dtype=np.float32
-    )
-
+    u_h = eigenvectors[:, np.where(eigenvalues == 0)[0]].astype(np.float64)
+    eigenvalues = eigenvalues[np.where(eigenvalues == 0)[0]].astype(np.float64)
     return u_h, eigenvalues
 
 
@@ -39,13 +34,8 @@ def get_curl_eigenvectors(upper_lap_mat: np.ndarray) -> tuple:
     """
     eigenvectors, eigenvalues = _get_eigendecomposition(upper_lap_mat)
     # get columns with non-zero eigenvalues
-    u_c = eigenvectors[:, np.where(eigenvalues > 0)[0]]
-    u_c = u_c.astype(np.float64)
-
-    eigenvalues = np.asarray(
-        [ev for ev in eigenvalues if ev > 0], dtype=np.float64
-    )
-
+    u_c = eigenvectors[:, np.where(eigenvalues > 0)[0]].astype(np.float64)
+    eigenvalues = eigenvalues[np.where(eigenvalues > 0)[0]].astype(np.float64)
     return u_c, eigenvalues
 
 
@@ -62,13 +52,8 @@ def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
     """
     eigenvectors, eigenvalues = _get_eigendecomposition(lower_lap_mat)
     # get columns with non-zero eigenvalues
-    u_g = eigenvectors[:, np.where(eigenvalues > 0)[0]]
-    u_g = u_g.astype(np.float64)
-
-    eigenvalues = np.asarray(
-        [ev for ev in eigenvalues if ev > 0], dtype=np.float64
-    )
-
+    u_g = eigenvectors[:, np.where(eigenvalues > 0)[0]].astype(np.float64)
+    eigenvalues = eigenvalues[np.where(eigenvalues > 0)[0]].astype(np.float64)
     return u_g, eigenvalues
 
 
@@ -88,5 +73,12 @@ def _get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
         eigenvalues (np.ndarray): The eigenvalues.
     """
     eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
+    # set eigenvalues below tolerance to zero
     eigenvalues[eigenvalues < tolerance] = 0
+
+    # sort the eigenvectors according to the sorted eigenvalues
+    eigenvectors = eigenvectors[:, eigenvalues.argsort()]
+    # sort the eigenvalues
+    eigenvalues = np.sort(eigenvalues)
+
     return eigenvectors, eigenvalues
