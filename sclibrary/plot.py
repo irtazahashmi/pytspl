@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
+from sclibrary.hodgedecomposition import get_hodge_decomposition
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 
@@ -339,7 +340,7 @@ class SCPlot:
             # draw the labels
             self.draw_node_labels()
 
-    def draw_flow(self, flow: list, ax=None) -> None:
+    def draw_flow(self, flow: np.ndarray, ax=None) -> None:
         if ax is None:
             ax = plt.gca()
 
@@ -363,3 +364,36 @@ class SCPlot:
         # plot labels
         self.draw_node_labels(font_size=7)
         self.draw_edge_labels(edge_labels=edge_labels, font_size=15)
+
+    def draw_hodge_decomposition(
+        self,
+        flow: np.ndarray,
+        round_fig: bool = True,
+        round_sig_fig: int = 2,
+    ) -> None:
+        fig = plt.figure(figsize=(15, 5))
+
+        f_g, f_c, f_h = get_hodge_decomposition(
+            self.sc.incidence_matrix(rank=1),
+            self.sc.incidence_matrix(rank=2),
+            flow,
+            round_fig=round_fig,
+            round_sig_fig=round_sig_fig,
+        )
+
+        # gradient flow
+        ax = fig.add_subplot(1, 3, 1)
+        ax.set_title("f_g")
+        self.draw_flow(flow=f_g, ax=ax)
+
+        # curl flow
+        ax = fig.add_subplot(1, 3, 2)
+        ax.set_title("f_c")
+        self.draw_flow(flow=f_c, ax=ax)
+
+        # harmonic flow
+        ax = fig.add_subplot(1, 3, 3)
+        ax.set_title("f_h")
+        self.draw_flow(flow=f_h, ax=ax)
+
+        plt.show()
