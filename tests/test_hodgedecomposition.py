@@ -30,7 +30,9 @@ def sc():
 
 @pytest.fixture
 def flow():
-    yield [0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09]
+    yield np.array(
+        [0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09]
+    )
 
 
 class TestHodgeDecompostion:
