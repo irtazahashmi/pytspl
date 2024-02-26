@@ -2,6 +2,7 @@ from itertools import combinations
 from typing import Hashable, Iterable
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from toponetx.classes import SimplicialComplex
 
@@ -176,3 +177,69 @@ class SimplicialComplexNetwork:
         """
         hodge_lap_mat = self.sc.hodge_laplacian_matrix(rank=rank).todense()
         return np.squeeze(np.asarray(hodge_lap_mat))
+
+    def apply_lower_shifting(
+        self, flow: np.ndarray, steps: int = 1
+    ) -> np.ndarray:
+        """
+        Applies the lower shifting operator to the simplicial complex.
+
+        Args:
+            flow (np.ndarray): Flow on the simplicial complex.
+            steps (int): Number of times to apply the lower shifting operator.
+            Defaults to 1.
+
+        Returns:
+            np.ndarray: Lower shifted simplicial complex.
+        """
+
+        L1L = self.lower_laplacian_matrix(rank=1)
+
+        if steps == 1:
+            # L(1, l) @ f
+            flow = csr_matrix(L1L).dot(flow)
+        else:
+            # L(1, l)**2 @ f
+            flow = csr_matrix(L1L).dot(csr_matrix(L1L.T).dot(flow))
+
+        return flow
+
+    def apply_upper_shifting(
+        self, flow: np.ndarray, steps: int = 1
+    ) -> np.ndarray:
+        """
+        Applies the upper shifting operator to the simplicial complex.
+
+        Args:
+            flow (np.ndarray): Flow on the simplicial complex.
+            steps (int): Number of times to apply the upper shifting operator.
+            Defaults to 1.
+
+        Returns:
+            np.ndarray: Upper shifted simplicial complex.
+        """
+
+        L1U = self.upper_laplacian_matrix(rank=1)
+
+        if steps == 1:
+            # L(1, u) @ f
+            flow = csr_matrix(L1U).dot(flow)
+        else:
+            # L(1, u)**2 @ f
+            flow = csr_matrix(L1U).dot(csr_matrix(L1U.T).dot(flow))
+
+        return flow
+
+    def apply_two_step_shifting(self, flow: np.ndarray) -> np.ndarray:
+        """
+        Applies the two-step shifting operator to the simplicial complex.
+
+        Args:
+            flow (np.ndarray): Flow on the simplicial complex.
+
+        Returns:
+            np.ndarray: Two-step shifted simplicial complex.
+        """
+        two_step_lower_shifting = self.apply_lower_shifting(flow, steps=2)
+        two_step_upper_shifting = self.apply_upper_shifting(flow, steps=2)
+        return two_step_lower_shifting + two_step_upper_shifting
