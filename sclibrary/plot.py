@@ -7,12 +7,6 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-from sclibrary.eigendecomposition import (
-    get_curl_eigenvectors,
-    get_gradient_eigenvectors,
-    get_harmonic_eigenvectors,
-)
-from sclibrary.hodgedecomposition import get_hodge_decomposition
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 
@@ -379,12 +373,8 @@ class SCPlot:
     ) -> None:
         fig = plt.figure(figsize=(15, 5))
 
-        f_g, f_c, f_h = get_hodge_decomposition(
-            self.sc.incidence_matrix(rank=1),
-            self.sc.incidence_matrix(rank=2),
-            flow,
-            round_fig=round_fig,
-            round_sig_fig=round_sig_fig,
+        f_h, f_c, f_g = self.sc.get_hodgedecomposition(
+            flow=flow, round_fig=round_fig, round_sig_fig=round_sig_fig
         )
 
         # gradient flow
@@ -411,8 +401,7 @@ class SCPlot:
         round_sig_fig: int = 2,
     ):
 
-        L1L = self.sc.lower_laplacian_matrix(rank=1)
-        u_g, eigenvals_g = get_gradient_eigenvectors(L1L)
+        u_g, eigenvals_g = self.sc.get_eigendecomposition(component="gradient")
 
         if len(eigenvector_indices) == 0:
             eigenvector_indices = range(len(eigenvals_g))
@@ -452,8 +441,8 @@ class SCPlot:
         round_fig: bool = True,
         round_sig_fig: int = 2,
     ):
-        L1U = self.sc.upper_laplacian_matrix(rank=1)
-        u_c, eigenvals_c = get_curl_eigenvectors(L1U)
+
+        u_c, eigenvals_c = self.sc.get_eigendecomposition(component="curl")
 
         if len(eigenvector_indices) == 0:
             eigenvector_indices = range(len(eigenvals_c))
@@ -493,8 +482,8 @@ class SCPlot:
         round_fig: bool = True,
         round_sig_fig: int = 2,
     ):
-        L1 = self.sc.hodge_laplacian_matrix(rank=1)
-        u_h, eigenvals_h = get_harmonic_eigenvectors(L1)
+
+        u_h, eigenvals_h = self.sc.get_eigendecomposition(component="harmonic")
 
         if len(eigenvector_indices) == 0:
             eigenvector_indices = range(len(eigenvals_h))
