@@ -339,11 +339,11 @@ class SCPlot:
             # draw the labels
             self.draw_node_labels()
 
-    def draw_flow(self, flow: list, ax=None) -> None:
+    def draw_flow(self, flow: np.ndarray, ax=None) -> None:
         if ax is None:
             ax = plt.gca()
 
-        self._init_axes(ax=ax)
+        # self._init_axes(ax=ax)
 
         # get edge labels
         edges = self.sc.edges
@@ -352,14 +352,167 @@ class SCPlot:
             edge_labels[edges[i][0], edges[i][1]] = flow[i]
 
         # plot nodes and edges
-        self.draw_sc_nodes()
+        self.draw_sc_nodes(ax=ax)
         self.draw_sc_edges(
             edge_color=list(edge_labels.values()),
             edge_width=10,
             directed=True,
             arrowsize=30,
+            ax=ax,
         )
 
         # plot labels
         self.draw_node_labels(font_size=7)
-        self.draw_edge_labels(edge_labels=edge_labels, font_size=15)
+        self.draw_edge_labels(edge_labels=edge_labels, font_size=15, ax=ax)
+
+    def draw_hodge_decomposition(
+        self,
+        flow: np.ndarray,
+        round_fig: bool = True,
+        round_sig_fig: int = 2,
+    ) -> None:
+        fig = plt.figure(figsize=(15, 5))
+
+        f_h, f_c, f_g = self.sc.get_hodgedecomposition(
+            flow=flow, round_fig=round_fig, round_sig_fig=round_sig_fig
+        )
+
+        # gradient flow
+        ax = fig.add_subplot(1, 3, 1)
+        ax.set_title("f_g")
+        self.draw_flow(flow=f_g, ax=ax)
+
+        # curl flow
+        ax = fig.add_subplot(1, 3, 2)
+        ax.set_title("f_c")
+        self.draw_flow(flow=f_c, ax=ax)
+
+        # harmonic flow
+        ax = fig.add_subplot(1, 3, 3)
+        ax.set_title("f_h")
+        self.draw_flow(flow=f_h, ax=ax)
+
+        plt.show()
+
+    def draw_gradient_eigenvectors(
+        self,
+        eigenvector_indices: np.ndarray = [],
+        round_fig: bool = True,
+        round_sig_fig: int = 2,
+    ):
+
+        u_g, eigenvals_g = self.sc.get_eigendecomposition(component="gradient")
+
+        if len(eigenvector_indices) == 0:
+            eigenvector_indices = range(len(eigenvals_g))
+
+        # Assuming you have a total number of eigenvector_indices as num_plots
+        num_plots = len(eigenvector_indices)
+        # Calculate the number of columns needed
+        num_cols = min(num_plots, 3)
+        # Calculate the number of rows needed
+        num_rows = num_plots // num_cols
+
+        if num_plots % num_cols != 0:
+            num_rows += 1
+
+        Position = range(1, num_plots + 1)
+        fig = plt.figure(1, figsize=(15, 5 * num_rows))
+
+        for i, eig_vec in enumerate(eigenvector_indices):
+            ax = fig.add_subplot(num_rows, num_cols, Position[i])
+            ax.set_title(
+                "λ_G = {}".format(round(eigenvals_g[eig_vec], round_sig_fig))
+            )
+
+            flow = u_g[:, eig_vec]
+
+            if round_fig:
+                flow = np.round(flow, round_sig_fig)
+
+            self.draw_flow(flow=flow, ax=ax)
+
+        plt.tight_layout()
+        plt.show()
+
+    def draw_curl_eigenvectors(
+        self,
+        eigenvector_indices: np.ndarray = [],
+        round_fig: bool = True,
+        round_sig_fig: int = 2,
+    ):
+
+        u_c, eigenvals_c = self.sc.get_eigendecomposition(component="curl")
+
+        if len(eigenvector_indices) == 0:
+            eigenvector_indices = range(len(eigenvals_c))
+
+        # Assuming you have a total number of eigenvector_indices as num_plots
+        num_plots = len(eigenvector_indices)
+        # Calculate the number of columns needed
+        num_cols = min(num_plots, 3)
+        # Calculate the number of rows needed
+        num_rows = num_plots // num_cols
+
+        if num_plots % num_cols != 0:
+            num_rows += 1
+
+        Position = range(1, num_plots + 1)
+        fig = plt.figure(1, figsize=(15, 5 * num_rows))
+
+        for i, eig_vec in enumerate(eigenvector_indices):
+            ax = fig.add_subplot(num_rows, num_cols, Position[i])
+            ax.set_title(
+                "λ_C = {}".format(round(eigenvals_c[eig_vec], round_sig_fig))
+            )
+
+            flow = u_c[:, eig_vec]
+
+            if round_fig:
+                flow = np.round(flow, round_sig_fig)
+
+            self.draw_flow(flow=flow, ax=ax)
+
+        plt.tight_layout()
+        plt.show()
+
+    def draw_harmonic_eigenvectors(
+        self,
+        eigenvector_indices: np.ndarray = [],
+        round_fig: bool = True,
+        round_sig_fig: int = 2,
+    ):
+
+        u_h, eigenvals_h = self.sc.get_eigendecomposition(component="harmonic")
+
+        if len(eigenvector_indices) == 0:
+            eigenvector_indices = range(len(eigenvals_h))
+
+        # Assuming you have a total number of eigenvector_indices as num_plots
+        num_plots = len(eigenvector_indices)
+        # Calculate the number of columns needed
+        num_cols = min(num_plots, 3)
+        # Calculate the number of rows needed
+        num_rows = num_plots // num_cols
+
+        if num_plots % num_cols != 0:
+            num_rows += 1
+
+        Position = range(1, num_plots + 1)
+        fig = plt.figure(1, figsize=(15, 5 * num_rows))
+
+        for i, eig_vec in enumerate(eigenvector_indices):
+            ax = fig.add_subplot(num_rows, num_cols, Position[i])
+            ax.set_title(
+                "λ_H = {}".format(round(eigenvals_h[eig_vec], round_sig_fig))
+            )
+
+            flow = u_h[:, eig_vec]
+
+            if round_fig:
+                flow = np.round(flow, round_sig_fig)
+
+            self.draw_flow(flow=flow, ax=ax)
+
+        plt.tight_layout()
+        plt.show()

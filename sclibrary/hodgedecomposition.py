@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import csr_matrix
 
 
 def get_divergence(
@@ -16,7 +17,7 @@ def get_divergence(
     Returns:
         np.ndarray: The divergence of the flow.
     """
-    divergence = incidence_matrix @ flow
+    divergence = csr_matrix(incidence_matrix).dot(flow)
     return divergence
 
 
@@ -39,7 +40,7 @@ def get_gradient_component(
         np.ndarray: The gradient flow.
     """
     p = np.linalg.lstsq(incidence_matrix.T, flow, rcond=None)[0]
-    gradient_flow = incidence_matrix.T @ p
+    gradient_flow = csr_matrix(incidence_matrix.T).dot(p)
 
     if round_fig:
         gradient_flow = np.round(gradient_flow, round_sig_fig)
@@ -66,7 +67,7 @@ def get_curl_component(
         np.ndarray: The curl flow.
     """
     w = np.linalg.lstsq(incidence_matrix, flow, rcond=None)[0]
-    curl_flow = incidence_matrix @ w
+    curl_flow = csr_matrix(incidence_matrix).dot(w)
 
     if round_fig:
         curl_flow = np.round(curl_flow, round_sig_fig)
