@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 
 from sclibrary.eigendecomposition import (
-    _get_eigendecomposition,
     get_curl_eigenvectors,
+    get_eigendecomposition,
     get_gradient_eigenvectors,
     get_harmonic_eigenvectors,
 )
@@ -90,7 +90,7 @@ class TestEigendecomoposition:
         l_1 = sc.hodge_laplacian_matrix(rank=k)
 
         tolerance = 1e-03
-        eigenvectors, eigenvalues = _get_eigendecomposition(
+        eigenvectors, eigenvalues = get_eigendecomposition(
             l_1, tolerance=tolerance
         )
         lambda_matrix = np.diag(eigenvalues)

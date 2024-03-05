@@ -37,6 +37,12 @@ def flow():
 
 class TestHodgeDecompostion:
 
+    def test_divergence_component(self, sc, flow):
+        # B1@f_d = 0
+        B1 = sc.incidence_matrix(rank=1)
+        f_d = get_divergence(B1, flow)
+        assert np.allclose(f_d, B1 @ flow)
+
     def test_harmonic_component_condition(self, sc, flow):
         # L1@f_h = 0
         B1 = sc.incidence_matrix(rank=1)
