@@ -9,6 +9,7 @@ from sclibrary.eigendecomposition import (
     get_gradient_eigenvectors,
     get_harmonic_eigenvectors,
 )
+from sclibrary.freq_component import FrequencyComponent
 from sclibrary.hodgedecomposition import *
 from toponetx.classes import SimplicialComplex
 
@@ -293,15 +294,15 @@ class SimplicialComplexNetwork:
             tuple: Eigenvectors and eigenvalues of the simplicial complex.
         """
 
-        if component == "harmonic":
+        if component == FrequencyComponent.HARMONIC.value:
             L1 = self.hodge_laplacian_matrix(rank=1)
             u_h, eig_h = get_harmonic_eigenvectors(L1)
             return u_h, eig_h
-        elif component == "curl":
+        elif component == FrequencyComponent.CURL.value:
             L1U = self.upper_laplacian_matrix(rank=1)
             u_c, eig_c = get_curl_eigenvectors(L1U)
             return u_c, eig_c
-        elif component == "gradient":
+        elif component == FrequencyComponent.GRADIENT.value:
             L1L = self.lower_laplacian_matrix(rank=1)
             u_g, eig_g = get_gradient_eigenvectors(L1L)
             return u_g, eig_g
@@ -354,3 +355,39 @@ class SimplicialComplexNetwork:
         )
 
         return f_h, f_c, f_g
+
+    def get_component_coefficients(
+        self,
+        component: str,
+    ) -> np.ndarray:
+
+        L1 = self.hodge_laplacian_matrix(rank=1)
+
+        u_h, e_h = self.get_eigendecomposition(
+            FrequencyComponent.HARMONIC.value
+        )
+        u_c, e_c = self.get_eigendecomposition(FrequencyComponent.CURL.value)
+        _, e_g = self.get_eigendecomposition(FrequencyComponent.GRADIENT.value)
+
+        # concatenate the eigenvalues
+        eigenvals = np.concatenate((e_h, e_c, e_g))
+
+        # mask the eigenvectors
+        mask = np.zeros(L1.shape[0])
+
+        if component == FrequencyComponent.HARMONIC.value:
+            mask[: u_h.shape[1]] = 1
+            # sort mask according to eigenvalues
+            mask = mask[np.argsort(eigenvals)]
+        elif component == FrequencyComponent.CURL.value:
+            mask[u_h.shape[1] : u_h.shape[1] + u_c.shape[1]] = 1
+            # sort mask according to eigenvalues
+            mask = mask[np.argsort(eigenvals)]
+        elif component == FrequencyComponent.GRADIENT.value:
+            mask[u_h.shape[1] + u_c.shape[1] :] = 1
+            mask = mask[np.argsort(eigenvals)]
+        else:
+            raise ValueError(
+                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+            )
+        return mask
