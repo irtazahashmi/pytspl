@@ -4,8 +4,9 @@ __pycache__/
 # DS_Store
 **/.DS_Store
 
-# toponetx
+# libraries
 toponetx
+chebpy
 
 # venv
 thesis_venv
