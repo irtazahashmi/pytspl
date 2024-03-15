@@ -146,7 +146,7 @@ class SimplicialComplexNetwork:
         norm_lap_mat = self.sc.normalized_laplacian_matrix(rank=rank).todense()
         return np.squeeze(np.asarray(norm_lap_mat))
 
-    def upper_laplacian_matrix(self, rank: int) -> np.ndarray:
+    def upper_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
         Computes the upper Laplacian matrix of the simplicial complex.
 
@@ -159,7 +159,7 @@ class SimplicialComplexNetwork:
         up_lap_mat = self.sc.up_laplacian_matrix(rank=rank).todense()
         return np.squeeze(np.asarray(up_lap_mat))
 
-    def lower_laplacian_matrix(self, rank: int) -> np.ndarray:
+    def lower_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
         Computes the lower Laplacian matrix of the simplicial complex.
 
@@ -172,7 +172,7 @@ class SimplicialComplexNetwork:
         down_lap_mat = self.sc.down_laplacian_matrix(rank=rank).todense()
         return np.squeeze(np.asarray(down_lap_mat))
 
-    def hodge_laplacian_matrix(self, rank: int) -> np.ndarray:
+    def hodge_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
         Computes the Hodge Laplacian matrix of the simplicial complex.
 

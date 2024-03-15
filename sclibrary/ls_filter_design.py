@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
 from sclibrary.eigendecomposition import get_eigendecomposition
@@ -8,8 +7,8 @@ from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 class LSFilterDesign:
 
-    def __init__(self, sc: SimplicialComplexNetwork):
-        self.sc = sc
+    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+        self.sc = simplicial_complex
         self.errors = None
         self.frequency_responses = None
         self.f_estimated = None
