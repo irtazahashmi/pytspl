@@ -12,7 +12,7 @@ class GridBasedFilterDesign:
         self.frequency_responses = None
         self.f_estimated = None
 
-    def _power_iteration(self):
+    def _power_iteration(self) -> np.ndarray:
         """Power iteration algorithm to approximate the largest eigenvalue."""
         L1 = self.sc.hodge_laplacian_matrix()
         v = np.ones(L1.shape[0])
@@ -23,7 +23,7 @@ class GridBasedFilterDesign:
 
         return v
 
-    def _sample_grid_points(self, num_of_samples: int):
+    def _sample_grid_points(self, num_of_samples: int) -> np.ndarray:
         """
         Sample M1 and M2 grid points unoformly in the interval for the smallest
         set value greater than 0 as the lower bound.
@@ -42,7 +42,7 @@ class GridBasedFilterDesign:
         return np.linspace(lambda_min, lambda_max, num_of_samples)
 
     @staticmethod
-    def _frequency_response(eigenvalue: float, mu: float = 0.5):
+    def _frequency_response(eigenvalue: float, mu: float = 0.5) -> float:
         """
         Compute the frequency response for a given eigenvalue.
 
@@ -54,7 +54,7 @@ class GridBasedFilterDesign:
 
     def _compute_sampled_continuous_freq_response(
         self, num_of_samples: int, mu: float = 0.5
-    ):
+    ) -> tuple:
         """
         Compute the continuous frequency response for sampled eigenvalues.
 
@@ -75,7 +75,7 @@ class GridBasedFilterDesign:
 
         return g, sampled_eigenvals
 
-    def _compute_true_continuous_freq_response(self, mu: float = 0.5):
+    def _compute_true_continuous_freq_response(self, mu: float = 0.5) -> list:
         """
         Compute the continuous frequency response for the true eigenvalues.
 
@@ -98,7 +98,7 @@ class GridBasedFilterDesign:
         f0: np.ndarray,
         f: np.ndarray,
         filter_range=range(12),
-    ):
+    ) -> None:
 
         # eigenvalues
         L1 = self.sc.hodge_laplacian_matrix(rank=1)

@@ -85,9 +85,9 @@ class LSFilterDesign:
             H_1_tilda = np.diag(u_1.T @ H_1 @ u_1)
             frequency_responses[:, L] = H_1_tilda
 
-        self.f_estimated = f_estimated
-        self.errors = errors
-        self.frequency_responses = frequency_responses
+        self.f_estimated = np.array(f_estimated).astype(float)
+        self.errors = np.array(errors).astype(float)
+        self.frequency_responses = np.array(frequency_responses).astype(float)
 
     def general_filter(
         self,

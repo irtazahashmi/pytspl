@@ -360,6 +360,17 @@ class SimplicialComplexNetwork:
         self,
         component: str,
     ) -> np.ndarray:
+        """
+        Calculates the component coefficients of the given component using the
+        order of the eigenvectors.
+
+        Raises:
+            ValueError: If the component is not one of 'harmonic', 'curl', or 'gradient'.
+
+        Returns:
+            np.ndarray: The component coefficients of the simplicial complex for the
+            given component.
+        """
 
         L1 = self.hodge_laplacian_matrix(rank=1)
 
