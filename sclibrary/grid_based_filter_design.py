@@ -149,6 +149,7 @@ class GridBasedFilterDesign:
 
             # compute errors
             errors_tf[l] = np.linalg.norm(f_est - f0) / np.linalg.norm(f0)
+            # H - g_G(lambda)
             errors_filter_true[l] = np.linalg.norm(H - H_true)
 
         self.errors = errors_filter_true
