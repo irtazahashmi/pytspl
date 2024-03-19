@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from sclibrary.eigendecomposition import get_eigendecomposition
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
@@ -12,13 +13,13 @@ class GridBasedFilterDesign:
         self.frequency_responses = None
         self.f_estimated = None
 
-    def _power_iteration(self) -> np.ndarray:
+    def _power_iteration(self, iterations: int = 50) -> np.ndarray:
         """Power iteration algorithm to approximate the largest eigenvalue."""
         L1 = self.sc.hodge_laplacian_matrix()
         v = np.ones(L1.shape[0])
 
-        for i in range(50):
-            v = L1 @ v
+        for i in range(iterations):
+            v = csr_matrix(L1).dot(v)
             v = v / np.linalg.norm(v)
 
         return v
@@ -152,6 +153,6 @@ class GridBasedFilterDesign:
             # H - g_G(lambda)
             errors_filter_true[l] = np.linalg.norm(H - H_true)
 
-        self.errors = errors_filter_true
-        self.frequency_responses = H_freq
-        self.f_estimated = f_est
+        self.errors = errors_filter_true.astype(float)
+        self.frequency_responses = H_freq.astype(float)
+        self.f_estimated = f_est.astype(float)

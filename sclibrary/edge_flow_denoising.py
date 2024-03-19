@@ -6,8 +6,8 @@ from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 class EdgeFlowDenoising:
     """
-    Solve the regularized optimization probelm to estimate f_tilde from f = f0 + ε
-    where, ε is a zero mean Gaussian noise.
+    Solve the regularized optimization probelm to estimate f_tilde from
+    f = f0 + ε where, ε is a zero mean Gaussian noise.
     """
 
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
@@ -43,21 +43,16 @@ class EdgeFlowDenoising:
         I = np.eye(P.shape[0])
         U1, _ = get_eigendecomposition(P)
 
-        # Use P as the edge laplacian
-        A_lg = np.abs(P - 2 * I)
-        L_lg = np.diag(A_lg) - A_lg
-
-        # regularization parameters
         errors = np.zeros((len(mu_vals)))
 
+        # denoising with low pass filter Hp
         for i, mu in enumerate(mu_vals):
-            # denoising with low pass filter Hp
-
             # frequency response of the low-pass filter
-            H_regularized = np.linalg.inv(P * mu + I)
-            H_regularized_freq = np.diag(U1.T @ H_regularized @ U1)
+            H = np.linalg.inv(I + mu * P)
+            H_freq = np.diag(U1.T @ H @ U1)
 
-            f_est_r = H_regularized @ f
+            # estimate frequency response
+            f_est_r = H @ f
 
             # calculate error
             errors[i] = np.linalg.norm(f_est_r - f0) / np.linalg.norm(f0)
