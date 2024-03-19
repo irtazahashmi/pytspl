@@ -66,6 +66,8 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
     The eigendecomposition of the Hodge Laplacian is given by:
     L(k) = U(k) * lambda(k) * U(k).T
 
+    Sorts the eigenvectors according to the sorted eigenvalues.
+
     Args:
         lap_mat (np.ndarray): The Laplacian matrix L(k).
         tolerance (float): The tolerance for eigenvalues to be considered zero.

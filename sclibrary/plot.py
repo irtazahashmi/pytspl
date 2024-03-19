@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
+from sclibrary.freq_component import FrequencyComponent
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 
@@ -27,6 +28,9 @@ class SCPlot:
         self.pos = pos
 
     def _init_axes(self, ax) -> dict:
+        """
+        Initialize the axes for the plot.
+        """
         layout = self.pos
         edges = self._get_edges()
 
@@ -59,10 +63,12 @@ class SCPlot:
         return layout
 
     def _get_nodes(self):
+        """Return the 0-simplices."""
         # generate 0-simplices
         return list(set(itertools.chain(*self.sc.simplices)))
 
     def _get_edges(self):
+        """Return the 1-simplices."""
         # generate 1-simplices
         edges = list(
             set(
@@ -82,6 +88,7 @@ class SCPlot:
         return edges
 
     def _get_triangles(self):
+        """Return the 2-simplices."""
         # generate 2-simplices
         triangles = list(
             set(
@@ -112,6 +119,7 @@ class SCPlot:
         with_labels: bool = False,
         ax=None,
     ):
+        """Draw the nodes of the simplicial complex."""
 
         if ax is None:
             ax = plt.gca()
@@ -170,6 +178,8 @@ class SCPlot:
         font_weight: str = "normal",
         alpha=None,
     ) -> None:
+        """Draw the labels of the nodes."""
+
         for node_id in self._get_nodes():
             (x, y) = self.pos[node_id]
             plt.text(
@@ -196,6 +206,7 @@ class SCPlot:
         edge_vmax=None,
         ax=None,
     ):
+        """Draw the edges of the simplicial complex."""
 
         if ax is None:
             ax = plt.gca()
@@ -203,6 +214,7 @@ class SCPlot:
         fig = ax.get_figure()
         self._init_axes(ax=ax)
 
+        # edge color is iterable and all elements are numbers
         if np.iterable(edge_color) and np.alltrue(
             [isinstance(c, Number) for c in edge_color]
         ):
@@ -291,6 +303,7 @@ class SCPlot:
         alpha=None,
         ax=None,
     ):
+        """Draw the labels of the edges."""
 
         if ax is None:
             ax = plt.gca()
@@ -324,6 +337,7 @@ class SCPlot:
     def draw_sc_network(
         self, directed: bool = False, with_labels: bool = False, ax=None
     ) -> None:
+        """Draw the simplicial complex network."""
 
         if ax is None:
             ax = plt.gca()
@@ -339,11 +353,11 @@ class SCPlot:
             # draw the labels
             self.draw_node_labels()
 
-    def draw_flow(self, flow: np.ndarray, ax=None) -> None:
+    def draw_flow(
+        self, flow: np.ndarray, with_labels: bool = True, ax=None
+    ) -> None:
         if ax is None:
             ax = plt.gca()
-
-        # self._init_axes(ax=ax)
 
         # get edge labels
         edges = self.sc.edges
@@ -352,7 +366,7 @@ class SCPlot:
             edge_labels[edges[i][0], edges[i][1]] = flow[i]
 
         # plot nodes and edges
-        self.draw_sc_nodes(ax=ax)
+        self.draw_sc_nodes(with_labels=with_labels, ax=ax)
         self.draw_sc_edges(
             edge_color=list(edge_labels.values()),
             edge_width=10,
@@ -361,9 +375,11 @@ class SCPlot:
             ax=ax,
         )
 
-        # plot labels
         self.draw_node_labels(font_size=7)
-        self.draw_edge_labels(edge_labels=edge_labels, font_size=15, ax=ax)
+
+        # plot edge labels
+        if with_labels:
+            self.draw_edge_labels(edge_labels=edge_labels, font_size=15, ax=ax)
 
     def draw_hodge_decomposition(
         self,
@@ -371,6 +387,8 @@ class SCPlot:
         round_fig: bool = True,
         round_sig_fig: int = 2,
     ) -> None:
+        """Draw the Hodge decomposition of the flow."""
+
         fig = plt.figure(figsize=(15, 5))
 
         f_h, f_c, f_g = self.sc.get_hodgedecomposition(
@@ -399,9 +417,13 @@ class SCPlot:
         eigenvector_indices: np.ndarray = [],
         round_fig: bool = True,
         round_sig_fig: int = 2,
+        with_labels: bool = True,
     ):
+        """Draw the gradient eigenvectors."""
 
-        u_g, eigenvals_g = self.sc.get_eigendecomposition(component="gradient")
+        u_g, eigenvals_g = self.sc.get_eigendecomposition(
+            component=FrequencyComponent.GRADIENT.value
+        )
 
         if len(eigenvector_indices) == 0:
             eigenvector_indices = range(len(eigenvals_g))
@@ -430,7 +452,7 @@ class SCPlot:
             if round_fig:
                 flow = np.round(flow, round_sig_fig)
 
-            self.draw_flow(flow=flow, ax=ax)
+            self.draw_flow(flow=flow, ax=ax, with_labels=with_labels)
 
         plt.tight_layout()
         plt.show()
@@ -440,9 +462,13 @@ class SCPlot:
         eigenvector_indices: np.ndarray = [],
         round_fig: bool = True,
         round_sig_fig: int = 2,
+        with_labels: bool = True,
     ):
+        """Draw the curl eigenvectors."""
 
-        u_c, eigenvals_c = self.sc.get_eigendecomposition(component="curl")
+        u_c, eigenvals_c = self.sc.get_eigendecomposition(
+            component=FrequencyComponent.CURL.value
+        )
 
         if len(eigenvector_indices) == 0:
             eigenvector_indices = range(len(eigenvals_c))
@@ -471,7 +497,7 @@ class SCPlot:
             if round_fig:
                 flow = np.round(flow, round_sig_fig)
 
-            self.draw_flow(flow=flow, ax=ax)
+            self.draw_flow(flow=flow, with_labels=with_labels, ax=ax)
 
         plt.tight_layout()
         plt.show()
@@ -481,9 +507,13 @@ class SCPlot:
         eigenvector_indices: np.ndarray = [],
         round_fig: bool = True,
         round_sig_fig: int = 2,
+        with_labels: bool = True,
     ):
+        """Draw the harmonic eigenvectors."""
 
-        u_h, eigenvals_h = self.sc.get_eigendecomposition(component="harmonic")
+        u_h, eigenvals_h = self.sc.get_eigendecomposition(
+            component=FrequencyComponent.HARMONIC.value
+        )
 
         if len(eigenvector_indices) == 0:
             eigenvector_indices = range(len(eigenvals_h))
@@ -512,7 +542,7 @@ class SCPlot:
             if round_fig:
                 flow = np.round(flow, round_sig_fig)
 
-            self.draw_flow(flow=flow, ax=ax)
+            self.draw_flow(flow=flow, with_labels=with_labels, ax=ax)
 
         plt.tight_layout()
         plt.show()

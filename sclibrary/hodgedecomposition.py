@@ -26,7 +26,7 @@ def get_gradient_component(
     flow: np.ndarray,
     round_fig: bool = True,
     round_sig_fig: int = 2,
-):
+) -> np.ndarray:
     """
     Calculate the gradient flow of a flow on a graph.
 
@@ -53,7 +53,7 @@ def get_curl_component(
     flow: np.ndarray,
     round_fig: bool = True,
     round_sig_fig: int = 2,
-):
+) -> np.ndarray:
     """
     Calculate the curl flow of a flow on a graph.
 
@@ -81,7 +81,7 @@ def get_harmonic_component(
     flow: np.ndarray,
     round_fig: bool = True,
     round_sig_fig: int = 2,
-):
+) -> np.ndarray:
     """
     Calculate the harmonic flow of a flow on a graph.
 

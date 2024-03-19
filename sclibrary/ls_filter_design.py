@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
 from sclibrary.eigendecomposition import get_eigendecomposition
@@ -8,8 +7,8 @@ from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 class LSFilterDesign:
 
-    def __init__(self, sc: SimplicialComplexNetwork):
-        self.sc = sc
+    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+        self.sc = simplicial_complex
         self.errors = None
         self.frequency_responses = None
         self.f_estimated = None
@@ -32,8 +31,9 @@ class LSFilterDesign:
             FrequencyComponent.GRADIENT.value: f_g,
         }
 
-        f_true = component_mapping[component]
-        if f_true is None:
+        try:
+            f_true = component_mapping[component]
+        except KeyError:
             raise ValueError(
                 f"Invalid component {component}. Use 'harmonic', 'curl' or 'gradient'."
             )
@@ -45,7 +45,7 @@ class LSFilterDesign:
         lap_matrix: np.ndarray,
         f: np.ndarray,
         f_true: np.ndarray,
-        u_1: np.ndarray,
+        U1: np.ndarray,
         eigenvals: np.ndarray,
         alpha: np.ndarray,
         filter_range: np.ndarray,
@@ -56,9 +56,10 @@ class LSFilterDesign:
 
         # create a matrix to store the system
         system_mat = np.zeros((len(eigenvals), len(filter_range)))
-        f_estimated = []
-        errors = []
-        frequency_responses = np.zeros((len(u_1), len(filter_range)))
+
+        errors = np.zeros((len(filter_range)))
+        frequency_responses = np.zeros((len(U1), len(filter_range)))
+        f_estimated = None
 
         for L in filter_range:
 
@@ -80,15 +81,15 @@ class LSFilterDesign:
             error = np.linalg.norm(f_estimated - f_true) / np.linalg.norm(
                 f_true
             )
-            errors.append(error)
+            errors[L] = error
 
             # filter frequency response
-            H_1_tilda = np.diag(u_1.T @ H_1 @ u_1)
+            H_1_tilda = np.diag(U1.T @ H_1 @ U1)
             frequency_responses[:, L] = H_1_tilda
 
-        self.f_estimated = f_estimated
-        self.errors = errors
-        self.frequency_responses = frequency_responses
+        self.f_estimated = np.array(f_estimated).astype(float)
+        self.errors = np.array(errors).astype(float)
+        self.frequency_responses = np.array(frequency_responses).astype(float)
 
     def general_filter(
         self,
@@ -112,7 +113,7 @@ class LSFilterDesign:
 
         # eigendecomposition of the Hodge Laplacian matrix
         L1 = self.sc.hodge_laplacian_matrix(rank=1)
-        u_1, eigenvals = get_eigendecomposition(L1)
+        U1, eigenvals = get_eigendecomposition(L1)
 
         # get the component coefficients
         alpha = self.sc.get_component_coefficients(component=component)
@@ -123,7 +124,7 @@ class LSFilterDesign:
             lap_matrix=L1,
             f=f,
             f_true=f_true,
-            u_1=u_1,
+            U1=U1,
             eigenvals=eigenvals,
             alpha=alpha,
             filter_range=filter_range,
@@ -175,9 +176,7 @@ class LSFilterDesign:
             )
 
         # get unique eigenvalues
-        u_1, eigenvals = get_eigendecomposition(
-            lap_matrix, tolerance=tolerance
-        )
+        U1, eigenvals = get_eigendecomposition(lap_matrix, tolerance=tolerance)
         eigenvals = np.unique(eigenvals)
         # get the true signal
         f_true = self._get_true_signal(component, f)
@@ -188,7 +187,7 @@ class LSFilterDesign:
             lap_matrix=lap_matrix,
             f=f,
             f_true=f_true,
-            u_1=u_1,
+            U1=U1,
             eigenvals=eigenvals,
             alpha=alpha,
             filter_range=filter_range,
