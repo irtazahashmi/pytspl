@@ -364,6 +364,9 @@ class SimplicialComplexNetwork:
         Calculates the component coefficients of the given component using the
         order of the eigenvectors.
 
+        Args:
+            component (str): Component of the eigendecomposition to return.
+
         Raises:
             ValueError: If the component is not one of 'harmonic', 'curl', or 'gradient'.
 
@@ -374,10 +377,10 @@ class SimplicialComplexNetwork:
 
         L1 = self.hodge_laplacian_matrix(rank=1)
 
-        u_h, e_h = self.get_eigendecomposition(
+        U_H, e_h = self.get_eigendecomposition(
             FrequencyComponent.HARMONIC.value
         )
-        u_c, e_c = self.get_eigendecomposition(FrequencyComponent.CURL.value)
+        U_C, e_c = self.get_eigendecomposition(FrequencyComponent.CURL.value)
         _, e_g = self.get_eigendecomposition(FrequencyComponent.GRADIENT.value)
 
         # concatenate the eigenvalues
@@ -387,18 +390,39 @@ class SimplicialComplexNetwork:
         mask = np.zeros(L1.shape[0])
 
         if component == FrequencyComponent.HARMONIC.value:
-            mask[: u_h.shape[1]] = 1
-            # sort mask according to eigenvalues
-            mask = mask[np.argsort(eigenvals)]
+            mask[: U_H.shape[1]] = 1
         elif component == FrequencyComponent.CURL.value:
-            mask[u_h.shape[1] : u_h.shape[1] + u_c.shape[1]] = 1
-            # sort mask according to eigenvalues
-            mask = mask[np.argsort(eigenvals)]
+            mask[U_H.shape[1] : U_H.shape[1] + U_C.shape[1]] = 1
         elif component == FrequencyComponent.GRADIENT.value:
-            mask[u_h.shape[1] + u_c.shape[1] :] = 1
-            mask = mask[np.argsort(eigenvals)]
+            mask[U_H.shape[1] + U_C.shape[1] :] = 1
         else:
             raise ValueError(
                 "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
             )
+
+        # sort mask according to eigenvalues
+        mask = mask[np.argsort(eigenvals)]
+
+        return mask
+
+    def get_component_coefficients_by_type(self, component: str) -> np.ndarray:
+        L1 = self.hodge_laplacian_matrix(rank=1)
+        u_h, _ = self.get_eigendecomposition(FrequencyComponent.HARMONIC.value)
+        u_g, _ = self.get_eigendecomposition(FrequencyComponent.GRADIENT.value)
+
+        # mask the eigenvectors
+        mask = np.zeros(L1.shape[0])
+
+        if component == FrequencyComponent.HARMONIC.value:
+            mask[: u_h.shape[1]] = 1
+        elif component == FrequencyComponent.GRADIENT.value:
+            mask[u_h.shape[1] : u_h.shape[1] + u_g.shape[1]] = 1
+        elif component == FrequencyComponent.CURL.value:
+            mask[u_h.shape[1] + u_g.shape[1] :] = 1
+
+        else:
+            raise ValueError(
+                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+            )
+
         return mask

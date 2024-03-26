@@ -38,7 +38,7 @@ class GridBasedFilterDesign:
         # Get the largest eigenvalue
         v = self._power_iteration()
         lambda_min = 0
-        lambda_max = np.mean(L1 @ v / v)
+        lambda_max = np.mean(csr_matrix(L1).dot(v) / v)
 
         return np.linspace(lambda_min, lambda_max, num_of_samples)
 
@@ -100,6 +100,17 @@ class GridBasedFilterDesign:
         f: np.ndarray,
         filter_range=range(12),
     ) -> None:
+        """
+        Apply the grid-based filter to the input signal.
+
+        Updates the errors, frequency_responses, and f_estimated attributes.
+
+        Args:
+            f0 (np.ndarray): The noise-free signal.
+            f (np.ndarray): The noisy signal.
+            filter_range (range, optional): The range of filter order to
+            consider. Defaults to range(12).
+        """
 
         # eigenvalues
         L1 = self.sc.hodge_laplacian_matrix(rank=1)

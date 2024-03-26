@@ -12,8 +12,12 @@ class EdgeFlowDenoising:
 
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
         self.sc = simplicial_complex
-        self.errors = None
+
         self.f_estimated = None
+        self.error = None
+
+        self.filter_range = None
+        self.errors = None
 
     def denoise(
         self,
@@ -52,10 +56,13 @@ class EdgeFlowDenoising:
             H_freq = np.diag(U1.T @ H @ U1)
 
             # estimate frequency response
-            f_est_r = H @ f
+            f_estimated = H @ f
 
-            # calculate error
-            errors[i] = np.linalg.norm(f_est_r - f0) / np.linalg.norm(f0)
+            # calculate error for each mu
+            errors[i] = np.linalg.norm(f_estimated - f0) / np.linalg.norm(f0)
 
+        self.f_estimated = f_estimated
+        self.error = np.linalg.norm(f_estimated - f0) / np.linalg.norm(f0)
+
+        self.filter_range = mu_vals
         self.errors = errors
-        self.f_estimated = f_est_r

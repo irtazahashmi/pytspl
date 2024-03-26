@@ -41,16 +41,14 @@ class TestLSFilterDesign:
         with pytest.raises(ValueError):
             ls_filter._get_true_signal(component, f)
 
-    def test_general_filter_gradient(
+    def test_simplicial_filter_gradient(
         self, ls_filter: LSFilterDesign, f: np.ndarray
     ):
 
-        filter_range = range(4)
+        filter_size = 4
         component = "gradient"
 
-        ls_filter.general_filter(
-            component=component, f=f, filter_range=filter_range
-        )
+        ls_filter.simplicial_filter(L=filter_size, component=component, f=f)
 
         assert ls_filter.errors is not None
         assert ls_filter.frequency_responses is not None
@@ -72,11 +70,11 @@ class TestLSFilterDesign:
         self, ls_filter: LSFilterDesign, f: np.ndarray
     ):
 
-        filter_range = range(4)
+        filter_size = 4
         component = "gradient"
 
         ls_filter.subcomponent_extraction(
-            component=component, f=f, filter_range=filter_range
+            L=filter_size, component=component, f=f
         )
 
         assert ls_filter.errors is not None

@@ -335,7 +335,7 @@ class SCPlot:
         return edge_items
 
     def draw_sc_network(
-        self, directed: bool = False, with_labels: bool = False, ax=None
+        self, directed: bool = False, with_labels: bool = True, ax=None
     ) -> None:
         """Draw the simplicial complex network."""
 
