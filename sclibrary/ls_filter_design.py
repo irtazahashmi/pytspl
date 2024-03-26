@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from sclibrary.eigendecomposition import get_eigendecomposition
 from sclibrary.freq_component import FrequencyComponent
@@ -10,9 +11,27 @@ class LSFilterDesign:
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
         self.sc = simplicial_complex
 
-        self.f_estimated = None
-        self.frequency_responses = None
-        self.errors = None
+        self.history = {
+            "f_estimated": None,
+            "error": None,
+            "frequency_responses": [],
+            "error_per_filter_size": [],
+        }
+
+    def _reset_history(self):
+        """Reset the history of the filter design."""
+        self.history = {
+            "f_estimated": None,
+            "error": None,
+            "frequency_responses": [],
+            "error_per_filter_size": [],
+        }
+
+    def calculate_error(self, f_estimated: np.ndarray, f_true) -> float:
+        """
+        Calculate the error of the estimated signal.
+        """
+        return np.linalg.norm(f_estimated - f_true) / np.linalg.norm(f_true)
 
     def _get_true_signal(self, component: str, f: np.ndarray) -> np.ndarray:
         """
@@ -50,19 +69,22 @@ class LSFilterDesign:
         U1: np.ndarray,
         eigenvals: np.ndarray,
         alpha: np.ndarray,
-    ) -> None:
+    ) -> tuple:
         """
         Apply the filter to the signal using a type of the laplacian matrix.
 
         Args:
             L (int): The size of the filter.
-            lap_matrix (np.ndarray): The laplacian matrix. It can be the Hodge Laplacian matrix,
-            the upper or lower laplacian matrix.
+            lap_matrix (np.ndarray): The laplacian matrix. It can be the Hodge
+            Laplacian matrix, the upper or lower laplacian matrix.
             f (np.ndarray): The noisy signal to be filtered.
             f_true (np.ndarray): The true signal.
             U1 (np.ndarray): The eigenvectors of the laplacian matrix.
             eigenvals (np.ndarray): The eigenvalues of the laplacian matrix.
             alpha (np.ndarray): The coefficients of the filter.
+
+        Returns:
+            tuple: The estimated signal, frequency responses and error per filter size.
         """
 
         # convert L1 to a numpy array with dtype object
@@ -92,42 +114,37 @@ class LSFilterDesign:
                 H_1 += h[l] * np.linalg.matrix_power(L1, l)
 
             # filter the signal
-            f_estimated = H_1 @ f
+            f_estimated = csr_matrix(H_1, dtype=float).dot(f)
 
             # compute the error for each filter size
-            error = np.linalg.norm(f_estimated - f_true) / np.linalg.norm(
-                f_true
-            )
-            errors[L] = error
+            errors[L] = self.calculate_error(f_estimated, f_true)
 
             # filter frequency response
             H_1_tilda = np.diag(U1.T @ H_1 @ U1)
             frequency_responses[:, L] = H_1_tilda
 
-        # update the results
-        self.f_estimated = np.array(f_estimated).astype(float)
-        self.frequency_responses = np.array(frequency_responses).astype(float)
-        self.errors = np.array(errors).astype(float)
+        f_estimated = np.array(f_estimated).astype(float)
+        frequency_responses = np.array(frequency_responses).astype(float)
+        errors = np.array(errors).astype(float)
 
-    # TODO: name this better
-    def simplicial_filter(
-        self, L: int, component: str, f: np.ndarray
-    ) -> tuple:
+        return f_estimated, frequency_responses, errors
+
+    def simplicial_filter(self, L: int, component: str, f: np.ndarray) -> None:
         """
-        LS based filter design for subcomponent extraction by filter H1.
-
-        Hk = sum(l=0, L) h_l L^l
+        LS based filter design for subcomponent extraction by filter H1 using
+        the Hodge Laplacian matrix (L1).
 
         In this case, we will use the Hodge Laplacian matrix L1 = L2 = L and α = β.
+
+        Hk = sum(l=0, L) h_l * L^l
 
         Args:
             L (int): The size of the filter.
             component (str): The component to be extracted.
             f (np.ndarray): The signal to be filtered.
-
-        Returns:
-            tuple: The estimated signal, errors and frequency responses.
         """
+
+        self._reset_history()
 
         # eigendecomposition of the Hodge Laplacian matrix
         L1 = self.sc.hodge_laplacian_matrix(rank=1)
@@ -138,7 +155,7 @@ class LSFilterDesign:
         # get the component coefficients
         alpha = self.sc.get_component_coefficients(component=component)
 
-        self._apply_filter(
+        f_estimated, frequency_responses, errors = self._apply_filter(
             L=L,
             lap_matrix=L1,
             f=f,
@@ -148,12 +165,12 @@ class LSFilterDesign:
             alpha=alpha,
         )
 
-        # update private attributes for the plot
-        self._f = f
-        self._filter_range = range(L)
-        self._component = f"{component} subcomponent"
+        # update the results
+        self.history["f_estimated"] = f_estimated
+        self.history["error"] = self.calculate_error(f_estimated, f)
+        self.history["frequency_responses"].append(frequency_responses)
+        self.history["error_per_filter_size"].append(errors)
 
-    # TODO: name this better
     def subcomponent_extraction(
         self,
         L: int,
@@ -162,7 +179,8 @@ class LSFilterDesign:
         tolerance: float = 1e-6,
     ) -> None:
         """
-        General LS based filter design for subcomponent extraction by filter H1.
+        LS based filter design for subcomponent extraction by filter H1 using
+        the upper or lower Laplacian matrix (L1 or L2).
 
         In this case:
         - The solution will have zero coefficients on the α for curl extraction (L1 = 0)
@@ -179,6 +197,8 @@ class LSFilterDesign:
             Defaults to 1e-6.
         """
 
+        self._reset_history()
+
         # get the Laplacian matrix according to the component
         componenet_mapping = {
             FrequencyComponent.GRADIENT.value: self.sc.lower_laplacian_matrix(
@@ -188,8 +208,9 @@ class LSFilterDesign:
                 rank=1
             ),
         }
-        lap_matrix = componenet_mapping[component]
-        if lap_matrix is None:
+        try:
+            lap_matrix = componenet_mapping[component]
+        except KeyError:
             raise ValueError(
                 f"Invalid component {component}. Use 'gradient' or 'curl'."
             )
@@ -201,10 +222,12 @@ class LSFilterDesign:
         f_true = self._get_true_signal(component=component, f=f)
 
         # filter coefficients
-        # TODO: check if the coefficients are correct
-        alpha = [0] + [1] * (len(eigenvals) - 1)
+        harmonic_components = sum(
+            self.sc.get_component_coefficients("harmonic")
+        ).astype(int)
+        alpha = [0] * harmonic_components + [1] * (len(eigenvals) - 1)
 
-        self._apply_filter(
+        f_estimated, frequency_responses, errors = self._apply_filter(
             L=L,
             lap_matrix=lap_matrix,
             f=f,
@@ -213,6 +236,12 @@ class LSFilterDesign:
             eigenvals=eigenvals,
             alpha=alpha,
         )
+
+        # update the results
+        self.history["f_estimated"] = f_estimated
+        self.history["error"] = self.calculate_error(f_estimated, f)
+        self.history["frequency_responses"].append(frequency_responses)
+        self.history["error_per_filter_size"].append(errors)
 
     def general_filter(
         self,
@@ -232,6 +261,8 @@ class LSFilterDesign:
             Defaults to 1e-6.
         """
 
+        self._reset_history()
+
         f_est_g, f_est_c, f_est_h = 0, 0, 0
 
         # gradient extraction
@@ -242,7 +273,7 @@ class LSFilterDesign:
                 f=f,
                 tolerance=tolerance,
             )
-            f_est_g = self.f_estimated
+            f_est_g = self.history["f_estimated"]
 
         # curl extraction
         if L2 > 0:
@@ -252,7 +283,7 @@ class LSFilterDesign:
                 f=f,
                 tolerance=tolerance,
             )
-            f_est_c = self.f_estimated
+            f_est_c = self.history["f_estimated"]
 
         # harmonic extraction
         f_est_h = f - f_est_g - f_est_c
@@ -261,28 +292,5 @@ class LSFilterDesign:
         f_estimated = f_est_g + f_est_c + f_est_h
 
         # update the results
-        self.f_estimated = f_estimated
-        self.frequency_responses = None
-        self.errors = None
-
-        # update private attributes for the plot
-        self._f = f
-        self._component = "General filter"
-
-    def calculate_error(self) -> float:
-        """
-        Calculate the error of the estimated signal.
-        """
-        return np.linalg.norm(self.f_estimated - self._f) / np.linalg.norm(
-            self._f
-        )
-
-    def plot_errors(self, figsize: tuple = (15, 5)):
-        """
-        Plot the errors for each filter size.
-        """
-        import matplotlib.pyplot as plt
-
-        plt.figure(figsize=figsize)
-        plt.plot(self._filter_range, self.errors)
-        plt.title(f"{self._component} error")
+        self.history["f_estimated"] = f_estimated
+        self.history["error"] = self.calculate_error(f_estimated, f)
