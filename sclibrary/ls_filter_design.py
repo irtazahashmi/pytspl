@@ -119,9 +119,8 @@ class LSFilterDesign:
             # compute the error for each filter size
             errors[L] = self.calculate_error(f_estimated, f_true)
 
-            # filter frequency response
-            H_1_tilda = np.diag(U1.T @ H_1 @ U1)
-            frequency_responses[:, L] = H_1_tilda
+            # filter frequency response (H_1_tilda)
+            frequency_responses[:, L] = np.diag(U1.T @ H_1 @ U1)
 
         f_estimated = np.array(f_estimated).astype(float)
         frequency_responses = np.array(frequency_responses).astype(float)

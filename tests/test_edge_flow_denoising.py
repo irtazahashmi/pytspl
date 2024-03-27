@@ -37,23 +37,25 @@ class TestEdgeFlowDenoising:
     ):
 
         P_choice = "L1"
+        edf = EdgeFlowDenoising(sc)
+        edf.denoise(f0, f, P_choice=P_choice)
 
-        edge_flow_denoising = EdgeFlowDenoising(sc)
-        edge_flow_denoising.denoise(f0, f, P_choice=P_choice)
+        assert edf.history["f_estimated"] is not None
+        assert edf.history["error"] is not None
+        assert edf.history["frequency_responses"] is not None
+        assert edf.history["error_per_filter_size"] is not None
 
         expected_error = 0.70
-        assert edge_flow_denoising.errors is not None
         assert np.isclose(
-            round(edge_flow_denoising.errors[0], 2),
+            np.round(edf.history["error"], 2),
             expected_error,
         )
 
-        assert edge_flow_denoising.f_estimated is not None
         f_expected = np.array(
             [1.01, 0.21, 0.75, -0.31, 0.73, 0.74, 1.19, 0.12, 0.51, 0.84]
         )
         assert np.allclose(
-            np.round(edge_flow_denoising.f_estimated, 2),
+            np.round(edf.history["f_estimated"], 2),
             f_expected,
         )
 
@@ -62,23 +64,25 @@ class TestEdgeFlowDenoising:
     ):
 
         P_choice = "L1L"
+        edf = EdgeFlowDenoising(sc)
+        edf.denoise(f0, f, P_choice=P_choice)
 
-        edge_flow_denoising = EdgeFlowDenoising(sc)
-        edge_flow_denoising.denoise(f0, f, P_choice=P_choice)
+        assert edf.history["f_estimated"] is not None
+        assert edf.history["error"] is not None
+        assert edf.history["frequency_responses"] is not None
+        assert edf.history["error_per_filter_size"] is not None
 
         expected_error = 0.73
-        assert edge_flow_denoising.errors is not None
         assert np.isclose(
-            round(edge_flow_denoising.errors[0], 2),
+            np.round(edf.history["error"], 2),
             expected_error,
         )
 
-        assert edge_flow_denoising.f_estimated is not None
         f_expected = np.array(
             [1.26, 0.05, 0.65, -0.06, 0.83, 0.74, 1.19, 0.35, 0.28, 1.07]
         )
         assert np.allclose(
-            np.round(edge_flow_denoising.f_estimated, 2),
+            np.round(edf.history["f_estimated"], 2),
             f_expected,
         )
 
@@ -87,9 +91,8 @@ class TestEdgeFlowDenoising:
     ):
 
         P_choice = "LL"
-
-        edge_flow_denoising = EdgeFlowDenoising(sc)
+        edf = EdgeFlowDenoising(sc)
 
         # catch ValueError
         with pytest.raises(ValueError):
-            edge_flow_denoising.denoise(f0, f, P_choice=P_choice)
+            edf.denoise(f0, f, P_choice=P_choice)
