@@ -38,7 +38,9 @@ def grid_filter(sc: SimplicialComplexNetwork):
 class TestGridBasedFilterDesign:
 
     def test_power_iteration_algo(self, grid_filter: GridBasedFilterDesign):
-        v = grid_filter._power_iteration(iterations=50)
+
+        P = grid_filter.sc.hodge_laplacian_matrix(rank=1)
+        v = grid_filter._power_iteration(P=P, iterations=50)
 
         assert v is not None
         assert isinstance(v, np.ndarray)
@@ -48,21 +50,68 @@ class TestGridBasedFilterDesign:
         )
         assert np.allclose(np.round(v, 2), expected)
 
-    def test_apply_filter(
-        self, grid_filter: GridBasedFilterDesign, f0: np.ndarray, f: np.ndarray
+    def test_subcomponent_extraction_L1(
+        self, grid_filter: GridBasedFilterDesign, f: np.ndarray, f0: np.ndarray
     ):
+        p_choice = "L1"
+        filter_size = 4
 
-        grid_filter.apply_filter(f0, f=f)
-
-        assert grid_filter.f_estimated is not None
-        assert grid_filter.errors is not None
-        assert grid_filter.frequency_responses is not None
-
-        # decreasing error
-        assert np.all(np.diff(grid_filter.errors) < 0.1)
-
-        f_expected = np.array(
-            [1.01, 0.2, 0.75, -0.31, 0.73, 0.74, 1.19, 0.12, 0.5, 0.84]
+        grid_filter.subcomponent_extraction(
+            p_choice=p_choice, L=filter_size, component="gradient", f=f
         )
 
-        assert np.allclose(np.round(grid_filter.f_estimated, 2), f_expected)
+        # none of the attributes should be None
+        for _, result in grid_filter.history.items():
+            assert result is not None
+
+        # decreasing error
+        assert np.all(
+            np.diff(grid_filter.history["error_per_filter_size"]) < 0.1
+        )
+
+        f_estimated = grid_filter.history["f_estimated"]
+        error = grid_filter.calculate_error(f_estimated, f0)
+        excepted_error = 0.70
+        assert np.allclose(error, excepted_error, atol=0.01)
+
+    def test_subcomponent_extraction_L1L(
+        self, grid_filter: GridBasedFilterDesign, f: np.ndarray, f0: np.ndarray
+    ):
+        p_choice = "L1L"
+        filter_size = 4
+
+        grid_filter.subcomponent_extraction(
+            p_choice=p_choice, L=filter_size, component="gradient", f=f
+        )
+
+        # none of the attributes should be None
+        for _, result in grid_filter.history.items():
+            assert result is not None
+
+        # decreasing error
+        assert np.all(
+            np.diff(grid_filter.history["error_per_filter_size"]) < 0.1
+        )
+
+        f_estimated = grid_filter.history["f_estimated"]
+        error = grid_filter.calculate_error(f_estimated, f0)
+        excepted_error = 0.73
+        assert np.allclose(error, excepted_error, atol=0.01)
+
+    def test_general_filter(
+        self, grid_filter: GridBasedFilterDesign, f: np.ndarray
+    ):
+
+        L1, L2 = 1, 1
+        f_est_h, f_est_c, f_est_g = grid_filter.general_filter(
+            L1=L1, L2=L2, f=f
+        )
+        f_est = f_est_h + f_est_c + f_est_g
+
+        assert grid_filter.history["L1"] is not None
+        assert grid_filter.history["L2"] is not None
+
+        assert np.allclose(
+            np.round(f_est, 2),
+            f,
+        )

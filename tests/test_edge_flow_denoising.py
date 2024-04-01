@@ -38,16 +38,20 @@ class TestEdgeFlowDenoising:
 
         P_choice = "L1"
         edf = EdgeFlowDenoising(sc)
-        edf.denoise(f0, f, P_choice=P_choice)
+        edf.denoise(
+            p_choice=P_choice,
+            component="gradient",
+            f=f,
+        )
 
-        assert edf.history["f_estimated"] is not None
-        assert edf.history["error"] is not None
-        assert edf.history["frequency_responses"] is not None
-        assert edf.history["error_per_filter_size"] is not None
+        # none of the attributes should be None for the history
+        for _, result in edf.history.items():
+            assert result is not None
 
         expected_error = 0.70
+        actual_error = edf.calculate_error(edf.history["f_estimated"], f0)
         assert np.isclose(
-            np.round(edf.history["error"], 2),
+            np.round(actual_error, 2),
             expected_error,
         )
 
@@ -65,16 +69,20 @@ class TestEdgeFlowDenoising:
 
         P_choice = "L1L"
         edf = EdgeFlowDenoising(sc)
-        edf.denoise(f0, f, P_choice=P_choice)
+        edf.denoise(
+            p_choice=P_choice,
+            component="gradient",
+            f=f,
+        )
 
-        assert edf.history["f_estimated"] is not None
-        assert edf.history["error"] is not None
-        assert edf.history["frequency_responses"] is not None
-        assert edf.history["error_per_filter_size"] is not None
+        # none of the attributes should be None for the history
+        for _, result in edf.history.items():
+            assert result is not None
 
         expected_error = 0.73
+        actual_error = edf.calculate_error(edf.history["f_estimated"], f0)
         assert np.isclose(
-            np.round(edf.history["error"], 2),
+            np.round(actual_error, 2),
             expected_error,
         )
 
@@ -86,7 +94,7 @@ class TestEdgeFlowDenoising:
             f_expected,
         )
 
-    def test_edge_flow_denoising_P_error(
+    def test_edge_flow_denoising_P_not_found(
         self, sc: SimplicialComplexNetwork, f0: np.ndarray, f: np.ndarray
     ):
 
@@ -95,4 +103,8 @@ class TestEdgeFlowDenoising:
 
         # catch ValueError
         with pytest.raises(ValueError):
-            edf.denoise(f0, f, P_choice=P_choice)
+            edf.denoise(
+                p_choice=P_choice,
+                component="gradient",
+                f=f,
+            )
