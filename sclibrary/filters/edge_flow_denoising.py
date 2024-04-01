@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from sclibrary.eigendecomposition import get_eigendecomposition
-from sclibrary.filter import Filter
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.filters.filter import Filter
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
 """Module for edge flow denoising."""
 

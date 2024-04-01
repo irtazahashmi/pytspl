@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
-from sclibrary.extended_graph import ExtendedGraph
+from sclibrary.sc.extended_graph import ExtendedGraph
 
 """Module for reading graph network data."""
 

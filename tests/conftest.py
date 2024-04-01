@@ -1,7 +1,7 @@
 import pytest
 
-from sclibrary.network_reader import NetworkReader
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.data_reader.network_reader import NetworkReader
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
 
 
 @pytest.fixture(scope="module")

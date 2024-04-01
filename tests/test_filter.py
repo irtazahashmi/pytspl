@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary.filter import Filter
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.filters.filter import Filter
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
 
 
 @pytest.fixture

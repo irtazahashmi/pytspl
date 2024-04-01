@@ -4,13 +4,13 @@ from typing import Hashable, Iterable
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from sclibrary.eigendecomposition import (
+from sclibrary.utils.eigendecomposition import (
     get_curl_eigenvectors,
     get_gradient_eigenvectors,
     get_harmonic_eigenvectors,
 )
-from sclibrary.freq_component import FrequencyComponent
-from sclibrary.hodgedecomposition import *
+from sclibrary.utils.frequency_component import FrequencyComponent
+from sclibrary.utils.hodgedecomposition import *
 from toponetx.classes import SimplicialComplex
 
 """Module to analyze simplicial complex data."""

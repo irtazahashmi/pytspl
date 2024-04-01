@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary.grid_based_filter_design import GridBasedFilterDesign
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.filters.grid_based_filter_design import GridBasedFilterDesign
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
 
 
 @pytest.fixture

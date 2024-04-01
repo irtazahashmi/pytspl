@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary.ls_filter_design import LSFilterDesign
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.filters.ls_filter_design import LSFilterDesign
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
 
 
 @pytest.fixture

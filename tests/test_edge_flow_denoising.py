@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary.edge_flow_denoising import EdgeFlowDenoising
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.filters.edge_flow_denoising import EdgeFlowDenoising
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
 
 
 @pytest.fixture
