@@ -134,7 +134,6 @@ class GridBasedFilterDesign(Filter):
         """
 
         P = self.get_p_matrix(p_choice)
-        self.P = P
 
         U1, eigenvals = get_eigendecomposition(lap_mat=P)
         f_true = self.get_true_signal(component=component, f=f)
@@ -176,7 +175,7 @@ class GridBasedFilterDesign(Filter):
                 H_true += h_true[i] * np.linalg.matrix_power(P, i)
 
             # estimate the signal
-            f_est = H @ f
+            f_est = csr_matrix(H, dtype=float).dot(f)
 
             # frequency response of the filter
             frequency_responses = np.diag(U1.T @ H @ U1)
