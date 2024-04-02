@@ -1,5 +1,5 @@
-from sclibrary.extended_graph import ExtendedGraph
-from sclibrary.network_reader import NetworkReader as nv
+from sclibrary.data_reader.network_reader import NetworkReader as nv
+from sclibrary.sc.extended_graph import ExtendedGraph
 
 
 class TestNetworkReader:

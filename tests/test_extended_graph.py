@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary.network_reader import NetworkReader as nv
+from sclibrary.data_reader.network_reader import NetworkReader as nv
 
 
 @pytest.fixture

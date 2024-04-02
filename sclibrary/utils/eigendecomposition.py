@@ -2,12 +2,12 @@ import warnings
 
 import numpy as np
 
-"""Module for eigendecomposition"""
+"""Module to compute eigendecomposition"""
 
 
 def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:
     """
-    Calculate the harmonic eigenvectors of the Hodge Laplacian.
+    Calculate the harmonic eigenvectors of the Hodge Laplacian - e.g. L1.
 
     Args:
         hodgle_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
@@ -25,10 +25,10 @@ def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:
 
 def get_curl_eigenvectors(upper_lap_mat: np.ndarray) -> tuple:
     """
-    Calculate the curl eigenvectors of the upper Laplacian.
+    Calculate the curl eigenvectors of the upper Laplacian e.g. L1U.
 
     Args:
-        upper_lap_mat (np.ndarray): The upper Laplacian matrix L(k, u)
+        upper_lap_mat (np.ndarray): The upper Laplacian matrix L(k, u).
 
     Returns:
         u_c (np.ndarray): The curl eigenvectors U(C)
@@ -43,7 +43,7 @@ def get_curl_eigenvectors(upper_lap_mat: np.ndarray) -> tuple:
 
 def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
     """
-    Calculate the gradient eigenvectors of the lower Laplacian.
+    Calculate the gradient eigenvectors of the lower Laplacian e.g. L1L.
 
     Args:
         lower_lap_mat (np.ndarray): The lower Laplacian matrix L(k, l)

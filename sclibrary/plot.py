@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-from sclibrary.freq_component import FrequencyComponent
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class SCPlot:
@@ -335,7 +335,7 @@ class SCPlot:
         return edge_items
 
     def draw_sc_network(
-        self, directed: bool = False, with_labels: bool = False, ax=None
+        self, directed: bool = False, with_labels: bool = True, ax=None
     ) -> None:
         """Draw the simplicial complex network."""
 

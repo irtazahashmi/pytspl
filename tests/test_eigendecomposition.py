@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 
-from sclibrary.eigendecomposition import (
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.utils.eigendecomposition import (
     get_curl_eigenvectors,
     get_eigendecomposition,
     get_gradient_eigenvectors,
     get_harmonic_eigenvectors,
 )
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 
 @pytest.fixture

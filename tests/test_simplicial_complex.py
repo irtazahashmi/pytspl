@@ -1,6 +1,6 @@
 import numpy as np
 
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
 
 
 class TestSimplicialComplex:
