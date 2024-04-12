@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplexNetwork
 from sclibrary.utils.frequency_component import FrequencyComponent
 
 

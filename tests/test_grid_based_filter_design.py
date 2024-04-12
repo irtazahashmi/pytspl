@@ -1,33 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary.filters.grid_based_filter_design import GridBasedFilterDesign
-from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
-
-
-@pytest.fixture
-def f0():
-    return np.array(
-        [
-            2.25,
-            0.13,
-            1.72,
-            -2.12,
-            1.59,
-            1.08,
-            -0.30,
-            -0.21,
-            1.25,
-            1.45,
-        ]
-    )
-
-
-@pytest.fixture
-def f():
-    return np.array(
-        [2.90, 0.25, 1.78, -1.50, 1.76, 1.53, 1.32, 0.08, 0.67, 1.73]
-    )
+from sclibrary import SimplicialComplexNetwork
+from sclibrary.filters import GridBasedFilterDesign
 
 
 @pytest.fixture(autouse=True)

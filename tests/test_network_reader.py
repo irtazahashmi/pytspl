@@ -1,5 +1,5 @@
-from sclibrary.data_reader.network_reader import NetworkReader as nv
-from sclibrary.sc.extended_graph import ExtendedGraph
+from sclibrary import read_csv
+from sclibrary.simplicial_complex.extended_graph import ExtendedGraph
 
 
 class TestNetworkReader:
@@ -10,5 +10,5 @@ class TestNetworkReader:
         src_col = "Source"
         dest_col = "Target"
         feature_cols = ["Distance"]
-        g = nv.read_csv(filename, delimeter, src_col, dest_col, feature_cols)
+        g = read_csv(filename, delimeter, src_col, dest_col, feature_cols)
         assert isinstance(g, ExtendedGraph)

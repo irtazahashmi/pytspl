@@ -1,15 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary.filters.ls_filter_design import LSFilterDesign
-from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
-
-
-@pytest.fixture
-def f():
-    return np.array(
-        [2.90, 0.25, 1.78, -1.50, 1.76, 1.53, 1.32, 0.08, 0.67, 1.73]
-    )
+from sclibrary import SimplicialComplexNetwork
+from sclibrary.filters import LSFilterDesign
 
 
 @pytest.fixture(autouse=True)
