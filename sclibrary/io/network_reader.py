@@ -46,9 +46,10 @@ def read_csv(
 
 def read_tntp(
     filename: str,
-    delimeter: str,
     src_col: str,
     dest_col: str,
+    skip_rows: int,
+    delimeter: str = "\t",
     feature_cols: list = None,
 ) -> ExtendedGraph:
     """
@@ -56,16 +57,23 @@ def read_tntp(
 
     Args:
         filename (str): The name of the tntp file.
-        delimeter (str): The delimeter used in the tntp file.
         src_col (str): The name of the column containing the source nodes.
         dest_col (str): The name of the column containing the destination nodes.
+        skip_rows (int): The number of (metadata) rows to skip in the tntp file.
+        delimeter (str): The delimeter used in the tntp file. Defaults to "\t".
         feature_cols (list, optional): The names of the feature columns. Defaults to None.
 
     Returns:
         ExtendedGraph: The graph read from the tntp file.
     """
-    df = pd.read_csv(filename, sep=delimeter, skiprows=5)
-    df.drop(columns=["~ ", ";"], inplace=True)
+
+    # Read the file
+    df = pd.read_csv(filename, skiprows=skip_rows, sep=delimeter)
+    # trimmed cols names
+    df.columns = [s.strip() for s in df.columns]
+
+    # And drop the silly first andlast columns
+    df.drop(["~", ";"], axis=1, inplace=True)
 
     # Create a graph
     G = nx.Graph()
@@ -125,7 +133,7 @@ def read_incidence_matrix(B1_filename: str, B2_filename: str) -> ExtendedGraph:
         adjacency[b][a] = 1
 
     # create graph
-    G = nx.from_numpy_matrix(np.array(adjacency))
+    G = nx.from_numpy_array(np.array(adjacency))
     return ExtendedGraph(G)
 
 
@@ -134,7 +142,7 @@ def get_coordinates(
     node_id_col: str,
     x_col: str,
     y_col: str,
-    delimeter: str = ",",
+    delimeter: str,
 ) -> dict:
     """
     Reads a csv file and returns a dictionary of coordinates.
@@ -144,7 +152,7 @@ def get_coordinates(
         node_id_col (str): The name of the column containing the node ids.
         x_col (str): The name of the column containing the x coordinates.
         y_col (str): The name of the column containing the y coordinates.
-        delimeter (str, optional): The delimeter used in the csv file. Defaults to ",".
+        delimeter (str, optional): The delimeter used in the csv file.
 
     Returns:
         dict: A dictionary of coordinates (node_id : (x, y)).
