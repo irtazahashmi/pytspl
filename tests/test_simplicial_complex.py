@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from sclibrary import SimplicialComplexNetwork
 
@@ -14,8 +15,24 @@ class TestSimplicialComplex:
     def test_nodes(self, sc: SimplicialComplexNetwork):
         assert sc.nodes == {0, 1, 2, 3, 4, 5, 6}
 
+    def test_edges(self, sc: SimplicialComplexNetwork):
+        edges = sc.edges
+        assert len(edges) == 10
+
     def test_is_connected(self, sc: SimplicialComplexNetwork):
         assert sc.is_connected
+
+    def test_get_faces(self, sc: SimplicialComplexNetwork):
+        simplex = [0, 1]
+        faces = sc.get_faces(simplex=simplex)
+        expected_faces = [(1,), (0,)]
+        assert faces == expected_faces
+
+    def test_get_cofaces(self, sc: SimplicialComplexNetwork):
+        simplex = [0]
+        cofaces = sc.get_cofaces(simplex=simplex)
+        expected_cofaces = [(0, 2, 3), (0, 1, 2), (0, 3), (0, 1), (0, 2), (0,)]
+        assert cofaces == expected_cofaces
 
     def test_identity_matrix(self, sc: SimplicialComplexNetwork):
         nodes = 7
@@ -167,6 +184,12 @@ class TestSimplicialComplex:
         assert np.allclose(f_tilda_c, exptected_c)
         assert np.allclose(f_tilda_g, exptected_g)
 
+    def test_eigedecomposition_error(self, sc: SimplicialComplexNetwork):
+        component = "unknown"
+
+        with pytest.raises(ValueError):
+            sc.get_eigendecomposition(component=component)
+
     def test_get_component_coefficients(self, sc: SimplicialComplexNetwork):
         alpha_g = sc.get_component_coefficients(component="gradient")
         alpha_c = sc.get_component_coefficients(component="curl")
@@ -179,3 +202,11 @@ class TestSimplicialComplex:
         assert np.array_equal(alpha_g, expected_g)
         assert np.array_equal(alpha_c, expected_c)
         assert np.array_equal(alpha_h, expected_h)
+
+    def test_get_component_coefficients_error(
+        self, sc: SimplicialComplexNetwork
+    ):
+        component = "unknown"
+
+        with pytest.raises(ValueError):
+            sc.get_component_coefficients(component=component)
