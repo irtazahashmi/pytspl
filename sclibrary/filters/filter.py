@@ -1,6 +1,6 @@
 import numpy as np
 
-from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplexNetwork
 from sclibrary.utils.frequency_component import FrequencyComponent
 
 """Filter design base class."""

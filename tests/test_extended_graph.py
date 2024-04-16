@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary.data_reader.network_reader import NetworkReader as nv
+from sclibrary import read_csv
 
 
 @pytest.fixture
@@ -11,7 +11,7 @@ def graph():
     src_col = "Source"
     dest_col = "Target"
     feature_cols = ["Distance"]
-    g = nv.read_csv(filename, delimeter, src_col, dest_col, feature_cols)
+    g = read_csv(filename, delimeter, src_col, dest_col, feature_cols)
     yield g
 
 

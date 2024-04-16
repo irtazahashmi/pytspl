@@ -1,7 +1,7 @@
+import numpy as np
 import pytest
 
-from sclibrary.data_reader.network_reader import NetworkReader
-from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary import SimplicialComplexNetwork, read_csv
 
 
 @pytest.fixture(scope="module")
@@ -20,7 +20,7 @@ def sc():
     dest_col = "Target"
     feature_cols = ["Distance"]
 
-    G = NetworkReader.read_csv(
+    G = read_csv(
         filename=filename,
         delimeter=delimeter,
         src_col=src_col,
@@ -32,3 +32,42 @@ def sc():
         condition="distance", dist_col_name="Distance", dist_threshold=1.5
     )
     yield SimplicialComplexNetwork(simplices=simplices)
+
+
+@pytest.fixture(scope="module")
+def f0():
+    """
+    True flow for the simplicial complex above.
+    Used for testing purposes.
+
+    Returns:
+        np.ndarray: True flow.
+    """
+    return np.array(
+        [
+            2.25,
+            0.13,
+            1.72,
+            -2.12,
+            1.59,
+            1.08,
+            -0.30,
+            -0.21,
+            1.25,
+            1.45,
+        ]
+    )
+
+
+@pytest.fixture(scope="module")
+def f():
+    """
+    Noisy flow for the simplicial complex above.
+    Used for testing purposes.
+
+    Returns:
+        np.ndarray: Noisy flow.
+    """
+    return np.array(
+        [2.90, 0.25, 1.78, -1.50, 1.76, 1.53, 1.32, 0.08, 0.67, 1.73]
+    )

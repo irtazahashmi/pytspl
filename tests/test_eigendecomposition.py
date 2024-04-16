@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary import SimplicialComplexNetwork
 from sclibrary.utils.eigendecomposition import (
     get_curl_eigenvectors,
     get_eigendecomposition,

@@ -1,8 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary.data_reader.network_reader import NetworkReader
-from sclibrary.sc.simplicial_complex import SimplicialComplexNetwork
+from sclibrary import SimplicialComplexNetwork, read_csv
 from sclibrary.utils.hodgedecomposition import *
 
 
@@ -14,7 +13,7 @@ def sc():
     src_col = "Source"
     dest_col = "Target"
     feature_cols = ["Distance"]
-    G = NetworkReader.read_csv(
+    G = read_csv(
         filename=filename,
         delimeter=delimeter,
         src_col=src_col,
