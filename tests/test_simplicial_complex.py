@@ -171,7 +171,7 @@ class TestSimplicialComplex:
             flow=flow
         )
         exptected_h = np.array([-1.001])
-        exptected_c = np.array([-1.0, -0.999, -0.997])
+        exptected_c = np.array([-1.000, -0.999, -0.997])
         exptected_g = np.array(
             [
                 -1.001,
@@ -183,7 +183,7 @@ class TestSimplicialComplex:
             ]
         )
         assert np.allclose(np.round(f_tilda_h, 3), exptected_h)
-        # assert np.allclose(np.round(f_tilda_c, 3), exptected_c)
+        assert np.allclose(np.round(f_tilda_c, 3), exptected_c)
         assert np.allclose(np.round(f_tilda_g, 3), exptected_g)
 
     def test_eigedecomposition_error(self, sc: SimplicialComplexNetwork):
