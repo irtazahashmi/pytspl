@@ -31,6 +31,7 @@ jobs:
           python3 -m pytest
       - name: Generate coverage report
         run: |
+          coverage run --source=sclibrary -m pytest -v tests
           coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
