@@ -9,4 +9,3 @@ pytest
 scipy
 toponetx @ git+https://github.com/pyt-team/TopoNetX.git
 trimesh
-warnings

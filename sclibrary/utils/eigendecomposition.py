@@ -81,7 +81,7 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
     # set eigenvalues below tolerance to zero
     eigenvalues[eigenvalues < tolerance] = 0
 
-    with warnings.catch_warnings(action="ignore"):
+    with warnings.catch_warnings(record=True):
         # sort the eigenvectors according to the sorted eigenvalues
         eigenvectors = eigenvectors[:, eigenvalues.argsort()].astype(
             np.float64
