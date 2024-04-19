@@ -1,4 +1,4 @@
-name: Build, run tests and linter
+name: Build, test and linting
 
 on:
   push:
