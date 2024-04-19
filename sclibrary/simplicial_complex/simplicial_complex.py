@@ -282,9 +282,9 @@ class SimplicialComplexNetwork:
         # each entry of an embedding represents the weight the flow has on the
         # corresponding eigenvector
         # coefficients of the flow on the harmonic, curl, and gradient basis
-        f_tilda_h = csr_matrix(u_h.T).dot(flow)
-        f_tilda_c = csr_matrix(u_c.T).dot(flow)
-        f_tilda_g = csr_matrix(u_g.T).dot(flow)
+        f_tilda_h = csr_matrix(u_h.T).dot(flow).astype(float)
+        f_tilda_c = csr_matrix(u_c.T).dot(flow).astype(float)
+        f_tilda_g = csr_matrix(u_g.T).dot(flow).astype(float)
 
         return f_tilda_h, f_tilda_c, f_tilda_g
 
