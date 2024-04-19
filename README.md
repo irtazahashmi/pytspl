@@ -1,5 +1,6 @@
-[![Test](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml/badge.svg)](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml)
+[![Build](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml/badge.svg)](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml)
 [![codecov](https://codecov.io/gh/irtazahashmi/sc-graph-library/graph/badge.svg?token=7KQ0U8FW70)](https://codecov.io/gh/irtazahashmi/sc-graph-library)
+[![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
 
 # Simplical Complex Graph Library
 
