@@ -6,12 +6,15 @@ from sclibrary.simplicial_complex import SimplicialComplexNetwork
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 from sclibrary.utils.frequency_component import FrequencyComponent
 
-"""Module for grid-based filter design."""
-
 
 class GridBasedFilterDesign(Filter):
+    """Module for grid-based filter design."""
 
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+        """
+        Initialize the grid-based filter design using the simplicial
+        complex.
+        """
         super().__init__(simplicial_complex)
 
     def _power_iteration(
@@ -43,7 +46,6 @@ class GridBasedFilterDesign(Filter):
         Returns:
             np.ndarray: Sampled grid points.
         """
-
         # Get the largest eigenvalue
         v = self._power_iteration(P=P)
         lambda_min = 0
@@ -80,7 +82,6 @@ class GridBasedFilterDesign(Filter):
         Returns:
             tuple: Sampled frequency responses and sampled eigenvalues.
         """
-
         sampled_eigenvals = self._sample_grid_points(
             P=P, num_of_samples=num_of_samples
         )
@@ -132,7 +133,6 @@ class GridBasedFilterDesign(Filter):
             component (str): The component of the signal.
             f (np.ndarray): The noisy signal.
         """
-
         P = self.get_p_matrix(p_choice)
 
         U1, eigenvals = get_eigendecomposition(lap_mat=P)
@@ -162,7 +162,8 @@ class GridBasedFilterDesign(Filter):
             system_mat[:, l] = np.power(eigenvals_sampled, l)
             system_mat_true[:, l] = np.power(eigenvals, l)
 
-            # solve the system using least squares solution to obtain filter coefficients
+            # solve the system using least squares solution to obtain
+            # filter coefficients
             h = np.linalg.lstsq(system_mat, g, rcond=None)[0]
             h_true = np.linalg.lstsq(system_mat_true, g_true, rcond=None)[0]
 
@@ -182,7 +183,8 @@ class GridBasedFilterDesign(Filter):
 
             # compute error compared to the true component signal
             errors[l] = self.calculate_error(f_est, f_true)
-            # computer error compared to the true filter using the true eigenvalues
+            # computer error compared to the true filter using the
+            # true eigenvalues
             errors_per_filter_size[l] = np.linalg.norm(H - H_true)
 
         # update the results
@@ -211,7 +213,6 @@ class GridBasedFilterDesign(Filter):
         Returns:
             np.ndarray: The estimated harmonic, curl and gradient components.
         """
-
         f_est_g, f_est_c, f_est_h = 0, 0, 0
 
         history = {

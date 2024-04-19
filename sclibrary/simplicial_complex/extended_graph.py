@@ -1,15 +1,16 @@
 import networkx as nx
 
-"""Extended Graph module. Built on top of networkx.Graph."""
-
 
 class ExtendedGraph(nx.Graph):
+    """Extended Graph module. Built on top of networkx.Graph."""
+
     def __init__(self, incoming_graph_data=None, **attr):
+        """Initialize the ExtendedGraph class using networkx.Graph."""
         super().__init__(incoming_graph_data, **attr)
 
     def triangles(self) -> list:
         """
-        Returns a list of triangles in the graph.
+        Get a list of triangles in the graph.
 
         Returns:
             list: List of triangles.
@@ -20,7 +21,7 @@ class ExtendedGraph(nx.Graph):
 
     def triangles_dist_based(self, dist_col_name: str, epsilon: float) -> list:
         """
-        Returns a list of triangles in the graph that satisfy the condition:
+        Get a list of triangles in the graph that satisfy the condition:
             d(a, b) < epsilon, d(a, c) < epsilon, d(b, c) < epsilon
 
         Args:
@@ -61,17 +62,19 @@ class ExtendedGraph(nx.Graph):
         dist_threshold: float = 1.5,
     ) -> list:
         """
-        Returns a list of simplicies in the graph.
+        Get a list of simplicies in the graph.
 
         Args:
-            condition (str, optional): Condition to filter simplicies. Defaults to "all".
+            condition (str, optional): Condition to filter simplicies.
+            Defaults to "all".
             Options:
                 - "all": All simplicies.
                 - "distance": Based on distance.
 
-            dist_col_name (str, optional): Name of the column that contains the distance.
-            dist_threshold (float, optional): Distance threshold to consider for simplicies.
-            Defaults to 1.5.
+            dist_col_name (str, optional): Name of the column that contains
+            the distance.
+            dist_threshold (float, optional): Distance threshold to consider
+            for simplicies. Defaults to 1.5.
 
         Returns:
             list: List of simplicies.

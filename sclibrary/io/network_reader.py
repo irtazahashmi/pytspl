@@ -14,15 +14,16 @@ def read_csv(
     dest_col: str,
     feature_cols: list = None,
 ) -> ExtendedGraph:
-    """
-    Reads a csv file and returns a graph.
+    """Read a csv file and returns a graph.
 
     Args:
         filename (str): The name of the csv file.
         delimeter (str): The delimeter used in the csv file.
         src_col (str): The name of the column containing the source nodes.
-        dest_col (str): The name of the column containing the destination nodes.
-        feature_cols (list, optional): The names of the feature columns. Defaults to None.
+        dest_col (str): The name of the column containing the destination
+        nodes.
+        feature_cols (list, optional): The names of the feature columns.
+        Defaults to None.
 
     Returns:
         ExtendedGraph: The graph read from the csv file.
@@ -52,21 +53,23 @@ def read_tntp(
     delimeter: str = "\t",
     feature_cols: list = None,
 ) -> ExtendedGraph:
-    """
-    Reads a tntp file and returns a graph.
+    """Read a tntp file and returns a graph.
 
     Args:
         filename (str): The name of the tntp file.
         src_col (str): The name of the column containing the source nodes.
-        dest_col (str): The name of the column containing the destination nodes.
-        skip_rows (int): The number of (metadata) rows to skip in the tntp file.
-        delimeter (str): The delimeter used in the tntp file. Defaults to "\t".
-        feature_cols (list, optional): The names of the feature columns. Defaults to None.
+        dest_col (str): The name of the column containing the destination
+        nodes.
+        skip_rows (int): The number of (metadata) rows to skip in the tntp
+        file.
+        delimeter (str): The delimeter used in the tntp file. Defaults to next
+        line.
+        feature_cols (list, optional): The names of the feature columns.
+        Defaults to None.
 
     Returns:
         ExtendedGraph: The graph read from the tntp file.
     """
-
     # Read the file
     df = pd.read_csv(filename, skiprows=skip_rows, sep=delimeter)
     # trimmed cols names
@@ -90,9 +93,9 @@ def read_tntp(
     return ExtendedGraph(G)
 
 
-def read_incidence_matrix(B1_filename: str, B2_filename: str) -> ExtendedGraph:
+def read_incidence_matrix(B1_filename: str) -> ExtendedGraph:
     """
-    Reads the B1 and B2 incidence matrix files.
+    Read the B1 and B2 incidence matrix files.
 
     Args:
         B1_filename (str): The name of the B1 incidence matrix file.
@@ -102,7 +105,6 @@ def read_incidence_matrix(B1_filename: str, B2_filename: str) -> ExtendedGraph:
         ExtendedGraph: The graph read from the incidence matrix files.
     """
     B1 = pd.read_csv(B1_filename, header=None).values
-    B2 = pd.read_csv(B2_filename, header=None).values
 
     # create adjacency matrix
     nodes = B1.shape[0]
@@ -145,7 +147,7 @@ def get_coordinates(
     delimeter: str,
 ) -> dict:
     """
-    Reads a csv file and returns a dictionary of coordinates.
+    Read a csv file and returns a dictionary of coordinates.
 
     Args:
         filename (str): The name of the csv file.

@@ -1,14 +1,16 @@
+"""Filter module for filter design and denoising."""
+
 import numpy as np
 
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 from sclibrary.utils.frequency_component import FrequencyComponent
 
-"""Filter design base class."""
-
 
 class Filter:
+    """Filter design base class."""
 
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+        """Initialize the filter design using a simplicial complex."""
         self.sc = simplicial_complex
 
         self.history = {
@@ -28,9 +30,7 @@ class Filter:
         }
 
     def calculate_error(self, f_estimated: np.ndarray, f_true) -> float:
-        """
-        Calculate the error of the estimated signal.
-        """
+        """Calculate the error of the estimated signal."""
         return np.linalg.norm(f_estimated - f_true) / np.linalg.norm(f_true)
 
     def get_true_signal(self, component: str, f: np.ndarray) -> np.ndarray:
@@ -55,12 +55,26 @@ class Filter:
             f_true = component_mapping[component]
         except KeyError:
             raise ValueError(
-                f"Invalid component {component}. Use 'harmonic', 'curl' or 'gradient'."
+                f"Invalid component {component}. Use 'harmonic',"
+                + "'curl' or 'gradient'."
             )
 
         return f_true
 
     def get_p_matrix(self, p_choice: str = "L1") -> np.ndarray:
+        """
+        Get the matrix P for the filter design.
+
+        Args:
+            p_choice (str, optional): The choice of matrix P. Defaults
+            to "L1".
+
+        Raises:
+            ValueError: Invalid P_choice.
+
+        Returns:
+            np.ndarray: The matrix P.
+        """
         P_choices = {
             "L1": self.sc.hodge_laplacian_matrix(rank=1),
             "L1L": self.sc.lower_laplacian_matrix(rank=1),

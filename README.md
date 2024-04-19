@@ -1,6 +1,10 @@
+[![Build](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml/badge.svg)](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml)
+[![codecov](https://codecov.io/gh/irtazahashmi/sc-graph-library/graph/badge.svg?token=7KQ0U8FW70)](https://codecov.io/gh/irtazahashmi/sc-graph-library)
+[![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
+
 # Simplical Complex Graph Library
 
-## Using the library
+## Contributing to the library
 
 ### Create a virtual environment
 
@@ -24,7 +28,9 @@ To download the project requirements, run the following command:
 $ python3 -m pip install -r requirements.txt
 ```
 
-## Running unit tests
+## Quality assurance
+
+### Unit tests
 
 To run all the **unit tests**, run the following command:
 
@@ -36,4 +42,12 @@ To get the test coverage report, run the following command:
 
 ```console
 $ coverage run --source=sclibrary -m pytest -v tests && coverage report -m
+```
+
+### Static code analysis (flake8)
+
+To run the flake8 linter, run the following command:
+
+```console
+$ python3 -m flake8 sclibrary
 ```

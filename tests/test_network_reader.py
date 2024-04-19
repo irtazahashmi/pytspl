@@ -57,8 +57,7 @@ class TestNetworkReader:
 
     def test_read_incidence_matrix(self):
         B1_filename = "data/sample_data/B1.csv"
-        B2_filename = "data/sample_data/B2.csv"
-        g = read_incidence_matrix(B1_filename, B2_filename)
+        g = read_incidence_matrix(B1_filename)
         assert isinstance(g, ExtendedGraph)
         assert len(g.nodes) == NODES
         assert len(g.edges) == EDGES

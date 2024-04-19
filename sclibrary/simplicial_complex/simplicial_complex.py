@@ -10,16 +10,20 @@ from sclibrary.utils.eigendecomposition import (
     get_harmonic_eigenvectors,
 )
 from sclibrary.utils.frequency_component import FrequencyComponent
-from sclibrary.utils.hodgedecomposition import *
+from sclibrary.utils.hodgedecomposition import (
+    get_curl_component,
+    get_gradient_component,
+    get_harmonic_component,
+)
 from toponetx.classes import SimplicialComplex
-
-"""Module to analyze simplicial complex data."""
 
 
 class SimplicialComplexNetwork:
+    """Module to analyze simplicial complex data."""
+
     def __init__(self, simplices: list):
         """
-        Creates a simplicial complex network from edge list.
+        Create a simplicial complex network from edge list.
 
         Args:
             simplices (list): List of simplices of the simplicial complex.
@@ -29,22 +33,22 @@ class SimplicialComplexNetwork:
 
     @property
     def shape(self) -> tuple:
-        """Returns the shape of the simplicial complex."""
+        """Return the shape of the simplicial complex."""
         return self.sc.shape
 
     @property
     def max_dim(self) -> int:
-        """Returns the maximum dimension of the simplicial complex."""
+        """Return the maximum dimension of the simplicial complex."""
         return self.sc.dim
 
     @property
     def nodes(self) -> set:
-        """Returns the set of nodes in the simplicial complex."""
-        return set(node for (node,) in self.sc.nodes)
+        """Return the set of nodes in the simplicial complex."""
+        return {node for (node,) in self.sc.nodes}
 
     @property
     def edges(self) -> list[tuple]:
-        """Returns the set of edges in the simplicial complex"""
+        """Return the set of edges in the simplicial complex"""
         simplices = self.simplices
         edges = [simplex for simplex in simplices if len(simplex) == 2]
         edges = sorted(edges, key=lambda x: (x[0], x[1]))
@@ -52,18 +56,22 @@ class SimplicialComplexNetwork:
 
     @property
     def simplices(self) -> list[tuple]:
+        """Get the simplices of the simplicial complex."""
         simplices = set(simplex for simplex in self.sc.simplices)
         simplices = [tuple(simplex) for simplex in simplices]
         return simplices
 
     @property
     def is_connected(self) -> bool:
-        """Returns True if the simplicial complex is connected, False otherwise."""
+        """
+        Return True if the simplicial complex is connected, False
+        otherwise.
+        """
         return self.sc.is_connected()
 
     def get_faces(self, simplex: Iterable[Hashable]) -> set[tuple]:
         """
-        Returns the faces of the simplex.
+        Return the faces of the simplex.
 
         Args:
             simplex (Iterable[Hashable]): Simplex for which to find the faces.
@@ -81,12 +89,13 @@ class SimplicialComplexNetwork:
         self, simplex: Iterable[Hashable], rank: int = 0
     ) -> list[tuple]:
         """
-        Returns the cofaces of the simplex.
+        Return the cofaces of the simplex.
 
         Args:
-            simplex (Iterable[Hashable]): Simplex for which to find the cofaces.
-            rank (int): Rank of the cofaces. Defaults to 0. If rank is 0, returns
-            all cofaces of the simplex.
+            simplex (Iterable[Hashable]): Simplex for which to find the
+            cofaces.
+            rank (int): Rank of the cofaces. Defaults to 0. If rank is 0,
+            returns all cofaces of the simplex.
         """
         cofaces = self.sc.get_cofaces(simplex=simplex, codimension=rank)
         cofaces = set(coface for coface in cofaces)
@@ -99,7 +108,7 @@ class SimplicialComplexNetwork:
 
     def incidence_matrix(self, rank: int) -> np.ndarray:
         """
-        Computes the incidence matrix of the simplicial complex.
+        Compute the incidence matrix of the simplicial complex.
 
         Args:
             rank (int): Rank of the incidence matrix.
@@ -112,7 +121,7 @@ class SimplicialComplexNetwork:
 
     def adjacency_matrix(self, rank: int) -> np.ndarray:
         """
-        Computes the adjacency matrix of the simplicial complex.
+        Compute the adjacency matrix of the simplicial complex.
 
         Args:
             rank (int): Rank of the adjacency matrix.
@@ -125,7 +134,7 @@ class SimplicialComplexNetwork:
 
     def laplacian_matrix(self) -> np.ndarray:
         """
-        Computes the Laplacian matrix of the simplicial complex.
+        Compute the Laplacian matrix of the simplicial complex.
 
         Returns:
             np.ndarray: Laplacian matrix of the simplicial complex.
@@ -135,7 +144,7 @@ class SimplicialComplexNetwork:
 
     def normalized_laplacian_matrix(self, rank: int) -> np.ndarray:
         """
-        Computes the normalized Laplacian matrix of the simplicial complex.
+        Compute the normalized Laplacian matrix of the simplicial complex.
 
         Args:
             rank (int): Rank of the normalized Laplacian matrix.
@@ -148,7 +157,7 @@ class SimplicialComplexNetwork:
 
     def upper_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
-        Computes the upper Laplacian matrix of the simplicial complex.
+        Compute the upper Laplacian matrix of the simplicial complex.
 
         Args:
             rank (int): Rank of the upper Laplacian matrix.
@@ -161,7 +170,7 @@ class SimplicialComplexNetwork:
 
     def lower_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
-        Computes the lower Laplacian matrix of the simplicial complex.
+        Compute the lower Laplacian matrix of the simplicial complex.
 
         Args:
             rank (int): Rank of the lower Laplacian matrix.
@@ -174,7 +183,7 @@ class SimplicialComplexNetwork:
 
     def hodge_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
-        Computes the Hodge Laplacian matrix of the simplicial complex.
+        Compute the Hodge Laplacian matrix of the simplicial complex.
 
         Args:
             rank (int): Rank of the Hodge Laplacian matrix.
@@ -189,7 +198,7 @@ class SimplicialComplexNetwork:
         self, flow: np.ndarray, steps: int = 1
     ) -> np.ndarray:
         """
-        Applies the lower shifting operator to the simplicial complex.
+        Apply the lower shifting operator to the simplicial complex.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
@@ -199,7 +208,6 @@ class SimplicialComplexNetwork:
         Returns:
             np.ndarray: Lower shifted simplicial complex.
         """
-
         L1L = self.lower_laplacian_matrix(rank=1)
 
         if steps == 1:
@@ -215,7 +223,7 @@ class SimplicialComplexNetwork:
         self, flow: np.ndarray, steps: int = 1
     ) -> np.ndarray:
         """
-        Applies the upper shifting operator to the simplicial complex.
+        Apply the upper shifting operator to the simplicial complex.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
@@ -225,7 +233,6 @@ class SimplicialComplexNetwork:
         Returns:
             np.ndarray: Upper shifted simplicial complex.
         """
-
         L1U = self.upper_laplacian_matrix(rank=1)
 
         if steps == 1:
@@ -239,7 +246,7 @@ class SimplicialComplexNetwork:
 
     def apply_two_step_shifting(self, flow: np.ndarray) -> np.ndarray:
         """
-        Applies the two-step shifting operator to the simplicial complex.
+        Apply the two-step shifting operator to the simplicial complex.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
@@ -253,7 +260,7 @@ class SimplicialComplexNetwork:
 
     def get_simplicial_embeddings(self, flow: np.ndarray) -> tuple:
         """
-        Returns the simplicial embeddings of the simplicial complex.
+        Return the simplicial embeddings of the simplicial complex.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
@@ -262,7 +269,6 @@ class SimplicialComplexNetwork:
             np.ndarray: Simplicial embeddings of the simplicial complex.
             Harmonic, curl, and gradient basis.
         """
-
         k = 1
         L1 = self.hodge_laplacian_matrix(rank=k)
         L1U = self.upper_laplacian_matrix(rank=k)
@@ -276,15 +282,15 @@ class SimplicialComplexNetwork:
         # each entry of an embedding represents the weight the flow has on the
         # corresponding eigenvector
         # coefficients of the flow on the harmonic, curl, and gradient basis
-        f_tilda_h = csr_matrix(u_h.T).dot(flow)
-        f_tilda_c = csr_matrix(u_c.T).dot(flow)
-        f_tilda_g = csr_matrix(u_g.T).dot(flow)
+        f_tilda_h = csr_matrix(u_h.T).dot(flow).astype(float)
+        f_tilda_c = csr_matrix(u_c.T).dot(flow).astype(float)
+        f_tilda_g = csr_matrix(u_g.T).dot(flow).astype(float)
 
         return f_tilda_h, f_tilda_c, f_tilda_g
 
     def get_eigendecomposition(self, component: str = "harmonic") -> tuple:
         """
-        Returns the eigendecomposition of the simplicial complex.
+        Return the eigendecomposition of the simplicial complex.
 
         Args:
             component (str, optional): Component of the eigendecomposition
@@ -293,7 +299,6 @@ class SimplicialComplexNetwork:
         Returns:
             tuple: Eigenvectors and eigenvalues of the simplicial complex.
         """
-
         if component == FrequencyComponent.HARMONIC.value:
             L1 = self.hodge_laplacian_matrix(rank=1)
             u_h, eig_h = get_harmonic_eigenvectors(L1)
@@ -308,7 +313,8 @@ class SimplicialComplexNetwork:
             return u_g, eig_g
         else:
             raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+                "Invalid component. Choose from 'harmonic',"
+                + "'curl', or 'gradient'."
             )
 
     def get_hodgedecomposition(
@@ -318,7 +324,7 @@ class SimplicialComplexNetwork:
         round_sig_fig: int = 2,
     ) -> tuple:
         """
-        Returns the hodgedecompositon of the simplicial complex.
+        Return the hodgedecompositon of the simplicial complex.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
@@ -330,7 +336,6 @@ class SimplicialComplexNetwork:
             tuple: Harmonic, curl, and gradient components of the
             hodgedecomposition, respectively.
         """
-
         B1 = self.incidence_matrix(rank=1)
         B2 = self.incidence_matrix(rank=2)
 
@@ -361,20 +366,20 @@ class SimplicialComplexNetwork:
         component: str,
     ) -> np.ndarray:
         """
-        Calculates the component coefficients of the given component using the
+        Calculate the component coefficients of the given component using the
         order of the eigenvectors.
 
         Args:
             component (str): Component of the eigendecomposition to return.
 
         Raises:
-            ValueError: If the component is not one of 'harmonic', 'curl', or 'gradient'.
+            ValueError: If the component is not one of 'harmonic', 'curl',
+            or 'gradient'.
 
         Returns:
-            np.ndarray: The component coefficients of the simplicial complex for the
-            given component.
+            np.ndarray: The component coefficients of the simplicial complex
+            for the given component.
         """
-
         L1 = self.hodge_laplacian_matrix(rank=1)
 
         U_H, e_h = self.get_eigendecomposition(
@@ -397,7 +402,8 @@ class SimplicialComplexNetwork:
             mask[U_H.shape[1] + U_C.shape[1] :] = 1
         else:
             raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+                "Invalid component. Choose from 'harmonic', 'curl', "
+                + "or 'gradient'."
             )
 
         # sort mask according to eigenvalues
@@ -406,6 +412,20 @@ class SimplicialComplexNetwork:
         return mask
 
     def get_component_coefficients_by_type(self, component: str) -> np.ndarray:
+        """
+        Get the component coefficients of the given component using the order
+        of the eigenvectors.
+
+        Args:
+            component (str): Component of the eigendecomposition to return.
+
+        Raises:
+            ValueError: If the component is not one of 'harmonic', 'curl',
+            or 'gradient'.
+
+        Returns:
+            np.ndarray: The component coefficients of the simplicial complex.
+        """
         L1 = self.hodge_laplacian_matrix(rank=1)
         u_h, _ = self.get_eigendecomposition(FrequencyComponent.HARMONIC.value)
         u_g, _ = self.get_eigendecomposition(FrequencyComponent.GRADIENT.value)
@@ -422,7 +442,8 @@ class SimplicialComplexNetwork:
 
         else:
             raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+                "Invalid component. Choose from 'harmonic', 'curl', "
+                + "or 'gradient'."
             )
 
         return mask

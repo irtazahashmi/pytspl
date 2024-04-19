@@ -6,12 +6,12 @@ from sclibrary.simplicial_complex import SimplicialComplexNetwork
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 from sclibrary.utils.frequency_component import FrequencyComponent
 
-"""Module for the LS filter design."""
-
 
 class LSFilterDesign(Filter):
+    """Module for the LS filter design."""
 
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+        """Initialize the LS filter design using a simplicial complex."""
         super().__init__(simplicial_complex)
 
     def _apply_filter(
@@ -41,7 +41,6 @@ class LSFilterDesign(Filter):
             tuple: The estimated filter, signal, frequency responses and
             error per filter size.
         """
-
         # convert L1 to a numpy array with dtype object
         L1 = np.array(lap_matrix, dtype=object)
 
@@ -90,7 +89,8 @@ class LSFilterDesign(Filter):
         LS based filter design for subcomponent extraction using the Hodge
         Laplacian matrix (L1) - type one.
 
-        In this case, we will use the Hodge Laplacian matrix L1 = L2 = L and α = β.
+        In this case, we will use the Hodge Laplacian matrix L1 = L2 = L
+        and α = β.
 
         Hk = sum(l=0, L) h_l * L^l
 
@@ -99,7 +99,6 @@ class LSFilterDesign(Filter):
             component (str): The component to be extracted.
             f (np.ndarray): The signal to be filtered.
         """
-
         self._reset_history()
 
         # eigendecomposition of the Hodge Laplacian matrix
@@ -139,8 +138,10 @@ class LSFilterDesign(Filter):
         lower Laplacian matrix (L1 or L2) - type two.
 
         In this case:
-        - The solution will have zero coefficients on the α for curl extraction (L1 = 0)
-        - The solution will have zero coefficients on the β for gradient extraction (L2 = 0)
+        - The solution will have zero coefficients on the α for curl
+        extraction (L1 = 0)
+        - The solution will have zero coefficients on the β for gradient
+        extraction (L2 = 0)
 
         Therefore, we will only consider the upper or lower part of the filter
         to do so.
@@ -149,10 +150,9 @@ class LSFilterDesign(Filter):
             L (int): The size of the filter.
             component (str): The component to be extracted.
             f (np.ndarray): The signal to be filtered.
-            tolerance (float, optional): The tolerance to consider the eigenvalues as unique.
-            Defaults to 1e-6.
+            tolerance (float, optional): The tolerance to consider the
+            eigenvalues as unique. Defaults to 1e-6.
         """
-
         self._reset_history()
 
         # get the Laplacian matrix according to the component
@@ -213,13 +213,12 @@ class LSFilterDesign(Filter):
             L1 (int): The size of the filter for the gradient extraction.
             L2 (int): The size of the filter for the curl extraction.
             f (np.ndarray): The signal to be filtered.
-            tolerance (float, optional): The tolerance to consider the eigenvalues as unique.
-            Defaults to 1e-6.
+            tolerance (float, optional): The tolerance to consider the
+            eigenvalues as unique. Defaults to 1e-6.
 
         Returns:
             np.ndarray: The estimated harmonic, curl and gradient components.
         """
-
         self._reset_history()
 
         f_est_g, f_est_c, f_est_h = 0, 0, 0
