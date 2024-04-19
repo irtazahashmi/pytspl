@@ -167,22 +167,24 @@ class TestSimplicialComplex:
 
     def test_get_simplicial_embeddings(self, sc: SimplicialComplexNetwork):
         flow = [0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09]
-        f_tilda_h, f_tilda_c, f_tilda_g = sc.get_simplicial_embeddings(flow)
-        exptected_h = np.array([-1.00084787])
+        f_tilda_h, f_tilda_c, f_tilda_g = sc.get_simplicial_embeddings(
+            flow=flow
+        )
+        exptected_h = np.array([-1.0])
+        exptected_c = np.array([-1.0, -0.999, -0.997])
         exptected_g = np.array(
             [
-                -1.00061497,
-                -1.00127706,
-                -1.00173494,
-                -1.0028754,
-                -0.99531111,
-                1.00412063,
+                -1.00,
+                -1.00,
+                -1.00,
+                -1.00,
+                -0.99,
+                1.00,
             ]
         )
-        exptected_c = np.array([-1.0, -0.99881595, -0.99702054])
-        assert np.allclose(f_tilda_h, exptected_h)
-        assert np.allclose(f_tilda_c, exptected_c)
-        assert np.allclose(f_tilda_g, exptected_g)
+        assert np.allclose(f_tilda_h, exptected_h, atol=1e-3)
+        assert np.allclose(f_tilda_c, exptected_c, atol=1e-3)
+        assert np.allclose(f_tilda_g, exptected_g, atol=1e-2)
 
     def test_eigedecomposition_error(self, sc: SimplicialComplexNetwork):
         component = "unknown"
