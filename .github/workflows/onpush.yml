@@ -34,3 +34,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: irtazahashmi/sc-graph-library
+          fail_ci_if_error: false
