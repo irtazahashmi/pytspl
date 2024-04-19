@@ -1,3 +1,8 @@
+"""This module is the main module of the library.
+
+It imports all the necessary modules and classes to be used by the user.
+"""
+
 # data reader module
 from sclibrary.io.network_reader import (
     get_coordinates,

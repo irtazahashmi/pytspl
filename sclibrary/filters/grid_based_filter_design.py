@@ -6,12 +6,15 @@ from sclibrary.simplicial_complex import SimplicialComplexNetwork
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 from sclibrary.utils.frequency_component import FrequencyComponent
 
-"""Module for grid-based filter design."""
-
 
 class GridBasedFilterDesign(Filter):
+    """Module for grid-based filter design."""
 
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+        """
+        Initialize the grid-based filter design using the simplicial
+        complex.
+        """
         super().__init__(simplicial_complex)
 
     def _power_iteration(
@@ -43,7 +46,6 @@ class GridBasedFilterDesign(Filter):
         Returns:
             np.ndarray: Sampled grid points.
         """
-
         # Get the largest eigenvalue
         v = self._power_iteration(P=P)
         lambda_min = 0
@@ -80,7 +82,6 @@ class GridBasedFilterDesign(Filter):
         Returns:
             tuple: Sampled frequency responses and sampled eigenvalues.
         """
-
         sampled_eigenvals = self._sample_grid_points(
             P=P, num_of_samples=num_of_samples
         )
@@ -132,7 +133,6 @@ class GridBasedFilterDesign(Filter):
             component (str): The component of the signal.
             f (np.ndarray): The noisy signal.
         """
-
         P = self.get_p_matrix(p_choice)
 
         U1, eigenvals = get_eigendecomposition(lap_mat=P)
@@ -213,7 +213,6 @@ class GridBasedFilterDesign(Filter):
         Returns:
             np.ndarray: The estimated harmonic, curl and gradient components.
         """
-
         f_est_g, f_est_c, f_est_h = 0, 0, 0
 
         history = {

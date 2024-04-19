@@ -12,6 +12,8 @@ from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class SCPlot:
+    """Module for plotting simplicial complexes."""
+
     def __init__(
         self,
         sc: SimplicialComplexNetwork,
@@ -25,7 +27,6 @@ class SCPlot:
             used for placing the 0-simplices. The standard nx spring
             layer is used otherwise.
         """
-
         self.sc = sc
         self.pos = pos
 
@@ -162,7 +163,6 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
-
         if ax is None:
             ax = plt.gca()
 
@@ -238,7 +238,6 @@ class SCPlot:
             alpha (float, optional): The transparency of the node labels.
             Defaults to None.
         """
-
         for node_id in self._get_nodes():
             (x, y) = self.pos[node_id]
             plt.text(
@@ -288,7 +287,6 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
-
         if ax is None:
             ax = plt.gca()
 
@@ -389,7 +387,6 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
-
         edges = self.sc.edges
         edge_labels = {}
         for i in range(len(edges)):
@@ -454,7 +451,6 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
-
         if ax is None:
             ax = plt.gca()
 
@@ -503,7 +499,6 @@ class SCPlot:
         Raises:
             ValueError: If an invalid component is provided.
         """
-
         fig = plt.figure(figsize=figsize)
 
         f_h, f_c, f_g = self.sc.get_hodgedecomposition(
@@ -575,7 +570,6 @@ class SCPlot:
             figsize (tuple, optional): The size of the figure. Defaults to
             (15, 5).
         """
-
         U, eigenvals = self.sc.get_eigendecomposition(component=component)
 
         # if no eigenvector indices are provided, draw all eigenvectors

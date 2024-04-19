@@ -7,5 +7,5 @@ networkx
 pandas
 pytest
 scipy
-toponetx
+toponetx==0.0.2
 trimesh

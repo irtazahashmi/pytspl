@@ -1,3 +1,5 @@
+"""Module for edge flow denoising."""
+
 import numpy as np
 from scipy.sparse import csr_matrix
 
@@ -5,16 +7,20 @@ from sclibrary.filters.filter import Filter
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
-"""Module for edge flow denoising."""
-
 
 class EdgeFlowDenoising(Filter):
     """
+    Edge flow denoising filter.
+
     Solve the regularized optimization probelm to estimate f_tilde from
     f = f0 + ε where, ε is a zero mean Gaussian noise.
     """
 
     def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+        """
+        Initialize the edge flow denoising filter using the
+        simplicial complex.
+        """
         super().__init__(simplicial_complex)
 
     def denoise(
@@ -24,8 +30,7 @@ class EdgeFlowDenoising(Filter):
         f: np.ndarray,
         mu_vals: np.ndarray = [0.5],
     ):
-        """
-        Denoising with low-pass filter Hp.
+        """Denoising with low-pass filter Hp.
 
         Args:
             p_choice (str): The choice of matrix P.
@@ -33,9 +38,7 @@ class EdgeFlowDenoising(Filter):
             f (np.ndarray): The noisy signal.
             mu_vals (np.ndarray, optional): Regularization parameters.
             Defaults to [0.5].
-
         """
-
         P = self.get_p_matrix(p_choice)
 
         identity = np.eye(P.shape[0])
