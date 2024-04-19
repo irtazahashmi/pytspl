@@ -7,5 +7,5 @@ networkx
 pandas
 pytest
 scipy
-toponetx==0.0.2
+toponetx @ git+https://github.com/pyt-team/TopoNetX.git
 trimesh
