@@ -174,17 +174,17 @@ class TestSimplicialComplex:
         exptected_c = np.array([-1.0, -0.999, -0.997])
         exptected_g = np.array(
             [
-                -1.00,
-                -1.00,
-                -1.00,
-                -1.00,
-                -0.99,
-                1.00,
+                -1.001,
+                -1.001,
+                -1.002,
+                -1.003,
+                -0.995,
+                1.004,
             ]
         )
         assert np.allclose(f_tilda_h, exptected_h, atol=1e-3)
         assert np.allclose(f_tilda_c, exptected_c, atol=1e-3)
-        assert np.allclose(f_tilda_g, exptected_g, atol=1e-2)
+        assert np.allclose(f_tilda_g, exptected_g, atol=1e-3)
 
     def test_eigedecomposition_error(self, sc: SimplicialComplexNetwork):
         component = "unknown"
