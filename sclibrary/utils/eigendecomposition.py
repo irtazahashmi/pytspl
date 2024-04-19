@@ -61,7 +61,8 @@ def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
 
 def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
     """
-    Calculate the eigenvectors of the Laplacian matrix using eigendecomposition.
+    Calculate the eigenvectors of the Laplacian matrix using
+    eigendecomposition.
 
     The eigendecomposition of the Hodge Laplacian is given by:
     L(k) = U(k) * lambda(k) * U(k).T

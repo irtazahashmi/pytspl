@@ -38,7 +38,7 @@ class EdgeFlowDenoising(Filter):
 
         P = self.get_p_matrix(p_choice)
 
-        I = np.eye(P.shape[0])
+        identity = np.eye(P.shape[0])
         U1, _ = get_eigendecomposition(P)
         f_true = self.get_true_signal(component=component, f=f)
 
@@ -48,7 +48,7 @@ class EdgeFlowDenoising(Filter):
         # denoising with low pass filter Hp
         for i, mu in enumerate(mu_vals):
             # frequency response of the low-pass filter
-            H = np.linalg.inv(I + mu * P)
+            H = np.linalg.inv(identity + mu * P)
 
             # estimate frequency response
             f_estimated = csr_matrix(H, dtype=float).dot(f)

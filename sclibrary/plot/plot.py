@@ -19,9 +19,11 @@ class SCPlot:
     ) -> None:
         """
         Args:
-            sc (SimplicialComplexNetwork): The simplicial complex network object.
-            pos (dict, optional): Dict of positions [node_id : (x, y)] is used for placing
-            the 0-simplices. The standard nx spring layour is used otherwise.
+            sc (SimplicialComplexNetwork): The simplicial complex network
+            object.
+            pos (dict, optional): Dict of positions [node_id : (x, y)] is
+            used for placing the 0-simplices. The standard nx spring
+            layer is used otherwise.
         """
 
         self.sc = sc
@@ -29,7 +31,8 @@ class SCPlot:
 
     def _init_axes(self, ax) -> dict:
         """
-        Initialize the axes for the plot. The axis limits are set to the bounding box of the nodes.
+        Initialize the axes for the plot. The axis limits are set to the
+        bounding box of the nodes.
 
         Args:
             ax (matplotlib.axes.Axes): The axes object.
@@ -132,19 +135,32 @@ class SCPlot:
         Draw the nodes of the simplicial complex.
 
         Args:
-            node_size (int, optional): The size of the nodes. Defaults to 300.
-            node_color (str, optional): The color of the nodes. Defaults to '#ff7f0e'.
-            node_edge_colors (str, optional): The color of the node edges. Defaults to 'black'.
-            font_size (float, optional): The font size of the node labels. Defaults to 12.
-            font_color (str, optional): The color of the node labels. Defaults to 'k'.
-            font_weight (str, optional): The font weight of the node labels. Defaults to 'normal'.
-            cmap (mpl.colors.Colormap, optional): The color map. Defaults to plt.cm.Blues.
-            vmin (float, optional): The minimum value for the color map. Defaults to None.
-            vmax (float, optional): The maximum value for the color map. Defaults to None.
-            alpha (float, optional): The transparency of the nodes. Defaults to 0.8.
-            margins (float, optional): The margins of the plot. Defaults to None.
-            with_labels (bool, optional): Whether to show the node labels. Defaults to False.
-            ax (matplotlib.axes.Axes, optional): The axes object. Defaults to None.
+            node_size (int, optional): The size of the nodes.
+            Defaults to 300.
+            node_color (str, optional): The color of the nodes.
+            Defaults to '#ff7f0e'.
+            node_edge_colors (str, optional): The color of the node edges.
+            Defaults to 'black'.
+            font_size (float, optional): The font size of the node labels.
+            Defaults to 12.
+            font_color (str, optional): The color of the node labels.
+            Defaults to 'k'.
+            font_weight (str, optional): The font weight of the node labels.
+            Defaults to 'normal'.
+            cmap (mpl.colors.Colormap, optional): The color map.
+            Defaults to plt.cm.Blues.
+            vmin (float, optional): The minimum value for the color map.
+            Defaults to None.
+            vmax (float, optional): The maximum value for the color map.
+            Defaults to None.
+            alpha (float, optional): The transparency of the nodes.
+            Defaults to 0.8.
+            margins (float, optional): The margins of the plot.
+            Defaults to None.
+            with_labels (bool, optional): Whether to show the node labels.
+            Defaults to False.
+            ax (matplotlib.axes.Axes, optional): The axes object.
+            Defaults to None.
         """
 
         if ax is None:
@@ -213,10 +229,14 @@ class SCPlot:
         Draw the labels of the nodes.
 
         Args:
-            font_size (float, optional): The font size of the node labels. Defaults to 12.
-            font_color (str, optional): The color of the node labels. Defaults to 'k'.
-            font_weight (str, optional): The font weight of the node labels. Defaults to 'normal'.
-            alpha (float, optional): The transparency of the node labels. Defaults to None.
+            font_size (float, optional): The font size of the node labels.
+            Defaults to 12.
+            font_color (str, optional): The color of the node labels.
+            Defaults to 'k'.
+            font_weight (str, optional): The font weight of the node labels.
+            Defaults to 'normal'.
+            alpha (float, optional): The transparency of the node labels.
+            Defaults to None.
         """
 
         for node_id in self._get_nodes():
@@ -249,15 +269,24 @@ class SCPlot:
         Draw the edges of the simplicial complex.
 
         Args:
-            directed (bool, optional): Whether the edges are directed. Defaults to True.
-            edge_color (str, optional): The color of the edges. Defaults to 'lightblue'.
-            edge_width (float, optional): The width of the edges. Defaults to 1.0.
-            alpha (float, optional): The transparency of the edges. Defaults to 0.8.
-            arrowsize (int, optional): The size of the arrows. Defaults to 10.
-            edge_cmap (mpl.colors.Colormap, optional): The color map of the edges. Defaults to plt.cm.Reds.
-            edge_vmin (float, optional): The minimum value for the color map. Defaults to None.
-            edge_vmax (float, optional): The maximum value for the color map. Defaults to None.
-            ax (matplotlib.axes.Axes, optional): The axes object. Defaults to None.
+            directed (bool, optional): Whether the edges are directed.
+            Defaults to True.
+            edge_color (str, optional): The color of the edges.
+            Defaults to 'lightblue'.
+            edge_width (float, optional): The width of the edges.
+            Defaults to 1.0.
+            alpha (float, optional): The transparency of the edges.
+            Defaults to 0.8.
+            arrowsize (int, optional): The size of the arrows.
+            Defaults to 10.
+            edge_cmap (mpl.colors.Colormap, optional): The color map of
+            the edges. Defaults to plt.cm.Reds.
+            edge_vmin (float, optional): The minimum value for the color
+            map. Defaults to None.
+            edge_vmax (float, optional): The maximum value for the color
+            map. Defaults to None.
+            ax (matplotlib.axes.Axes, optional): The axes object.
+            Defaults to None.
         """
 
         if ax is None:
@@ -347,12 +376,18 @@ class SCPlot:
 
         Args:
             flow (np.ndarray): The flow on the edges.
-            label_pos (float, optional): The position of the label. Defaults to 0.5.
-            font_size (int, optional): The font size of the labels. Defaults to 10.
-            font_color (str, optional): The color of the labels. Defaults to 'k'.
-            font_weight (str, optional): The font weight of the labels. Defaults to 'normal'.
-            alpha (float, optional): The transparency of the labels. Defaults to None.
-            ax (matplotlib.axes.Axes, optional): The axes object. Defaults to None.
+            label_pos (float, optional): The position of the label.
+            Defaults to 0.5.
+            font_size (int, optional): The font size of the labels.
+            Defaults to 10.
+            font_color (str, optional): The color of the labels.
+            Defaults to 'k'.
+            font_weight (str, optional): The font weight of the labels.
+            Defaults to 'normal'.
+            alpha (float, optional): The transparency of the labels.
+            Defaults to None.
+            ax (matplotlib.axes.Axes, optional): The axes object.
+            Defaults to None.
         """
 
         edges = self.sc.edges
@@ -400,18 +435,24 @@ class SCPlot:
         ax=None,
     ) -> None:
         """
-        Draw the simplicial complex network with edge flow. If the flow is not provided,
-        the network is drawn without flow.
+        Draw the simplicial complex network with edge flow. If the flow
+        is not provided, the network is drawn without flow.
 
         Args:
-            flow (np.ndarray, optional): The flow on the edges. If None, the network is
-            drawn without flow. Defaults to None.
-            directed (bool, optional): Whether the edges are directed. Defaults to True.
-            node_size (int, optional): The size of the nodes. Defaults to 400.
-            edge_width (int, optional): The width of the edges. Defaults to 5.
-            arrowsize (int, optional): The size of the arrows. Defaults to 30.
-            with_labels (bool, optional): Whether to show the node labels. Defaults to True.
-            ax (matplotlib.axes.Axes, optional): The axes object. Defaults to None.
+            flow (np.ndarray, optional): The flow on the edges. If None,
+            the network is drawn without flow. Defaults to None.
+            directed (bool, optional): Whether the edges are directed.
+            Defaults to True.
+            node_size (int, optional): The size of the nodes.
+            Defaults to 400.
+            edge_width (int, optional): The width of the edges.
+            Defaults to 5.
+            arrowsize (int, optional): The size of the arrows.
+            Defaults to 30.
+            with_labels (bool, optional): Whether to show the node labels.
+            Defaults to True.
+            ax (matplotlib.axes.Axes, optional): The axes object.
+            Defaults to None.
         """
 
         if ax is None:
@@ -450,12 +491,14 @@ class SCPlot:
 
         Args:
             flow (np.ndarray): The flow on the edges.
-            component (str, optional): The component of the flow to draw. If None, all
-            three components are drawn. Defaults to None.
-            round_fig (bool, optional): Whether to round the figures. Defaults to True.
-            round_sig_fig (int, optional): The number of significant figures to round to.
-            Defaults to 2.
-            figsize (tuple, optional): The size of the figure. Defaults to (15, 5).
+            component (str, optional): The component of the flow to draw.
+            If None, all three components are drawn. Defaults to None.
+            round_fig (bool, optional): Whether to round the figures.
+            Defaults to True.
+            round_sig_fig (int, optional): The number of significant figures
+            to round to. Defaults to 2.
+            figsize (tuple, optional): The size of the figure.
+            Defaults to (15, 5).
 
         Raises:
             ValueError: If an invalid component is provided.
@@ -495,7 +538,8 @@ class SCPlot:
                 to_plot = component_map[component]
             except KeyError:
                 raise ValueError(
-                    f"Invalid component {component}. Use 'gradient', 'curl' or 'harmonic'."
+                    f"Invalid component {component}. Use 'gradient'"
+                    + "'curl' or 'harmonic'."
                 )
 
             # create a single figure
@@ -515,18 +559,21 @@ class SCPlot:
         figsize=(15, 5),
     ):
         """
-        Draw the eigenvectors for the given component and eigenvalue indices using
-        eigendecomposition.
+        Draw the eigenvectors for the given component and eigenvalue
+        indices using eigendecomposition.
 
         Args:
             component (str): The component of the eigenvectors to draw.
-            eigenvector_indices (np.ndarray, optional): The indices of the eigenvectors to draw.
-            Defaults to [].
-            round_fig (bool, optional): Whether to round the figures. Defaults to True.
-            round_sig_fig (int, optional): The number of significant figures to round to.
-            Defaults to 2.
-            with_labels (bool, optional): Whether to show the node labels. Defaults to True.
-            figsize (tuple, optional): The size of the figure. Defaults to (15, 5).
+            eigenvector_indices (np.ndarray, optional): The indices of
+            the eigenvectors to draw. Defaults to [].
+            round_fig (bool, optional): Whether to round the figures.
+            Defaults to True.
+            round_sig_fig (int, optional): The number of significant
+            figures to round to. Defaults to 2.
+            with_labels (bool, optional): Whether to show the node labels.
+            Defaults to True.
+            figsize (tuple, optional): The size of the figure. Defaults to
+            (15, 5).
         """
 
         U, eigenvals = self.sc.get_eigendecomposition(component=component)

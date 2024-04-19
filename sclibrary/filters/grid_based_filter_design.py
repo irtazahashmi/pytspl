@@ -162,7 +162,8 @@ class GridBasedFilterDesign(Filter):
             system_mat[:, l] = np.power(eigenvals_sampled, l)
             system_mat_true[:, l] = np.power(eigenvals, l)
 
-            # solve the system using least squares solution to obtain filter coefficients
+            # solve the system using least squares solution to obtain
+            # filter coefficients
             h = np.linalg.lstsq(system_mat, g, rcond=None)[0]
             h_true = np.linalg.lstsq(system_mat_true, g_true, rcond=None)[0]
 
@@ -182,7 +183,8 @@ class GridBasedFilterDesign(Filter):
 
             # compute error compared to the true component signal
             errors[l] = self.calculate_error(f_est, f_true)
-            # computer error compared to the true filter using the true eigenvalues
+            # computer error compared to the true filter using the
+            # true eigenvalues
             errors_per_filter_size[l] = np.linalg.norm(H - H_true)
 
         # update the results

@@ -64,14 +64,16 @@ class ExtendedGraph(nx.Graph):
         Returns a list of simplicies in the graph.
 
         Args:
-            condition (str, optional): Condition to filter simplicies. Defaults to "all".
+            condition (str, optional): Condition to filter simplicies.
+            Defaults to "all".
             Options:
                 - "all": All simplicies.
                 - "distance": Based on distance.
 
-            dist_col_name (str, optional): Name of the column that contains the distance.
-            dist_threshold (float, optional): Distance threshold to consider for simplicies.
-            Defaults to 1.5.
+            dist_col_name (str, optional): Name of the column that contains
+            the distance.
+            dist_threshold (float, optional): Distance threshold to consider
+            for simplicies. Defaults to 1.5.
 
         Returns:
             list: List of simplicies.

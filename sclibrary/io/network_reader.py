@@ -21,8 +21,10 @@ def read_csv(
         filename (str): The name of the csv file.
         delimeter (str): The delimeter used in the csv file.
         src_col (str): The name of the column containing the source nodes.
-        dest_col (str): The name of the column containing the destination nodes.
-        feature_cols (list, optional): The names of the feature columns. Defaults to None.
+        dest_col (str): The name of the column containing the destination
+        nodes.
+        feature_cols (list, optional): The names of the feature columns.
+        Defaults to None.
 
     Returns:
         ExtendedGraph: The graph read from the csv file.
@@ -58,10 +60,13 @@ def read_tntp(
     Args:
         filename (str): The name of the tntp file.
         src_col (str): The name of the column containing the source nodes.
-        dest_col (str): The name of the column containing the destination nodes.
-        skip_rows (int): The number of (metadata) rows to skip in the tntp file.
+        dest_col (str): The name of the column containing the destination
+        nodes.
+        skip_rows (int): The number of (metadata) rows to skip in the tntp
+        file.
         delimeter (str): The delimeter used in the tntp file. Defaults to "\t".
-        feature_cols (list, optional): The names of the feature columns. Defaults to None.
+        feature_cols (list, optional): The names of the feature columns.
+        Defaults to None.
 
     Returns:
         ExtendedGraph: The graph read from the tntp file.
@@ -90,7 +95,7 @@ def read_tntp(
     return ExtendedGraph(G)
 
 
-def read_incidence_matrix(B1_filename: str, B2_filename: str) -> ExtendedGraph:
+def read_incidence_matrix(B1_filename: str) -> ExtendedGraph:
     """
     Reads the B1 and B2 incidence matrix files.
 
@@ -102,7 +107,6 @@ def read_incidence_matrix(B1_filename: str, B2_filename: str) -> ExtendedGraph:
         ExtendedGraph: The graph read from the incidence matrix files.
     """
     B1 = pd.read_csv(B1_filename, header=None).values
-    B2 = pd.read_csv(B2_filename, header=None).values
 
     # create adjacency matrix
     nodes = B1.shape[0]

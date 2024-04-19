@@ -90,7 +90,8 @@ class LSFilterDesign(Filter):
         LS based filter design for subcomponent extraction using the Hodge
         Laplacian matrix (L1) - type one.
 
-        In this case, we will use the Hodge Laplacian matrix L1 = L2 = L and α = β.
+        In this case, we will use the Hodge Laplacian matrix L1 = L2 = L
+        and α = β.
 
         Hk = sum(l=0, L) h_l * L^l
 
@@ -139,8 +140,10 @@ class LSFilterDesign(Filter):
         lower Laplacian matrix (L1 or L2) - type two.
 
         In this case:
-        - The solution will have zero coefficients on the α for curl extraction (L1 = 0)
-        - The solution will have zero coefficients on the β for gradient extraction (L2 = 0)
+        - The solution will have zero coefficients on the α for curl
+        extraction (L1 = 0)
+        - The solution will have zero coefficients on the β for gradient
+        extraction (L2 = 0)
 
         Therefore, we will only consider the upper or lower part of the filter
         to do so.
@@ -149,8 +152,8 @@ class LSFilterDesign(Filter):
             L (int): The size of the filter.
             component (str): The component to be extracted.
             f (np.ndarray): The signal to be filtered.
-            tolerance (float, optional): The tolerance to consider the eigenvalues as unique.
-            Defaults to 1e-6.
+            tolerance (float, optional): The tolerance to consider the
+            eigenvalues as unique. Defaults to 1e-6.
         """
 
         self._reset_history()
@@ -213,8 +216,8 @@ class LSFilterDesign(Filter):
             L1 (int): The size of the filter for the gradient extraction.
             L2 (int): The size of the filter for the curl extraction.
             f (np.ndarray): The signal to be filtered.
-            tolerance (float, optional): The tolerance to consider the eigenvalues as unique.
-            Defaults to 1e-6.
+            tolerance (float, optional): The tolerance to consider the
+            eigenvalues as unique. Defaults to 1e-6.
 
         Returns:
             np.ndarray: The estimated harmonic, curl and gradient components.

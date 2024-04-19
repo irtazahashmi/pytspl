@@ -55,7 +55,8 @@ class Filter:
             f_true = component_mapping[component]
         except KeyError:
             raise ValueError(
-                f"Invalid component {component}. Use 'harmonic', 'curl' or 'gradient'."
+                f"Invalid component {component}. Use 'harmonic',"
+                + "'curl' or 'gradient'."
             )
 
         return f_true

@@ -10,7 +10,11 @@ from sclibrary.utils.eigendecomposition import (
     get_harmonic_eigenvectors,
 )
 from sclibrary.utils.frequency_component import FrequencyComponent
-from sclibrary.utils.hodgedecomposition import *
+from sclibrary.utils.hodgedecomposition import (
+    get_curl_component,
+    get_gradient_component,
+    get_harmonic_component,
+)
 from toponetx.classes import SimplicialComplex
 
 """Module to analyze simplicial complex data."""
@@ -58,7 +62,10 @@ class SimplicialComplexNetwork:
 
     @property
     def is_connected(self) -> bool:
-        """Returns True if the simplicial complex is connected, False otherwise."""
+        """
+        Returns True if the simplicial complex is connected, False
+        otherwise.
+        """
         return self.sc.is_connected()
 
     def get_faces(self, simplex: Iterable[Hashable]) -> set[tuple]:
@@ -84,9 +91,10 @@ class SimplicialComplexNetwork:
         Returns the cofaces of the simplex.
 
         Args:
-            simplex (Iterable[Hashable]): Simplex for which to find the cofaces.
-            rank (int): Rank of the cofaces. Defaults to 0. If rank is 0, returns
-            all cofaces of the simplex.
+            simplex (Iterable[Hashable]): Simplex for which to find the
+            cofaces.
+            rank (int): Rank of the cofaces. Defaults to 0. If rank is 0,
+            returns all cofaces of the simplex.
         """
         cofaces = self.sc.get_cofaces(simplex=simplex, codimension=rank)
         cofaces = set(coface for coface in cofaces)
@@ -308,7 +316,8 @@ class SimplicialComplexNetwork:
             return u_g, eig_g
         else:
             raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+                "Invalid component. Choose from 'harmonic',"
+                + "'curl', or 'gradient'."
             )
 
     def get_hodgedecomposition(
@@ -368,11 +377,12 @@ class SimplicialComplexNetwork:
             component (str): Component of the eigendecomposition to return.
 
         Raises:
-            ValueError: If the component is not one of 'harmonic', 'curl', or 'gradient'.
+            ValueError: If the component is not one of 'harmonic', 'curl',
+            or 'gradient'.
 
         Returns:
-            np.ndarray: The component coefficients of the simplicial complex for the
-            given component.
+            np.ndarray: The component coefficients of the simplicial complex
+            for the given component.
         """
 
         L1 = self.hodge_laplacian_matrix(rank=1)
@@ -397,7 +407,8 @@ class SimplicialComplexNetwork:
             mask[U_H.shape[1] + U_C.shape[1] :] = 1
         else:
             raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+                "Invalid component. Choose from 'harmonic', 'curl', "
+                + "or 'gradient'."
             )
 
         # sort mask according to eigenvalues
@@ -422,7 +433,8 @@ class SimplicialComplexNetwork:
 
         else:
             raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', or 'gradient'."
+                "Invalid component. Choose from 'harmonic', 'curl', "
+                + "or 'gradient'."
             )
 
         return mask
