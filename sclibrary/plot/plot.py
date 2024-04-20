@@ -16,19 +16,19 @@ class SCPlot:
 
     def __init__(
         self,
-        sc: SimplicialComplexNetwork,
-        pos: dict = None,
+        simplical_complex: SimplicialComplexNetwork,
+        coordinates: dict = None,
     ) -> None:
         """
         Args:
-            sc (SimplicialComplexNetwork): The simplicial complex network
-            object.
-            pos (dict, optional): Dict of positions [node_id : (x, y)] is
-            used for placing the 0-simplices. The standard nx spring
-            layer is used otherwise.
+            simplical_complex (SimplicialComplexNetwork): The simplicial
+            complex network object.
+            coordinates (dict, optional): Dict of positions
+            [node_id : (x, y)] is used for placing the 0-simplices. The
+            standard nx spring layer is used otherwise.
         """
-        self.sc = sc
-        self.pos = pos
+        self.sc = simplical_complex
+        self.pos = coordinates
 
     def _init_axes(self, ax) -> dict:
         """
@@ -42,7 +42,7 @@ class SCPlot:
             dict: The layout of the nodes.
         """
         layout = self.pos
-        edges = self._get_edges()
+        edges = self.sc.edges
 
         if self.pos is None:
             # Using spring layout
@@ -72,31 +72,6 @@ class SCPlot:
 
         return layout
 
-    def _get_nodes(self) -> list:
-        """Return the 0-simplices."""
-        # generate 0-simplices
-        return list(set(itertools.chain(*self.sc.simplices)))
-
-    def _get_edges(self) -> list:
-        """Return the 1-simplices."""
-        # generate 1-simplices
-        edges = list(
-            set(
-                itertools.chain(
-                    *[
-                        [
-                            tuple(sorted((i, j)))
-                            for i, j in itertools.combinations(simplex, 2)
-                        ]
-                        for simplex in self.sc.simplices
-                    ]
-                )
-            )
-        )
-        # sort the edges
-        edges = sorted(edges, key=lambda x: (x[0], x[1]))
-        return edges
-
     def _get_triangles(self) -> list:
         """Return the 2-simplices."""
         # generate 2-simplices
@@ -115,6 +90,18 @@ class SCPlot:
         )
 
         return triangles
+
+    def create_edge_flow(self, flow: np.ndarray) -> dict:
+        """
+        Create a dictionary of edge flows from the flow array.
+
+        Args:
+            flow (np.ndarray): The flow on the edges.
+
+        Returns:
+            dict: The edge flow dictionary.
+        """
+        return dict(zip(self.sc.edges, flow))
 
     def draw_sc_nodes(
         self,
@@ -188,7 +175,7 @@ class SCPlot:
             fig = ax.get_figure()
             fig.colorbar(mappable=color_map, ax=ax)
 
-        nodes = self._get_nodes()
+        nodes = self.sc.nodes
 
         node_collection = ax.scatter(
             [self.pos[node_id][0] for node_id in nodes],
@@ -238,7 +225,7 @@ class SCPlot:
             alpha (float, optional): The transparency of the node labels.
             Defaults to None.
         """
-        for node_id in self._get_nodes():
+        for node_id in self.sc.nodes:
             (x, y) = self.pos[node_id]
             plt.text(
                 x,
@@ -254,28 +241,28 @@ class SCPlot:
 
     def draw_sc_edges(
         self,
-        directed: bool = True,
+        edge_flow: dict = None,
         edge_color: str = "lightblue",
         edge_width: float = 1.0,
-        alpha: float = 0.8,
         arrowsize: int = 10,
         edge_cmap=plt.cm.Reds,
         edge_vmin=None,
         edge_vmax=None,
+        directed: bool = True,
+        alpha: float = 0.8,
         ax=None,
     ) -> None:
         """
         Draw the edges of the simplicial complex.
 
         Args:
-            directed (bool, optional): Whether the edges are directed.
-            Defaults to True.
+            edge_flow (dict, optional): The flow of the edges.
+            e.g. {(0, 1): 0.5, (1, 2): 0.3, (2, 0): 0.2}.
+            Defaults to None.
             edge_color (str, optional): The color of the edges.
             Defaults to 'lightblue'.
             edge_width (float, optional): The width of the edges.
             Defaults to 1.0.
-            alpha (float, optional): The transparency of the edges.
-            Defaults to 0.8.
             arrowsize (int, optional): The size of the arrows.
             Defaults to 10.
             edge_cmap (mpl.colors.Colormap, optional): The color map of
@@ -284,6 +271,10 @@ class SCPlot:
             map. Defaults to None.
             edge_vmax (float, optional): The maximum value for the color
             map. Defaults to None.
+            directed (bool, optional): Whether the edges are directed.
+            Defaults to True.
+            alpha (float, optional): The transparency of the edges.
+            Defaults to 0.8.
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
@@ -293,8 +284,14 @@ class SCPlot:
         fig = ax.get_figure()
         self._init_axes(ax=ax)
 
+        # if edge labels are provided, use them to color the edges
+        if edge_flow is not None:
+            edges = list(edge_flow.keys())
+            edge_color = list(edge_flow.values())
+        else:
+            edges = self.sc.edges
+
         # create a graph
-        edges = self._get_edges()
         graph = nx.DiGraph()
         graph.add_edges_from(edges)
 
@@ -302,11 +299,13 @@ class SCPlot:
         if np.iterable(edge_color) and np.alltrue(
             [isinstance(c, Number) for c in edge_color]
         ):
+            # check if edge_cmap is a colormap
             if edge_cmap is not None:
                 assert isinstance(edge_cmap, mpl.colors.Colormap)
             else:
                 edge_cmap = plt.get_cmap()
 
+            # set the color map limits
             if edge_vmin is None:
                 # for more contrast
                 edge_vmin = min(edge_color) - abs(min(edge_color)) * 0.5
@@ -317,7 +316,7 @@ class SCPlot:
             color_map = mpl.cm.ScalarMappable(
                 cmap=edge_cmap,
             )
-
+            # set the color map limits
             color_map.set_clim(vmin=edge_vmin, vmax=edge_vmax)
             fig.colorbar(
                 mappable=color_map,
@@ -326,7 +325,7 @@ class SCPlot:
 
             # reorder the edges to match the order of the edge colors
             edge_color = [
-                edge_color[edges.index(edge)] for edge in list(graph.edges())
+                edge_color[edges.index(edge)] for edge in graph.edges()
             ]
 
         # draw edges
@@ -361,7 +360,7 @@ class SCPlot:
 
     def draw_edge_labels(
         self,
-        flow: np.ndarray,
+        edge_labels: dict,
         label_pos: float = 0.5,
         font_size: int = 10,
         font_color: str = "k",
@@ -373,7 +372,9 @@ class SCPlot:
         Draw the labels (flow) of the edges.
 
         Args:
-            flow (np.ndarray): The flow on the edges.
+            edge_labels (dict): The labels of the edges.
+            e.g. {(0, 1): 0.5, (1, 2): 0.3, (2, 0): 0.2}
+            Defaults to None.
             label_pos (float, optional): The position of the label.
             Defaults to 0.5.
             font_size (int, optional): The font size of the labels.
@@ -387,11 +388,6 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
-        edges = self.sc.edges
-        edge_labels = {}
-        for i in range(len(edges)):
-            edge_labels[edges[i][0], edges[i][1]] = flow[i]
-
         if ax is None:
             ax = plt.gca()
 
@@ -423,7 +419,7 @@ class SCPlot:
 
     def draw_network(
         self,
-        flow: np.ndarray = None,
+        edge_flow=None,
         directed: bool = True,
         node_size: int = 400,
         edge_width: int = 5,
@@ -436,8 +432,9 @@ class SCPlot:
         is not provided, the network is drawn without flow.
 
         Args:
-            flow (np.ndarray, optional): The flow on the edges. If None,
-            the network is drawn without flow. Defaults to None.
+            edge_flow (dict, np.ndarray, list, optional): The labels of the
+            edges. e.g. {(0, 1): 0.5, (1, 2): 0.3, (2, 0): 0.2}. You can also
+            provide a numpy array of the flow. Defaults to None.
             directed (bool, optional): Whether the edges are directed.
             Defaults to True.
             node_size (int, optional): The size of the nodes.
@@ -451,28 +448,35 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
+        # initialize the axes
         if ax is None:
             ax = plt.gca()
 
         self._init_axes(ax=ax)
 
-        if not np.iterable(flow):
-            flow = "lightblue"
+        if isinstance(edge_flow, (np.ndarray, list)):
+            edge_flow = self.create_edge_flow(flow=edge_flow)
+
+        # if edge labels are provided, use them to color the edges
+        if not np.iterable(edge_flow):
+            edge_color = "lightblue"
+        else:
+            edge_color = list(edge_flow.values())
 
         # draw the nodes
         self.draw_sc_nodes(node_size=node_size, ax=ax, with_labels=with_labels)
         # draw the edges
         self.draw_sc_edges(
-            edge_color=flow,
-            directed=directed,
+            edge_flow=edge_flow,
             edge_width=edge_width,
             arrowsize=arrowsize,
+            directed=directed,
             ax=ax,
         )
 
         # plot edge labels
-        if with_labels and isinstance(flow, np.ndarray):
-            self.draw_edge_labels(flow=flow, font_size=15, ax=ax)
+        if with_labels and np.all([isinstance(c, Number) for c in edge_color]):
+            self.draw_edge_labels(edge_labels=edge_flow, font_size=15, ax=ax)
 
     def draw_hodge_decomposition(
         self,
@@ -516,17 +520,17 @@ class SCPlot:
             # gradient flow
             ax = fig.add_subplot(1, 3, 1)
             ax.set_title("f_g")
-            self.draw_network(flow=f_g, ax=ax)
+            self.draw_network(edge_flow=f_g, ax=ax)
 
             # curl flow
             ax = fig.add_subplot(1, 3, 2)
             ax.set_title("f_c")
-            self.draw_network(flow=f_c, ax=ax)
+            self.draw_network(edge_flow=f_c, ax=ax)
 
             # harmonic flow
             ax = fig.add_subplot(1, 3, 3)
             ax.set_title("f_h")
-            self.draw_network(flow=f_h, ax=ax)
+            self.draw_network(edge_flow=f_h, ax=ax)
 
         else:
             try:
@@ -540,7 +544,7 @@ class SCPlot:
             # create a single figure
             ax = fig.add_subplot(1, 1, 1)
             ax.set_title(f"f_{component}")
-            self.draw_network(flow=to_plot, ax=ax)
+            self.draw_network(edge_flow=to_plot, ax=ax)
 
         plt.show()
 
@@ -601,7 +605,7 @@ class SCPlot:
             if round_fig:
                 flow = np.round(flow, round_sig_fig)
 
-            self.draw_network(flow=flow, ax=ax, with_labels=with_labels)
+            self.draw_network(edge_flow=flow, ax=ax, with_labels=with_labels)
 
         plt.tight_layout()
         plt.show()

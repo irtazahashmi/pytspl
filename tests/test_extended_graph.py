@@ -16,6 +16,16 @@ def graph():
 
 
 class TestExtendedGraph:
+    def test_summary(self, graph):
+        summary = graph.summary()
+        expected_summary = {
+            "number_of_nodes": 5,
+            "number_of_edges": 7,
+            "is_directed": False,
+            "graph_density": 0.7,
+        }
+        assert summary == expected_summary
+
     def test_triangles(self, graph):
         triangles = graph.triangles()
         expected_triangles = np.array([[0, 1, 2], [1, 2, 3], [1, 3, 4]])

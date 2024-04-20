@@ -27,7 +27,6 @@ class TestLSFilterDesign:
             assert result is not None
 
         # test error is decreasing
-
         assert np.all(
             np.diff(ls_filter.history["error_per_filter_size"]) < 0.1
         )

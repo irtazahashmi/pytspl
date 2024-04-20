@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplexNetwork, read_csv
+from sclibrary import read_csv
 
 
 @pytest.fixture(scope="module")
@@ -28,10 +28,10 @@ def sc():
         feature_cols=feature_cols,
     )
 
-    simplices = G.simplicies(
+    simplical_complex = G.to_simplicial_complex(
         condition="distance", dist_col_name="Distance", dist_threshold=1.5
     )
-    yield SimplicialComplexNetwork(simplices=simplices)
+    yield simplical_complex
 
 
 @pytest.fixture(scope="module")

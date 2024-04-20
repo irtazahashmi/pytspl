@@ -1,5 +1,7 @@
 import networkx as nx
 
+from sclibrary.simplicial_complex import SimplicialComplexNetwork
+
 
 class ExtendedGraph(nx.Graph):
     """Extended Graph module. Built on top of networkx.Graph."""
@@ -7,6 +9,15 @@ class ExtendedGraph(nx.Graph):
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize the ExtendedGraph class using networkx.Graph."""
         super().__init__(incoming_graph_data, **attr)
+
+    def summary(self) -> dict:
+        """Provide a summary of the network data."""
+        return {
+            "number_of_nodes": self.number_of_nodes(),
+            "number_of_edges": self.number_of_edges(),
+            "is_directed": self.is_directed(),
+            "graph_density": nx.density(self),
+        }
 
     def triangles(self) -> list:
         """
@@ -92,3 +103,46 @@ class ExtendedGraph(nx.Graph):
             )
 
         return simplicies
+
+    def to_simplicial_complex(
+        self,
+        condition: str = "all",
+        dist_col_name="distance",
+        dist_threshold: float = 1.5,
+    ):
+        """
+        Convert the graph to a simplicial complex using the given condition
+        of simplicies. The simplicial complex will also have node and edge
+        features.
+
+        Args:
+            condition (str, optional): Condition to filter simplicies.
+            Defaults to "all".
+            Options:
+                - "all": All simplicies.
+                - "distance": Based on distance.
+
+            dist_col_name (str, optional): Name of the column that contains
+            the distance.
+            dist_threshold (float, optional): Distance threshold to consider
+            for simplicies. Defaults to 1.5.
+
+        Returns:
+            SimplicialComplexNetwork: Simplicial complex network.
+        """
+        simplices = self.simplicies(
+            condition=condition,
+            dist_col_name=dist_col_name,
+            dist_threshold=dist_threshold,
+        )
+
+        node_features = {node: self.nodes[node] for node in self.nodes}
+        edge_features = {(u, v): self.edges[u, v] for u, v in self.edges}
+
+        sc = SimplicialComplexNetwork(
+            simplices=simplices,
+            node_features=node_features,
+            edge_features=edge_features,
+        )
+
+        return sc

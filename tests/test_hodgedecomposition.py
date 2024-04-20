@@ -21,10 +21,10 @@ def sc():
         feature_cols=feature_cols,
     )
 
-    simplices = G.simplicies(
+    simplicial_complex = G.to_simplicial_complex(
         condition="distance", dist_col_name="Distance", dist_threshold=1.5
     )
-    yield SimplicialComplexNetwork(simplices=simplices)
+    yield simplicial_complex
 
 
 @pytest.fixture
@@ -36,13 +36,17 @@ def flow():
 
 class TestHodgeDecompostion:
 
-    def test_divergence_component(self, sc, flow):
+    def test_divergence_component(
+        self, sc: SimplicialComplexNetwork, flow: np.ndarray
+    ):
         # B1@f_d = 0
         B1 = sc.incidence_matrix(rank=1)
         f_d = get_divergence(B1, flow)
         assert np.allclose(f_d, B1 @ flow)
 
-    def test_harmonic_component_condition(self, sc, flow):
+    def test_harmonic_component_condition(
+        self, sc: SimplicialComplexNetwork, flow: np.ndarray
+    ):
         # L1@f_h = 0
         B1 = sc.incidence_matrix(rank=1)
         B2 = sc.incidence_matrix(rank=2)
@@ -58,14 +62,18 @@ class TestHodgeDecompostion:
         L1U = sc.upper_laplacian_matrix(rank=1)
         assert np.allclose(L1U @ f_h, 0)
 
-    def test_curl_component(self, sc, flow):
+    def test_curl_component(
+        self, sc: SimplicialComplexNetwork, flow: np.ndarray
+    ):
         # L1L@f_c = 0
         B2 = sc.incidence_matrix(rank=2)
         f_c = get_curl_component(B2, flow, round_fig=False)
         L1L = sc.lower_laplacian_matrix(rank=1)
         assert np.allclose(L1L @ f_c, 0)
 
-    def test_gradient_component(self, sc, flow):
+    def test_gradient_component(
+        self, sc: SimplicialComplexNetwork, flow: np.ndarray
+    ):
         # L1U@f_g = 0
         B1 = sc.incidence_matrix(rank=1)
         f_g = get_gradient_component(B1, flow, round_fig=False)
