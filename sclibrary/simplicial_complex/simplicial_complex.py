@@ -127,18 +127,6 @@ class SimplicialComplexNetwork:
         else:
             return edge_features
 
-    def get_edge_attributes(self, name: str, rank: int = 1) -> dict:
-        """Get the edge attributes of the simplicial complex.
-
-        Args:
-            name (str): Name of the edge attribute.
-            rank (int, optional): Rank of the edge attribute. Defaults to 1.
-
-        Returns:
-            dict: Edge attributes of the simplicial complex.
-        """
-        return self.sc.get_simplex_attributes(name=name, rank=rank)
-
     def get_faces(self, simplex: Iterable[Hashable]) -> set[tuple]:
         """
         Return the faces of the simplex.

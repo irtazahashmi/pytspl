@@ -42,32 +42,39 @@ class SCPlot:
             dict: The layout of the nodes.
         """
         layout = self.pos
-        edges = self.sc.edges
 
         if self.pos is None:
             # Using spring layout
             G = nx.Graph()
-            G.add_edges_from(edges)
+            G.add_edges_from(self.sc.edges)
             layout = nx.spring_layout(G)
             # set the axis limits to a square
             ax.set_xlim([-1.1, 1.1])
             ax.set_ylim([-1.1, 1.1])
         else:
-            # set the axis limits to the bounding box of the nodes
-            min_x = min([x[0] for x in self.pos.values()])
-            max_x = max([x[0] for x in self.pos.values()])
-            min_y = min([x[1] for x in self.pos.values()])
-            max_y = max([x[1] for x in self.pos.values()])
+            # scale the coordinates
+            x = [x[0] for x in self.pos.values()]
+            y = [x[1] for x in self.pos.values()]
+            min_x, max_x = min(x), max(x)
+            min_y, max_y = min(y), max(y)
 
-            padding = (max_x - min_x) * 0.2
+            for node_id in self.pos:
+                self.pos[node_id] = (
+                    (self.pos[node_id][0] - min_x) / (max_x - min_x),
+                    (self.pos[node_id][1] - min_y) / (max_y - min_y),
+                )
 
-            ax.set_xlim([min_x - padding, max_x + padding])
-            ax.set_ylim([min_y - padding, max_y + padding])
+            # add padding to the bounding box
+            x_padding = (max_x - min_x) * 0.05
+            y_padding = (max_y - min_y) * 0.05
+
+            # set the axis limits according to the bounding box of the nodes
+            ax.set_xlim([min_x - x_padding, max_x + x_padding])
+            ax.set_ylim([min_y - y_padding, max_y + y_padding])
 
         # layout configuration
         ax.get_xaxis().set_ticks([])
         ax.get_yaxis().set_ticks([])
-        ax.axis("equal")
         ax.axis("off")
 
         return layout
@@ -182,10 +189,10 @@ class SCPlot:
             [self.pos[node_id][1] for node_id in nodes],
             s=node_size,
             c=node_color,
+            edgecolors=node_edge_colors,
             cmap=cmap,
             vmin=vmin,
             vmax=vmax,
-            edgecolors=node_edge_colors,
             alpha=alpha,
         )
 
@@ -464,7 +471,7 @@ class SCPlot:
             edge_color = list(edge_flow.values())
 
         # draw the nodes
-        self.draw_sc_nodes(node_size=node_size, ax=ax, with_labels=with_labels)
+        self.draw_sc_nodes(node_size=node_size, with_labels=with_labels, ax=ax)
         # draw the edges
         self.draw_sc_edges(
             edge_flow=edge_flow,
@@ -574,6 +581,8 @@ class SCPlot:
             figsize (tuple, optional): The size of the figure. Defaults to
             (15, 5).
         """
+        viz_per_row = 3
+
         U, eigenvals = self.sc.get_eigendecomposition(component=component)
 
         # if no eigenvector indices are provided, draw all eigenvectors
@@ -583,19 +592,28 @@ class SCPlot:
         # Assuming you have a total number of eigenvector_indices as num_plots
         num_plots = len(eigenvector_indices)
         # Calculate the number of columns needed
-        num_cols = min(num_plots, 3)
+        num_cols = min(num_plots, viz_per_row)
         # Calculate the number of rows needed
         num_rows = num_plots // num_cols
 
         if num_plots % num_cols != 0:
             num_rows += 1
 
-        Position = range(1, num_plots + 1)
-        new_figsize = (figsize[0], figsize[1] * num_rows)
-        fig = plt.figure(1, figsize=new_figsize)
+        positions = range(1, num_plots + 1)
+
+        # adjust the figure size to fit all the plots
+        if num_rows > 1:
+            new_figsize = (figsize[0], figsize[1] * num_rows)
+            fig = plt.figure(1, figsize=new_figsize)
+        else:
+            if num_cols != 1:
+                figsize = ((figsize[0] / viz_per_row) * num_cols, figsize[1])
+            fig = plt.figure(1, figsize=figsize)
 
         for i, eig_vec in enumerate(eigenvector_indices):
-            ax = fig.add_subplot(num_rows, num_cols, Position[i])
+
+            ax = fig.add_subplot(num_rows, num_cols, positions[i])
+
             ax.set_title(
                 f"λ_{component} = {round(eigenvals[eig_vec], round_sig_fig)}"
             )
