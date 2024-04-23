@@ -21,15 +21,25 @@ from toponetx.classes import SimplicialComplex
 class SimplicialComplexNetwork:
     """Module to analyze simplicial complex data."""
 
-    def __init__(self, simplices: list):
+    def __init__(
+        self,
+        simplices: list,
+        node_features: dict = {},
+        edge_features: dict = {},
+    ):
         """
         Create a simplicial complex network from edge list.
 
         Args:
             simplices (list): List of simplices of the simplicial complex.
-            Defaults to None.
+            node_features (dict, optional): Dict of node features.
+            Defaults to {}.
+            edge_features (dict, optional): Dict of edge features.
+            Defaults to {}.
         """
         self.sc = SimplicialComplex(simplices=simplices)
+        self.node_features = node_features
+        self.edge_features = edge_features
 
     @property
     def shape(self) -> tuple:
@@ -49,15 +59,18 @@ class SimplicialComplexNetwork:
     @property
     def edges(self) -> list[tuple]:
         """Return the set of edges in the simplicial complex"""
-        simplices = self.simplices
-        edges = [simplex for simplex in simplices if len(simplex) == 2]
+        edges = [simplex for simplex in self.simplices if len(simplex) == 2]
         edges = sorted(edges, key=lambda x: (x[0], x[1]))
         return edges
 
     @property
     def simplices(self) -> list[tuple]:
-        """Get the simplices of the simplicial complex."""
-        simplices = set(simplex for simplex in self.sc.simplices)
+        """
+        Get al the simplices of the simplicial complex.
+
+        This includes 0-simplices (nodes), 1-simplices (edges), 2-simplices.
+        """
+        simplices = set(self.sc.simplices)
         simplices = [tuple(simplex) for simplex in simplices]
         return simplices
 
@@ -68,6 +81,51 @@ class SimplicialComplexNetwork:
         otherwise.
         """
         return self.sc.is_connected()
+
+    @property
+    def edge_feature_names(self) -> list[str]:
+        """Return the list of edge feature names."""
+        if len(self.get_edge_features()) == 0:
+            return []
+
+        return list(list(self.get_edge_features().values())[0].keys())
+
+    def summary(self) -> dict:
+        """Return the summary of the simplicial complex."""
+        edge_feature_names = self.edge_feature_names
+
+        return {
+            "nodes": len(self.nodes),
+            "edges": len(self.edges),
+            "triangles": self.shape[2],
+            "shape": self.shape,
+            "max_dim": self.max_dim,
+            "is_connected": self.is_connected,
+            "edge_feature_names": edge_feature_names,
+        }
+
+    def get_node_features(self) -> list[dict]:
+        """Return the list of node features."""
+        return self.node_features
+
+    def get_edge_features(self, name: str = None) -> list[dict]:
+        """Return the list of edge features."""
+        edge_features = self.edge_features
+        if name is not None:
+
+            try:
+                return {
+                    key: value[name] for key, value in edge_features.items()
+                }
+
+            except KeyError:
+                raise KeyError(
+                    f"Edge feature {name} does not exist in"
+                    + "the simplicial complex."
+                )
+
+        else:
+            return edge_features
 
     def get_faces(self, simplex: Iterable[Hashable]) -> set[tuple]:
         """
@@ -98,7 +156,7 @@ class SimplicialComplexNetwork:
             returns all cofaces of the simplex.
         """
         cofaces = self.sc.get_cofaces(simplex=simplex, codimension=rank)
-        cofaces = set(coface for coface in cofaces)
+        cofaces = set(cofaces)
         cofaces = [tuple(coface) for coface in cofaces]
         return cofaces
 

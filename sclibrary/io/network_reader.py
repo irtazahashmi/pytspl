@@ -51,7 +51,6 @@ def read_tntp(
     dest_col: str,
     skip_rows: int,
     delimeter: str = "\t",
-    feature_cols: list = None,
 ) -> ExtendedGraph:
     """Read a tntp file and returns a graph.
 
@@ -64,8 +63,6 @@ def read_tntp(
         file.
         delimeter (str): The delimeter used in the tntp file. Defaults to next
         line.
-        feature_cols (list, optional): The names of the feature columns.
-        Defaults to None.
 
     Returns:
         ExtendedGraph: The graph read from the tntp file.
@@ -84,8 +81,13 @@ def read_tntp(
     for _, row in df.iterrows():
         G.add_edge(row[src_col], row[dest_col])
 
+    # extract features if any
+    feature_cols = [
+        col for col in df.columns if col not in [src_col, dest_col]
+    ]
+
     # add features if any
-    if feature_cols:
+    if len(feature_cols) > 0:
         for col in feature_cols:
             for _, row in df.iterrows():
                 G[row[src_col]][row[dest_col]][col] = row[col]
@@ -150,7 +152,7 @@ def get_coordinates(
     Read a csv file and returns a dictionary of coordinates.
 
     Args:
-        filename (str): The name of the csv file.
+        filename (str): The name of the file.
         node_id_col (str): The name of the column containing the node ids.
         x_col (str): The name of the column containing the x coordinates.
         y_col (str): The name of the column containing the y coordinates.
@@ -159,11 +161,14 @@ def get_coordinates(
     Returns:
         dict: A dictionary of coordinates (node_id : (x, y)).
     """
-    coordinates = pd.read_csv(filename, sep=delimeter)
+    df_coords = pd.read_csv(filename, sep=delimeter)
+
+    df_coords.columns = [s.strip() for s in df_coords.columns]
+
     # create a dictionary of coordinates (node_id : (x, y))
     return dict(
         zip(
-            coordinates[node_id_col],
-            zip(coordinates[x_col], coordinates[y_col]),
+            df_coords[node_id_col],
+            zip(df_coords[x_col], df_coords[y_col]),
         )
     )

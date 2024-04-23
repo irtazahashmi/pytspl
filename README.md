@@ -51,3 +51,12 @@ To run the flake8 linter, run the following command:
 ```console
 $ python3 -m flake8 sclibrary
 ```
+
+## Documentation
+
+The code documentation is generated using [Sphinx](https://www.sphinx-doc.org/en/master/). After making changes to the code/documentation, go to the _docs_ folder and run the following commands to regenreate the documentation:
+
+```console
+$ make clean html
+$ make html
+```
