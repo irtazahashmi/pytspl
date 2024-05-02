@@ -70,7 +70,7 @@ class TestEdgeFlowDenoising:
         )
 
     def test_edge_flow_denoising_P_not_found(
-        self, sc: SimplicialComplexNetwork, f0: np.ndarray, f: np.ndarray
+        self, sc: SimplicialComplexNetwork, f: np.ndarray
     ):
 
         P_choice = "LL"
