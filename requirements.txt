@@ -1,5 +1,5 @@
 coverage
-chebpy
+chebpy @ git+https://github.com/chebpy/chebpy.git
 flake8
 gudhi
 hypernetx==1.2.5
