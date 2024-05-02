@@ -6,7 +6,8 @@ It imports all the necessary modules and classes to be used by the user.
 # data reader module
 from sclibrary.io import (
     generate_random_simplicial_complex,
-    get_coordinates,
+    get_dataset_summary,
+    load_transportation_dataset,
     read_csv,
     read_incidence_matrix,
     read_tntp,

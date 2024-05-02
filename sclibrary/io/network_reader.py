@@ -4,7 +4,7 @@ import pandas as pd
 
 from sclibrary.simplicial_complex.extended_graph import ExtendedGraph
 
-"""Module for reading graph network data."""
+"""Module for reading simplicial complex network data."""
 
 
 def read_csv(
