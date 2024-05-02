@@ -1,6 +1,6 @@
 import networkx as nx
 
-from sclibrary import (
+from sclibrary.io.network_reader import (
     get_coordinates,
     read_csv,
     read_incidence_matrix,
