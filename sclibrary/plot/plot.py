@@ -44,7 +44,7 @@ class SCPlot:
         layout = self.pos
 
         if self.pos is None:
-            # Using spring layout
+            # use spring layout if no coordinates are provided
             G = nx.Graph()
             G.add_edges_from(self.sc.edges)
             layout = nx.spring_layout(G)
@@ -58,16 +58,9 @@ class SCPlot:
             min_x, max_x = min(x), max(x)
             min_y, max_y = min(y), max(y)
 
-            for node_id in self.pos:
-                self.pos[node_id] = (
-                    (self.pos[node_id][0] - min_x) / (max_x - min_x),
-                    (self.pos[node_id][1] - min_y) / (max_y - min_y),
-                )
-
             # add padding to the bounding box
             x_padding = (max_x - min_x) * 0.05
             y_padding = (max_y - min_y) * 0.05
-
             # set the axis limits according to the bounding box of the nodes
             ax.set_xlim([min_x - x_padding, max_x + x_padding])
             ax.set_ylim([min_y - y_padding, max_y + y_padding])
@@ -288,6 +281,8 @@ class SCPlot:
         if ax is None:
             ax = plt.gca()
 
+        _, fig_height = ax.get_figure().get_size_inches()
+
         fig = ax.get_figure()
         self._init_axes(ax=ax)
 
@@ -328,7 +323,7 @@ class SCPlot:
             fig.colorbar(
                 mappable=color_map,
                 ax=ax,
-            )
+            ).ax.tick_params(labelsize=fig_height)
 
             # reorder the edges to match the order of the edge colors
             edge_color = [
@@ -458,8 +453,6 @@ class SCPlot:
         # initialize the axes
         if ax is None:
             ax = plt.gca()
-
-        self._init_axes(ax=ax)
 
         if isinstance(edge_flow, (np.ndarray, list)):
             edge_flow = self.create_edge_flow(flow=edge_flow)

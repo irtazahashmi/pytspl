@@ -90,20 +90,6 @@ class SimplicialComplexNetwork:
 
         return list(list(self.get_edge_features().values())[0].keys())
 
-    def summary(self) -> dict:
-        """Return the summary of the simplicial complex."""
-        edge_feature_names = self.edge_feature_names
-
-        return {
-            "nodes": len(self.nodes),
-            "edges": len(self.edges),
-            "triangles": self.shape[2],
-            "shape": self.shape,
-            "max_dim": self.max_dim,
-            "is_connected": self.is_connected,
-            "edge_feature_names": edge_feature_names,
-        }
-
     def get_node_features(self) -> list[dict]:
         """Return the list of node features."""
         return self.node_features

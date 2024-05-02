@@ -10,15 +10,6 @@ class ExtendedGraph(nx.Graph):
         """Initialize the ExtendedGraph class using networkx.Graph."""
         super().__init__(incoming_graph_data, **attr)
 
-    def summary(self) -> dict:
-        """Provide a summary of the network data."""
-        return {
-            "number_of_nodes": self.number_of_nodes(),
-            "number_of_edges": self.number_of_edges(),
-            "is_directed": self.is_directed(),
-            "graph_density": nx.density(self),
-        }
-
     def triangles(self) -> list:
         """
         Get a list of triangles in the graph.
@@ -69,7 +60,7 @@ class ExtendedGraph(nx.Graph):
     def simplicies(
         self,
         condition: str = "all",
-        dist_col_name="distance",
+        dist_col_name: str = "distance",
         dist_threshold: float = 1.5,
     ) -> list:
         """
@@ -107,7 +98,7 @@ class ExtendedGraph(nx.Graph):
     def to_simplicial_complex(
         self,
         condition: str = "all",
-        dist_col_name="distance",
+        dist_col_name: str = "distance",
         dist_threshold: float = 1.5,
     ):
         """
