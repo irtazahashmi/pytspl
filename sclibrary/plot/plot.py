@@ -281,6 +281,8 @@ class SCPlot:
         if ax is None:
             ax = plt.gca()
 
+        _, fig_height = ax.get_figure().get_size_inches()
+
         fig = ax.get_figure()
         self._init_axes(ax=ax)
 
@@ -321,7 +323,7 @@ class SCPlot:
             fig.colorbar(
                 mappable=color_map,
                 ax=ax,
-            )
+            ).ax.tick_params(labelsize=fig_height)
 
             # reorder the edges to match the order of the edge colors
             edge_color = [

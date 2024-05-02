@@ -1,3 +1,5 @@
+import os
+
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -161,8 +163,11 @@ def get_coordinates(
     Returns:
         dict: A dictionary of coordinates (node_id : (x, y)).
     """
-    df_coords = pd.read_csv(filename, sep=delimeter)
+    if not os.path.exists(filename):
+        print("Coordinates file not found for the dataset.")
+        return None
 
+    df_coords = pd.read_csv(filename, sep=delimeter)
     df_coords.columns = [s.strip() for s in df_coords.columns]
 
     # create a dictionary of coordinates (node_id : (x, y))

@@ -60,7 +60,7 @@ class ExtendedGraph(nx.Graph):
     def simplicies(
         self,
         condition: str = "all",
-        dist_col_name="distance",
+        dist_col_name: str = "distance",
         dist_threshold: float = 1.5,
     ) -> list:
         """
@@ -98,7 +98,7 @@ class ExtendedGraph(nx.Graph):
     def to_simplicial_complex(
         self,
         condition: str = "all",
-        dist_col_name="distance",
+        dist_col_name: str = "distance",
         dist_threshold: float = 1.5,
     ):
         """
