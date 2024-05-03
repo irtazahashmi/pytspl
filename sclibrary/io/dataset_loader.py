@@ -1,5 +1,6 @@
 import os
 
+import networkx as nx
 import pandas as pd
 
 from sclibrary.io.network_reader import get_coordinates, read_tntp
@@ -42,7 +43,9 @@ def get_dataset_summary(dataset: str) -> dict:
     number_of_nodes = metadeta.iloc[1][0].split(" ")[-1]
     first_thru_node = metadeta.iloc[2][0].split(" ")[-1]
     number_of_links = metadeta.iloc[3][0].split(" ")[-1]
-    features = metadeta.iloc[4].values[1:]
+    features = list(metadeta.iloc[4].values[1:])
+    # remove trailing whitespace in the feature names
+    features = [feature.strip() for feature in features if feature != ";"]
 
     return {
         "number_of_zones": number_of_zones,
@@ -110,6 +113,11 @@ def load(dataset: str) -> tuple:
         y_col="Y",
         delimeter="\t",
     )
+    # generate coordinates using spring layout if coordinates are not provided
+    if coordinates is None:
+        print("Generating coordinates using spring layout.")
+        graph = nx.Graph(sc.edges)
+        coordinates = nx.spring_layout(graph)
 
     # read the flow data
     flow = load_flow(dataset=dataset)

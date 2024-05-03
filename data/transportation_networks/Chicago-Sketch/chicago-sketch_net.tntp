@@ -2,7 +2,7 @@
 <NUMBER OF NODES> 933											
 <FIRST THRU NODE> 1											
 <NUMBER OF LINKS> 2950
-<ORIGINAL HEADER>~	tail node	head node	capacity (veh/h)	length (miles)	fftt(min)	B	Power	speed limit (mph)	toll (cents)	link type	
+<ORIGINAL HEADER>~	tail node	head node	capacity (veh/h)	length (miles)	fftt(min)	B	Power	speed limit (mph)	toll (cents)	link type	;
 <END OF METADATA>											
 
 

@@ -9,44 +9,6 @@ from sclibrary.simplicial_complex.extended_graph import ExtendedGraph
 """Module for reading simplicial complex network data."""
 
 
-def read_csv(
-    filename: str,
-    delimeter: str,
-    src_col: str,
-    dest_col: str,
-    feature_cols: list = None,
-) -> ExtendedGraph:
-    """Read a csv file and returns a graph.
-
-    Args:
-        filename (str): The name of the csv file.
-        delimeter (str): The delimeter used in the csv file.
-        src_col (str): The name of the column containing the source nodes.
-        dest_col (str): The name of the column containing the destination
-        nodes.
-        feature_cols (list, optional): The names of the feature columns.
-        Defaults to None.
-
-    Returns:
-        ExtendedGraph: The graph read from the csv file.
-    """
-    df = pd.read_csv(filename, sep=delimeter)
-
-    # Create a graph
-    G = nx.Graph()
-    # add edges
-    for _, row in df.iterrows():
-        G.add_edge(row[src_col], row[dest_col])
-
-    # add features if any
-    if feature_cols:
-        for col in feature_cols:
-            for _, row in df.iterrows():
-                G[row[src_col]][row[dest_col]][col] = row[col]
-
-    return ExtendedGraph(G)
-
-
 def read_tntp(
     filename: str,
     src_col: str,
@@ -90,6 +52,44 @@ def read_tntp(
 
     # add features if any
     if len(feature_cols) > 0:
+        for col in feature_cols:
+            for _, row in df.iterrows():
+                G[row[src_col]][row[dest_col]][col] = row[col]
+
+    return ExtendedGraph(G)
+
+
+def read_csv(
+    filename: str,
+    delimeter: str,
+    src_col: str,
+    dest_col: str,
+    feature_cols: list = None,
+) -> ExtendedGraph:
+    """Read a csv file and returns a graph.
+
+    Args:
+        filename (str): The name of the csv file.
+        delimeter (str): The delimeter used in the csv file.
+        src_col (str): The name of the column containing the source nodes.
+        dest_col (str): The name of the column containing the destination
+        nodes.
+        feature_cols (list, optional): The names of the feature columns.
+        Defaults to None.
+
+    Returns:
+        ExtendedGraph: The graph read from the csv file.
+    """
+    df = pd.read_csv(filename, sep=delimeter)
+
+    # Create a graph
+    G = nx.Graph()
+    # add edges
+    for _, row in df.iterrows():
+        G.add_edge(row[src_col], row[dest_col])
+
+    # add features if any
+    if feature_cols:
         for col in feature_cols:
             for _, row in df.iterrows():
                 G[row[src_col]][row[dest_col]][col] = row[col]
