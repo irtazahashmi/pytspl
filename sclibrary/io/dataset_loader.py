@@ -68,6 +68,7 @@ def load_flow(dataset: str) -> pd.DataFrame:
 
     Returns:
         pd.DataFrame: The flow data of the transportation dataset.
+        Returns an empty DataFrame if the flow data file is not found.
     """
     flow_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_flow.tntp"
 
@@ -76,6 +77,7 @@ def load_flow(dataset: str) -> pd.DataFrame:
         flow = pd.read_csv(flow_data_path, sep="\t")
     else:
         print(f"Flow data file not found for the dataset: {dataset}")
+        return pd.DataFrame()
 
     return flow
 
@@ -124,9 +126,10 @@ def load(dataset: str) -> tuple:
     # read the flow data
     flow = load_flow(dataset=dataset)
     flow_dict = {}
-    for _, row in flow.iterrows():
-        source, target = row["From "], row["To "]
-        if (source, target) in sc.edges:
-            flow_dict[(source, target)] = row["Volume "].astype(float)
+    if not flow.empty:
+        for _, row in flow.iterrows():
+            source, target = row["From "], row["To "]
+            if (source, target) in sc.edges:
+                flow_dict[(source, target)] = row["Volume "].astype(float)
 
     return sc, coordinates, flow_dict
