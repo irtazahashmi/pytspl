@@ -1,4 +1,5 @@
 import os
+import pprint
 
 import networkx as nx
 import pandas as pd
@@ -18,8 +19,9 @@ def list_transportation_datasets() -> list:
         list: The list of available transportation datasets.
     """
     datasets = os.listdir(DATA_FOLDER)
-    # remove README.md file
-    datasets.remove("README.md")
+    # remove files
+    files = [".DS_Store", "README.md"]
+    datasets = [dataset for dataset in datasets if dataset not in files]
     return datasets
 
 
@@ -94,7 +96,7 @@ def load(dataset: str) -> tuple:
     network_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_net.tntp"
     coordinates_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_node.tntp"
 
-    print(get_dataset_summary(dataset=dataset))
+    pprint.pprint(get_dataset_summary(dataset=dataset))
 
     # read the network data
     sc = read_tntp(
