@@ -4,7 +4,7 @@ import pprint
 import networkx as nx
 import pandas as pd
 
-from sclibrary.io.network_reader import get_coordinates, read_tntp
+from sclibrary.io.network_reader import get_coordinates, read_csv, read_tntp
 
 """Module for loading transportation network datasets."""
 
@@ -133,3 +133,43 @@ def load(dataset: str) -> tuple:
                 flow_dict[(source, target)] = row["Volume "].astype(float)
 
     return sc, coordinates, flow_dict
+
+
+def load_paper_data() -> tuple:
+    """
+    Read the paper data and return the simplicial complex and coordinates.
+
+    Returns:
+        tuple: The simplicial complex and the coordinates of the nodes.
+    """
+    data_folder = "data/paper_data"
+
+    # read csv
+    filename = data_folder + "/edges.csv"
+    delimeter = " "
+    src_col = "Source"
+    dest_col = "Target"
+    feature_cols = ["Distance"]
+
+    G = read_csv(
+        filename=filename,
+        delimeter=delimeter,
+        src_col=src_col,
+        dest_col=dest_col,
+        feature_cols=feature_cols,
+    )
+    sc = G.to_simplicial_complex(
+        condition="distance", dist_col_name="Distance", dist_threshold=1.5
+    )
+
+    # if coordinates exist
+    filename = data_folder + "/coordinates.csv"
+    coordinates = get_coordinates(
+        filename=filename,
+        node_id_col="Id",
+        x_col="X",
+        y_col="Y",
+        delimeter=" ",
+    )
+
+    return sc, coordinates

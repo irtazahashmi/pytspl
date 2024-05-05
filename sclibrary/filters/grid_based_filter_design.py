@@ -92,11 +92,12 @@ class GridBasedFilterDesign(Filter):
             for eigenvalue in sampled_eigenvals
         ]
 
+        sampled_freq_response = np.asarray(sampled_freq_response, dtype=float)
         return sampled_freq_response, sampled_eigenvals
 
     def _compute_true_continuous_freq_response(
         self, P: np.ndarray, mu: float = 0.5
-    ) -> list:
+    ) -> np.ndarray:
         """
         Compute the continuous frequency response for the true eigenvalues.
 
@@ -105,9 +106,9 @@ class GridBasedFilterDesign(Filter):
             mu (float): Damping factor.
 
         Returns:
-            list: True frequency responses.
+            np.ndarray: True frequency responses.
         """
-        _, eigenvals = get_eigendecomposition(P)
+        _, eigenvals = get_eigendecomposition(lap_mat=P)
 
         # compute the frequency response for each eigenvalue
         g_true = [
@@ -115,6 +116,7 @@ class GridBasedFilterDesign(Filter):
             for eigenvalue in eigenvals
         ]
 
+        g_true = np.asarray(g_true, dtype=float)
         return g_true
 
     def subcomponent_extraction(
@@ -134,8 +136,9 @@ class GridBasedFilterDesign(Filter):
             f (np.ndarray): The noisy signal.
         """
         P = self.get_p_matrix(p_choice)
+        P_csr = csr_matrix(P)
 
-        U1, eigenvals = get_eigendecomposition(lap_mat=P)
+        U, eigenvals = get_eigendecomposition(lap_mat=P)
         f_true = self.get_true_signal(component=component, f=f)
 
         # number of samples
@@ -143,6 +146,7 @@ class GridBasedFilterDesign(Filter):
 
         # true eigenvalues & their frequency responses
         g_true = self._compute_true_continuous_freq_response(P=P)
+
         # sample eigenvalues & their frequency responses
         g, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
             P=P, num_of_samples=num_of_samples
@@ -152,12 +156,14 @@ class GridBasedFilterDesign(Filter):
         system_mat = np.zeros((len(eigenvals_sampled), L))
         system_mat_true = np.zeros((len(eigenvals), L))
 
+        f_estimated = None
         # errors
         errors = np.zeros((L))
         errors_per_filter_size = np.zeros((L))
+        # frequency responses
+        frequency_responses = np.zeros((L, len(U)))
 
         for l in range(L):
-
             # building the system matrix
             system_mat[:, l] = np.power(eigenvals_sampled, l)
             system_mat_true[:, l] = np.power(eigenvals, l)
@@ -168,33 +174,34 @@ class GridBasedFilterDesign(Filter):
             h_true = np.linalg.lstsq(system_mat_true, g_true, rcond=None)[0]
 
             # build the topology filter
-            H = np.zeros_like(P, dtype=object)
-            H_true = np.zeros_like(P, dtype=object)
+            H = np.zeros_like(P, dtype=float)
+            H_true = np.zeros_like(P, dtype=float)
 
             for i in range(len(h)):
-                H += h[i] * np.linalg.matrix_power(P, i)
-                H_true += h_true[i] * np.linalg.matrix_power(P, i)
+                H += h[i] * P_csr**i
+                H_true += h_true[i] * P_csr**i
 
             # estimate the signal
-            f_est = csr_matrix(H, dtype=float).dot(f)
-
-            # frequency response of the filter
-            frequency_responses = np.diag(U1.T @ H @ U1)
+            f_estimated = csr_matrix(H, dtype=float).dot(f)
 
             # compute error compared to the true component signal
-            errors[l] = self.calculate_error(f_est, f_true)
+            errors[l] = self.calculate_error(f_estimated, f_true)
             # computer error compared to the true filter using the
             # true eigenvalues
             errors_per_filter_size[l] = np.linalg.norm(H - H_true)
 
+            # frequency response of the filter
+            frequency_responses[l] = np.diag(U.T @ H @ U)
+
+            print(f"Filter size: {l} - Error: {errors_per_filter_size[l]}")
+
         # update the results
         self.history["filter"] = H
-        self.history["f_estimated"] = f_est.astype(float)
+        self.history["f_estimated"] = f_estimated.astype(float)
         self.history["frequency_responses"] = frequency_responses.astype(float)
         self.history["error_per_filter_size"] = errors_per_filter_size.astype(
             float
         )
-        self.history["errors"] = errors.astype(float)
 
     def general_filter(
         self,

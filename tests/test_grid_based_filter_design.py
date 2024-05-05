@@ -73,6 +73,29 @@ class TestGridBasedFilterDesign:
         excepted_error = 0.73
         assert np.allclose(error, excepted_error, atol=0.01)
 
+    def test_subcomponent_extraction_L1_large_filter_order(
+        self, grid_filter: GridBasedFilterDesign, f: np.ndarray, f0: np.ndarray
+    ):
+        p_choice = "L1"
+        filter_size = 12
+
+        grid_filter.subcomponent_extraction(
+            p_choice=p_choice, L=filter_size, component="gradient", f=f
+        )
+
+        # none of the attributes should be None
+        for _, result in grid_filter.history.items():
+            assert result is not None
+
+        # decreasing error
+        assert np.all(
+            np.diff(grid_filter.history["error_per_filter_size"]) < 0.1
+        )
+
+        error = grid_filter.history["error_per_filter_size"][-1]
+        excepted_error = 0.0014
+        assert np.allclose(error, excepted_error, atol=1e-4)
+
     def test_general_filter(
         self, grid_filter: GridBasedFilterDesign, f: np.ndarray
     ):
