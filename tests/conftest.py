@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary import read_csv
+from sclibrary import dataset_loader
 
 
 @pytest.fixture(scope="module")
@@ -12,25 +12,7 @@ def sc():
     Yields:
         SimplicialComplexNetwork: A simplicial complex network object.
     """
-    data_folder = "data/paper_data"
-    # read csv
-    filename = data_folder + "/edges.csv"
-    delimeter = " "
-    src_col = "Source"
-    dest_col = "Target"
-    feature_cols = ["Distance"]
-
-    G = read_csv(
-        filename=filename,
-        delimeter=delimeter,
-        src_col=src_col,
-        dest_col=dest_col,
-        feature_cols=feature_cols,
-    )
-
-    simplical_complex = G.to_simplicial_complex(
-        condition="distance", dist_col_name="Distance", dist_threshold=1.5
-    )
+    simplical_complex, _ = dataset_loader.load_paper_data()
     yield simplical_complex
 
 

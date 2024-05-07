@@ -2,7 +2,9 @@
 [![codecov](https://codecov.io/gh/irtazahashmi/sc-graph-library/graph/badge.svg?token=7KQ0U8FW70)](https://codecov.io/gh/irtazahashmi/sc-graph-library)
 [![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
 
-# Simplical Complex Graph Library
+# SimplicialLearn
+
+A Python package for simplicial complexes.
 
 ## Contributing to the library
 

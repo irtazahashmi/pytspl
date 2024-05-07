@@ -20,7 +20,7 @@ class LSFilterDesign(Filter):
         lap_matrix: np.ndarray,
         f: np.ndarray,
         f_true: np.ndarray,
-        U1: np.ndarray,
+        U: np.ndarray,
         eigenvals: np.ndarray,
         alpha: np.ndarray,
     ) -> tuple:
@@ -33,7 +33,7 @@ class LSFilterDesign(Filter):
             Laplacian matrix, the upper or lower laplacian matrix.
             f (np.ndarray): The noisy signal to be filtered.
             f_true (np.ndarray): The true signal.
-            U1 (np.ndarray): The eigenvectors of the laplacian matrix.
+            U (np.ndarray): The eigenvectors of the laplacian matrix.
             eigenvals (np.ndarray): The eigenvalues of the laplacian matrix.
             alpha (np.ndarray): The coefficients of the filter.
 
@@ -41,46 +41,46 @@ class LSFilterDesign(Filter):
             tuple: The estimated filter, signal, frequency responses and
             error per filter size.
         """
-        # convert L1 to a numpy array with dtype object
-        L1 = np.array(lap_matrix, dtype=object)
+        # convert L1 to a sparse matrix
+        L1 = csr_matrix(lap_matrix, dtype=float)
 
         # create a matrix to store the system
         system_mat = np.zeros((len(eigenvals), L))
 
         # store the results
         errors = np.zeros((L))
-        frequency_responses = np.zeros((len(U1), L))
+        frequency_responses = np.zeros((L, len(U)))
         f_estimated = None
 
-        filter_range = range(L)
-
-        for L in filter_range:
-
+        for L in range(L):
+            # create the system matrix
             system_mat[:, L] = np.power(eigenvals, L)
 
             # Least square solution to obtain the filter coefficients
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # building the topological filter
-            H_1 = np.zeros_like(L1, dtype=object)
+            H = np.zeros_like(L1, dtype=float)
 
             for l in range(len(h)):
-                H_1 += h[l] * np.linalg.matrix_power(L1, l)
+                H += h[l] * csr_matrix(L1**l, dtype=float)
 
             # filter the signal
-            f_estimated = csr_matrix(H_1, dtype=float).dot(f)
+            f_estimated = csr_matrix(H, dtype=float).dot(f)
 
             # compute the error for each filter size
             errors[L] = self.calculate_error(f_estimated, f_true)
 
             # filter frequency response (H_1_tilda)
-            frequency_responses[:, L] = np.diag(U1.T @ H_1 @ U1)
+            frequency_responses[L] = np.diag(U.T @ H @ U)
+
+            print(f"Filter size: {L} - Error: {errors[L]}")
 
         f_estimated = np.array(f_estimated).astype(float)
         frequency_responses = np.array(frequency_responses).astype(float)
         errors = np.array(errors).astype(float)
 
-        return H_1, f_estimated, frequency_responses, errors
+        return H, f_estimated, frequency_responses, errors
 
     def subcomponent_extraction_type_one(
         self, L: int, component: str, f: np.ndarray
@@ -103,10 +103,11 @@ class LSFilterDesign(Filter):
 
         # eigendecomposition of the Hodge Laplacian matrix
         L1 = self.sc.hodge_laplacian_matrix(rank=1)
-        U1, eigenvals = get_eigendecomposition(L1)
+        U, eigenvals = get_eigendecomposition(lap_mat=L1)
 
         # get the true signal
         f_true = self.get_true_signal(component=component, f=f)
+
         # get the component coefficients
         alpha = self.sc.get_component_coefficients(component=component)
 
@@ -115,7 +116,7 @@ class LSFilterDesign(Filter):
             lap_matrix=L1,
             f=f,
             f_true=f_true,
-            U1=U1,
+            U=U,
             eigenvals=eigenvals,
             alpha=alpha,
         )
@@ -171,24 +172,26 @@ class LSFilterDesign(Filter):
                 f"Invalid component {component}. Use 'gradient' or 'curl'."
             )
 
-        # get unique eigenvalues
-        U1, eigenvals = get_eigendecomposition(lap_matrix, tolerance=tolerance)
+        # get the eigenvalues
+        U, eigenvals = get_eigendecomposition(
+            lap_mat=lap_matrix, tolerance=tolerance
+        )
+        # unique eigenvalues
         eigenvals = np.unique(eigenvals)
+
         # get the true signal
         f_true = self.get_true_signal(component=component, f=f)
 
         # filter coefficients
-        harmonic_components = sum(
-            self.sc.get_component_coefficients("harmonic")
-        ).astype(int)
-        alpha = [0] * harmonic_components + [1] * (len(eigenvals) - 1)
+        alpha = [0] + [1] * (len(eigenvals) - 1)
 
+        # apply the filter
         H, f_estimated, frequency_responses, errors = self._apply_filter(
             L=L,
             lap_matrix=lap_matrix,
             f=f,
             f_true=f_true,
-            U1=U1,
+            U=U,
             eigenvals=eigenvals,
             alpha=alpha,
         )

@@ -80,7 +80,7 @@ class TestChebyshevFilterDesign:
         component = "gradient"
         p_choice = "L1L"
         chebyshev_filter.apply(
-            f=f, component=component, p_choice=p_choice, k_trunc_order=k
+            f=f, component=component, p_choice=p_choice, L=k
         )
         error = chebyshev_filter.history["error_per_filter_size"][-1]
         f_estimated = chebyshev_filter.history["f_estimated"][-1]

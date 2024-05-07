@@ -40,6 +40,38 @@ class TestLSFilterDesign:
             f_expected,
         )
 
+    def test_subcomponent_extraction_type_one_gradient_large_filter_order(
+        self, ls_filter: LSFilterDesign, f: np.ndarray
+    ):
+        filter_size = 19
+        component = "gradient"
+
+        ls_filter.subcomponent_extraction_type_one(
+            L=filter_size, component=component, f=f
+        )
+
+        # none of the attributes should be None for the history
+        for _, result in ls_filter.history.items():
+            assert result is not None
+
+        # test error is decreasing
+        assert np.all(
+            np.diff(ls_filter.history["error_per_filter_size"]) < 0.1
+        )
+
+        # test the estimated signal
+        f_expected = np.array(
+            [2.47, 0.58, 1.88, -1.89, 1.3, 1.8, 1.03, -0.53, 0.94, 1.47]
+        )
+        assert np.allclose(
+            np.round(ls_filter.history["f_estimated"], 2),
+            f_expected,
+        )
+
+        expected_error = 0.015
+        actual_error = ls_filter.history["error_per_filter_size"]
+        assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
+
     def test_subcomponent_extraction_type_one_gradient_error(
         self, ls_filter: LSFilterDesign, f: np.ndarray
     ):
@@ -83,6 +115,29 @@ class TestLSFilterDesign:
             np.round(ls_filter.history["f_estimated"], 2),
             f_expected,
         )
+
+    def test_subcomponent_extraction_type_two_gradient_large_filter_order(
+        self, ls_filter: LSFilterDesign, f: np.ndarray
+    ):
+        filter_size = 16
+        component = "gradient"
+
+        ls_filter.subcomponent_extraction_type_two(
+            L=filter_size, component=component, f=f
+        )
+
+        # none of the attributes should be None for the history
+        for _, result in ls_filter.history.items():
+            assert result is not None
+
+        # test error is decreasing
+        assert np.all(
+            np.diff(ls_filter.history["error_per_filter_size"]) < 0.1
+        )
+
+        expected_error = 0.0058
+        actual_error = ls_filter.history["error_per_filter_size"]
+        assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
 
     def test_subcomponent_extraction_type_two_component_error(
         self, ls_filter: LSFilterDesign, f: np.ndarray

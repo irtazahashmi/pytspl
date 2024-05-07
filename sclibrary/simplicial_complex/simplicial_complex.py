@@ -364,46 +364,58 @@ class SimplicialComplexNetwork:
     def get_hodgedecomposition(
         self,
         flow: np.ndarray,
+        component: str = FrequencyComponent.GRADIENT.value,
         round_fig: bool = True,
         round_sig_fig: int = 2,
-    ) -> tuple:
+    ) -> np.ndarray:
         """
         Return the hodgedecompositon of the simplicial complex.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
+            component (str, optional): Component of the hodgedecomposition.
+            Defaults to FrequencyComponent.GRADIENT.value.
             round_fig (bool, optional): Round the hodgedecomposition to the
+            Default to True.
             round_sig_fig (int, optional): Round to significant figure.
             Defaults to 2.
 
         Returns:
-            tuple: Harmonic, curl, and gradient components of the
-            hodgedecomposition, respectively.
+            np.ndarray: Hodgedecomposition of the simplicial complex.
         """
         B1 = self.incidence_matrix(rank=1)
         B2 = self.incidence_matrix(rank=2)
 
-        f_h = get_harmonic_component(
-            incidence_matrix_b1=B1,
-            incidence_matrix_b2=B2,
-            flow=flow,
-            round_fig=round_fig,
-            round_sig_fig=round_sig_fig,
-        )
-        f_c = get_curl_component(
-            incidence_matrix=B2,
-            flow=flow,
-            round_fig=round_fig,
-            round_sig_fig=round_sig_fig,
-        )
-        f_g = get_gradient_component(
-            incidence_matrix=B1,
-            flow=flow,
-            round_fig=round_fig,
-            round_sig_fig=round_sig_fig,
-        )
-
-        return f_h, f_c, f_g
+        if component == FrequencyComponent.HARMONIC.value:
+            f_h = get_harmonic_component(
+                incidence_matrix_b1=B1,
+                incidence_matrix_b2=B2,
+                flow=flow,
+                round_fig=round_fig,
+                round_sig_fig=round_sig_fig,
+            )
+            return f_h
+        elif component == FrequencyComponent.CURL.value:
+            f_c = get_curl_component(
+                incidence_matrix=B2,
+                flow=flow,
+                round_fig=round_fig,
+                round_sig_fig=round_sig_fig,
+            )
+            return f_c
+        elif component == FrequencyComponent.GRADIENT.value:
+            f_g = get_gradient_component(
+                incidence_matrix=B1,
+                flow=flow,
+                round_fig=round_fig,
+                round_sig_fig=round_sig_fig,
+            )
+            return f_g
+        else:
+            raise ValueError(
+                "Invalid component. Choose from 'harmonic',"
+                + "'curl', or 'gradient'."
+            )
 
     def get_component_coefficients(
         self,
@@ -429,8 +441,12 @@ class SimplicialComplexNetwork:
         U_H, e_h = self.get_eigendecomposition(
             FrequencyComponent.HARMONIC.value
         )
-        U_C, e_c = self.get_eigendecomposition(FrequencyComponent.CURL.value)
-        _, e_g = self.get_eigendecomposition(FrequencyComponent.GRADIENT.value)
+        U_C, e_c = self.get_eigendecomposition(
+            component=FrequencyComponent.CURL.value
+        )
+        _, e_g = self.get_eigendecomposition(
+            component=FrequencyComponent.GRADIENT.value
+        )
 
         # concatenate the eigenvalues
         eigenvals = np.concatenate((e_h, e_c, e_g))

@@ -17,7 +17,7 @@ def get_divergence(
     Returns:
         np.ndarray: The divergence of the flow.
     """
-    divergence = csr_matrix(incidence_matrix).dot(flow)
+    divergence = csr_matrix(incidence_matrix, dtype=float).dot(flow)
     return divergence
 
 
@@ -40,7 +40,7 @@ def get_gradient_component(
         np.ndarray: The gradient flow.
     """
     p = np.linalg.lstsq(incidence_matrix.T, flow, rcond=None)[0]
-    gradient_flow = csr_matrix(incidence_matrix.T).dot(p)
+    gradient_flow = csr_matrix(incidence_matrix.T, dtype=float).dot(p)
 
     if round_fig:
         gradient_flow = np.round(gradient_flow, round_sig_fig)
@@ -67,7 +67,7 @@ def get_curl_component(
         np.ndarray: The curl flow.
     """
     w = np.linalg.lstsq(incidence_matrix, flow, rcond=None)[0]
-    curl_flow = csr_matrix(incidence_matrix).dot(w)
+    curl_flow = csr_matrix(incidence_matrix, dtype=float).dot(w)
 
     if round_fig:
         curl_flow = np.round(curl_flow, round_sig_fig)
@@ -94,10 +94,12 @@ def get_harmonic_component(
         np.ndarray: The harmonic flow.
     """
     gradient_flow = get_gradient_component(
-        incidence_matrix_b1, flow, round_fig=False
+        incidence_matrix=incidence_matrix_b1, flow=flow, round_fig=False
     )
 
-    curl_flow = get_curl_component(incidence_matrix_b2, flow, round_fig=False)
+    curl_flow = get_curl_component(
+        incidence_matrix=incidence_matrix_b2, flow=flow, round_fig=False
+    )
 
     harmonic_flow = flow - gradient_flow - curl_flow
 
