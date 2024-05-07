@@ -229,7 +229,8 @@ class ChebyshevFilterDesign(Filter):
 
         start = time.time()
 
-        # U, _ = get_eigendecomposition(lap_mat=self.sc.hodge_laplacian_matrix())
+        # U, _ = get_eigendecomposition
+        # (lap_mat=self.sc.hodge_laplacian_matrix())
         P = self.get_p_matrix(p_choice)
         U_l, _ = get_eigendecomposition(lap_mat=P)
         print(time.time() - start)
