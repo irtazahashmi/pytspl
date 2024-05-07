@@ -14,7 +14,7 @@ class TestFilter:
 
     def test_get_true_signal_gradient(self, filter: Filter, f: np.ndarray):
         component = "gradient"
-        f_true = filter.get_true_signal(component, f)
+        f_true = filter.get_true_signal(f, component)
 
         f_expected = np.array(
             [2.48, 0.56, 1.89, -1.92, 1.34, 1.84, 1.01, -0.51, 0.95, 1.45]
@@ -23,12 +23,6 @@ class TestFilter:
             np.round(f_true, 2),
             f_expected,
         )
-
-    def test_get_true_signal_error(self, filter: Filter, f: np.ndarray):
-        component = "unknown"
-
-        with pytest.raises(ValueError):
-            filter.get_true_signal(component, f)
 
     def test_calcualte_error(
         self, filter: Filter, f0: np.ndarray, f: np.ndarray

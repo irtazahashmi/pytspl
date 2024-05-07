@@ -505,18 +505,42 @@ class SCPlot:
         """
         fig = plt.figure(figsize=figsize)
 
-        f_h, f_c, f_g = self.sc.get_hodgedecomposition(
-            flow=flow, round_fig=round_fig, round_sig_fig=round_sig_fig
-        )
-
-        component_map = {
-            FrequencyComponent.GRADIENT.value: f_g,
-            FrequencyComponent.CURL.value: f_c,
-            FrequencyComponent.HARMONIC.value: f_h,
-        }
+        if component is not None:
+            component_flow = self.sc.get_hodgedecomposition(
+                flow=flow,
+                component=component,
+                round_fig=round_fig,
+                round_sig_fig=round_sig_fig,
+            )
+            # create a single figure
+            ax = fig.add_subplot(1, 1, 1)
+            ax.set_title(f"f_{component}")
+            self.draw_network(edge_flow=component_flow, ax=ax)
 
         # if no component is specified, draw all three components
-        if component is None:
+        else:
+
+            f_g = self.sc.get_hodgedecomposition(
+                flow=flow,
+                component=FrequencyComponent.GRADIENT.value,
+                round_fig=round_fig,
+                round_sig_fig=round_sig_fig,
+            )
+
+            f_c = self.sc.get_hodgedecomposition(
+                flow=flow,
+                component=FrequencyComponent.CURL.value,
+                round_fig=round_fig,
+                round_sig_fig=round_sig_fig,
+            )
+
+            f_h = self.sc.get_hodgedecomposition(
+                flow=flow,
+                component=FrequencyComponent.HARMONIC.value,
+                round_fig=round_fig,
+                round_sig_fig=round_sig_fig,
+            )
+
             # gradient flow
             ax = fig.add_subplot(1, 3, 1)
             ax.set_title("f_g")
@@ -531,20 +555,6 @@ class SCPlot:
             ax = fig.add_subplot(1, 3, 3)
             ax.set_title("f_h")
             self.draw_network(edge_flow=f_h, ax=ax)
-
-        else:
-            try:
-                to_plot = component_map[component]
-            except KeyError:
-                raise ValueError(
-                    f"Invalid component {component}. Use 'gradient'"
-                    + "'curl' or 'harmonic'."
-                )
-
-            # create a single figure
-            ax = fig.add_subplot(1, 1, 1)
-            ax.set_title(f"f_{component}")
-            self.draw_network(edge_flow=to_plot, ax=ax)
 
         plt.show()
 

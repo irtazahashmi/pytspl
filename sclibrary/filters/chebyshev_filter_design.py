@@ -156,15 +156,13 @@ class ChebyshevFilterDesign(Filter):
         return alpha, lambda_max
 
     def get_ideal_frequency(
-        self,
-        component: str,
-        p_choice: str,
+        self, component_coeffs: np.ndarray, p_choice: str
     ) -> np.ndarray:
         """
         Calculate the ideal frequency of the component.
 
         Args:
-            component (str): The ideal frequency of the given component.
+            component coeffs: The masked coefficients of the component.
             p_choice (str): The ideal frequency calculated using the p_choice
             matrix
 
@@ -175,8 +173,7 @@ class ChebyshevFilterDesign(Filter):
 
         P = self.get_p_matrix(p_choice)
         U, _ = get_eigendecomposition(lap_mat=P)
-        coeffs = self.sc.get_component_coefficients(component=component)
-        H_ideal = U @ np.diag(coeffs) @ U.T
+        H_ideal = U @ np.diag(component_coeffs) @ U.T
         return H_ideal
 
     def get_chebyshev_frequency_approx(
@@ -210,65 +207,82 @@ class ChebyshevFilterDesign(Filter):
     def apply(
         self,
         f: np.ndarray,
-        component: str = "gradient",
         p_choice: str = "L1L",
-        k_trunc_order: int = 10,
+        component: str = "gradient",
+        L: int = 10,
     ) -> np.ndarray:
         """
         Apply the Chebyshev filter to the given flow f.
 
         Args:
             f (np.ndarray): The input flow.
-            component (str, optional): The component of the flow. Defaults
-            to "gradient".
             p_choice (str, optional): The choice of P matrix.
             Defaults to "L1L".
-            k_trunc_order (int, optional): The truncation order of the
-            Chebyshev filter. Defaults to 10.
+            component (str, optional): The component of the flow. Defaults
+            to "gradient".
+            L (int, optional): The filter size. Defaults to 10.
 
         Returns:
             np.ndarray: The Chebyshev filter output.
         """
+        import time
 
-        U, _ = get_eigendecomposition(lap_mat=self.sc.hodge_laplacian_matrix())
+        start = time.time()
+
+        # U, _ = get_eigendecomposition(lap_mat=self.sc.hodge_laplacian_matrix())
         P = self.get_p_matrix(p_choice)
         U_l, _ = get_eigendecomposition(lap_mat=P)
-
+        print(time.time() - start)
+        start = time.time()
+        print("eigendecomposition done")
         f_true = self.get_true_signal(component=component, f=f)
         h_ideal = self.sc.get_component_coefficients(component=component)
-
+        print(time.time() - start)
+        start = time.time()
+        print("true signal done")
         # calculate alpha
         alpha, lambda_max = self.get_alpha(p_choice=p_choice)
-
+        print(time.time() - start)
+        start = time.time()
+        print("alpha done")
         # get the chebyshev coefficients
         g_chebyshev = self._get_chebyshev_series(
             n=len(P), domain_min=0, domain_max=lambda_max
         )
         coeffs = g_chebyshev.funs[0].coeffs
+        print(time.time() - start)
+        start = time.time()
+        print("coeffs done")
 
         # ideal frequency
         H_ideal = self.get_ideal_frequency(
-            p_choice=p_choice, component=component
+            p_choice=p_choice, component_coeffs=h_ideal
         )
+        print(time.time() - start)
+        start = time.time()
+        print("ideal frequency done")
 
         # chebyshev approx frequency
         H_cheb_approx = self.get_chebyshev_frequency_approx(
             p_choice=p_choice,
             coeffs=coeffs,
             alpha=alpha,
-            k_trunc_order=k_trunc_order,
+            k_trunc_order=L,
         )
+        print(time.time() - start)
+        start = time.time()
+        print("chebyshev approx done")
 
-        errors_response = np.zeros(k_trunc_order)
-        errors_filter = np.zeros(k_trunc_order)
+        errors_response = np.zeros(L)
+        errors_filter = np.zeros(L)
 
-        f_cheb = np.zeros((k_trunc_order, P.shape[0]))
-        f_cheb_tilde = np.zeros((k_trunc_order, P.shape[0]))
+        f_cheb = np.zeros((L, P.shape[0]))
+        f_cheb_tilde = np.zeros((L, P.shape[0]))
 
-        error_per_filter_size = np.zeros(k_trunc_order)
-        error_tilde = np.zeros(k_trunc_order)
+        error_per_filter_size = np.zeros(L)
+        # error_tilde = np.zeros(L)
 
-        for k in range(k_trunc_order):
+        for k in range(L):
             g_cheb_approx = np.diag(
                 U_l.T @ np.squeeze(H_cheb_approx[k, :, :]) @ U_l.T
             )
@@ -283,10 +297,12 @@ class ChebyshevFilterDesign(Filter):
             error_per_filter_size[k] = self.calculate_error(f_cheb[k], f_true)
 
             # f_tilde - compute the error on component embedding
-            f_cheb_tilde[k] = U.T @ f_cheb[k]
-            error_tilde[k] = self.calculate_error(
-                f_cheb_tilde[k], U.T @ f_true
-            )
+            # f_cheb_tilde[k] = U.T @ f_cheb[k]
+            # error_tilde[k] = self.calculate_error(
+            #     f_cheb_tilde[k], U.T @ f_true
+            # )
+
+            print(f"Filter size: {k} - Error: {error_per_filter_size[k]}")
 
         self.history["filter"] = H_cheb_approx.astype(float)
         self.history["f_estimated"] = f_cheb.astype(float)

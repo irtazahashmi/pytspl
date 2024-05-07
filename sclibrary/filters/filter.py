@@ -33,32 +33,20 @@ class Filter:
         """Calculate the error of the estimated signal."""
         return np.linalg.norm(f_estimated - f_true) / np.linalg.norm(f_true)
 
-    def get_true_signal(self, component: str, f: np.ndarray) -> np.ndarray:
+    def get_true_signal(self, f: np.ndarray, component: str) -> np.ndarray:
         """
         Get the true signal for the component.
 
         Args:
-            component (str): The component to be extracted.
             f (np.ndarray): The signal to be filtered.
+            component (str): The component to be extracted.
 
         Returns:
             np.ndarray: The true signal.
         """
-        f_h, f_c, f_g = self.sc.get_hodgedecomposition(flow=f, round_fig=False)
-        component_mapping = {
-            FrequencyComponent.HARMONIC.value: f_h,
-            FrequencyComponent.CURL.value: f_c,
-            FrequencyComponent.GRADIENT.value: f_g,
-        }
-
-        try:
-            f_true = component_mapping[component]
-        except KeyError:
-            raise ValueError(
-                f"Invalid component {component}. Use 'harmonic',"
-                + "'curl' or 'gradient'."
-            )
-
+        f_true = self.sc.get_hodgedecomposition(
+            flow=f, component=component, round_fig=False
+        )
         return f_true
 
     def get_p_matrix(self, p_choice: str = "L1") -> np.ndarray:
