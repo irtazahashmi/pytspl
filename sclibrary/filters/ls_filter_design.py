@@ -41,8 +41,8 @@ class LSFilterDesign(Filter):
             tuple: The estimated filter, signal, frequency responses and
             error per filter size.
         """
-        # convert L1 to a sparse matrix
-        L1 = csr_matrix(lap_matrix, dtype=float)
+        # convert lap matrix to a sparse matrix
+        lap_matrix_csr = csr_matrix(lap_matrix, dtype=float)
 
         # create a matrix to store the system
         system_mat = np.zeros((len(eigenvals), L))
@@ -54,19 +54,22 @@ class LSFilterDesign(Filter):
 
         for L in range(L):
             # create the system matrix
-            system_mat[:, L] = np.power(eigenvals, L)
+            if L == 0:
+                system_mat[:, L] = np.ones(len(eigenvals))
+            else:
+                system_mat[:, L] = system_mat[:, L - 1] * eigenvals
 
             # Least square solution to obtain the filter coefficients
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # building the topological filter
-            H = np.zeros_like(L1, dtype=float)
+            H = np.zeros_like(lap_matrix, dtype=float)
 
             for l in range(len(h)):
-                H += h[l] * csr_matrix(L1**l, dtype=float)
+                H += h[l] * (lap_matrix_csr**l).toarray()
 
             # filter the signal
-            f_estimated = csr_matrix(H, dtype=float).dot(f)
+            f_estimated = H @ f
 
             # compute the error for each filter size
             errors[L] = self.calculate_error(f_estimated, f_true)

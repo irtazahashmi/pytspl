@@ -165,8 +165,12 @@ class GridBasedFilterDesign(Filter):
 
         for l in range(L):
             # building the system matrix
-            system_mat[:, l] = np.power(eigenvals_sampled, l)
-            system_mat_true[:, l] = np.power(eigenvals, l)
+            if l == 0:
+                system_mat[:, l] = np.ones(len(eigenvals_sampled))
+                system_mat_true[:, l] = np.ones(len(eigenvals))
+            else:
+                system_mat[:, l] = system_mat[:, l - 1] * eigenvals_sampled
+                system_mat_true[:, l] = system_mat_true[:, l - 1] * eigenvals
 
             # solve the system using least squares solution to obtain
             # filter coefficients
@@ -178,11 +182,11 @@ class GridBasedFilterDesign(Filter):
             H_true = np.zeros_like(P, dtype=float)
 
             for i in range(len(h)):
-                H += h[i] * P_csr**i
-                H_true += h_true[i] * P_csr**i
+                H += h[i] * (P_csr**i).toarray()
+                H_true += h_true[i] * (P_csr**i).toarray()
 
             # estimate the signal
-            f_estimated = csr_matrix(H, dtype=float).dot(f)
+            f_estimated = H @ f
 
             # compute error compared to the true component signal
             errors[l] = self.calculate_error(f_estimated, f_true)

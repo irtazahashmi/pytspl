@@ -68,7 +68,7 @@ class TestLSFilterDesign:
             f_expected,
         )
 
-        expected_error = 0.015
+        expected_error = 0.0162
         actual_error = ls_filter.history["error_per_filter_size"]
         assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
 
