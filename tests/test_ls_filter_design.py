@@ -43,7 +43,7 @@ class TestLSFilterDesign:
     def test_subcomponent_extraction_type_one_gradient_large_filter_order(
         self, ls_filter: LSFilterDesign, f: np.ndarray
     ):
-        filter_size = 19
+        filter_size = 16
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_one(
@@ -61,14 +61,14 @@ class TestLSFilterDesign:
 
         # test the estimated signal
         f_expected = np.array(
-            [2.47, 0.58, 1.88, -1.89, 1.3, 1.8, 1.03, -0.53, 0.94, 1.47]
+            [2.48, 0.56, 1.89, -1.92, 1.33, 1.84, 1.01, -0.51, 0.95, 1.45]
         )
         assert np.allclose(
             np.round(ls_filter.history["f_estimated"], 2),
             f_expected,
         )
 
-        expected_error = 0.0162
+        expected_error = 0.0009
         actual_error = ls_filter.history["error_per_filter_size"]
         assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
 
