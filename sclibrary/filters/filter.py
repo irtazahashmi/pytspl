@@ -30,7 +30,7 @@ class Filter:
         }
 
     def calculate_error(self, f_estimated: np.ndarray, f_true) -> float:
-        """Calculate the error of the estimated signal."""
+        """Calculate the error of the estimated signal using NRMSE."""
         return np.linalg.norm(f_estimated - f_true) / np.linalg.norm(f_true)
 
     def get_true_signal(self, f: np.ndarray, component: str) -> np.ndarray:
@@ -55,7 +55,7 @@ class Filter:
 
         Args:
             p_choice (str, optional): The choice of matrix P. Defaults
-            to "L1".
+            to "L1". Choose from ['L1', 'L1L'].
 
         Raises:
             ValueError: Invalid P_choice.
@@ -66,15 +66,12 @@ class Filter:
         P_choices = {
             "L1": self.sc.hodge_laplacian_matrix(rank=1),
             "L1L": self.sc.lower_laplacian_matrix(rank=1),
-            "L1U": self.sc.upper_laplacian_matrix(rank=1),
         }
 
         # eigenvalues
         try:
             P = P_choices[p_choice]
         except KeyError:
-            raise ValueError(
-                "Invalid P_choice. Choose from ['L1', 'L1L', 'L1U']"
-            )
+            raise ValueError("Invalid P_choice. Choose from ['L1', 'L1L']")
 
         return P

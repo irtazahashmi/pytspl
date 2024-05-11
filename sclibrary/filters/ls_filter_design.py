@@ -16,25 +16,25 @@ class LSFilterDesign(Filter):
 
     def _apply_filter(
         self,
-        L: int,
-        lap_matrix: np.ndarray,
         f: np.ndarray,
         f_true: np.ndarray,
+        lap_matrix: np.ndarray,
         U: np.ndarray,
         eigenvals: np.ndarray,
+        L: int,
         alpha: np.ndarray,
     ) -> tuple:
         """
         Apply the filter to the signal using a type of the laplacian matrix.
 
         Args:
-            L (int): The size of the filter.
-            lap_matrix (np.ndarray): The laplacian matrix. It can be the Hodge
-            Laplacian matrix, the upper or lower laplacian matrix.
             f (np.ndarray): The noisy signal to be filtered.
             f_true (np.ndarray): The true signal.
+            lap_matrix (np.ndarray): The laplacian matrix. It can be the Hodge
+            Laplacian matrix, the upper or lower laplacian matrix.
             U (np.ndarray): The eigenvectors of the laplacian matrix.
             eigenvals (np.ndarray): The eigenvalues of the laplacian matrix.
+            L (int): The size of the filter.
             alpha (np.ndarray): The coefficients of the filter.
 
         Returns:
@@ -86,7 +86,10 @@ class LSFilterDesign(Filter):
         return H, f_estimated, frequency_responses, errors
 
     def subcomponent_extraction_type_one(
-        self, L: int, component: str, f: np.ndarray
+        self,
+        f: np.ndarray,
+        L: int,
+        component: str,
     ) -> None:
         """
         LS based filter design for subcomponent extraction using the Hodge
@@ -98,9 +101,9 @@ class LSFilterDesign(Filter):
         Hk = sum(l=0, L) h_l * L^l
 
         Args:
+            f (np.ndarray): The signal to be filtered.
             L (int): The size of the filter.
             component (str): The component to be extracted.
-            f (np.ndarray): The signal to be filtered.
         """
         self._reset_history()
 
@@ -132,9 +135,9 @@ class LSFilterDesign(Filter):
 
     def subcomponent_extraction_type_two(
         self,
-        L: int,
-        component: str,
         f: np.ndarray,
+        component: str,
+        L: int,
         tolerance: float = 1e-6,
     ) -> None:
         """
@@ -151,9 +154,9 @@ class LSFilterDesign(Filter):
         to do so.
 
         Args:
+            f (np.ndarray): The signal to be filtered.
             L (int): The size of the filter.
             component (str): The component to be extracted.
-            f (np.ndarray): The signal to be filtered.
             tolerance (float, optional): The tolerance to consider the
             eigenvalues as unique. Defaults to 1e-6.
         """
@@ -207,18 +210,18 @@ class LSFilterDesign(Filter):
 
     def general_filter(
         self,
+        f: np.ndarray,
         L1: int,
         L2: int,
-        f: np.ndarray,
         tolerance: float = 1e-6,
     ) -> np.ndarray:
         """
         Denoising by a general filter H1 with L1 != L2 = L and α != β.
 
         Args:
+            f (np.ndarray): The signal to be filtered.
             L1 (int): The size of the filter for the gradient extraction.
             L2 (int): The size of the filter for the curl extraction.
-            f (np.ndarray): The signal to be filtered.
             tolerance (float, optional): The tolerance to consider the
             eigenvalues as unique. Defaults to 1e-6.
 
