@@ -96,6 +96,33 @@ class TestGridBasedFilterDesign:
         excepted_error = 0.0014
         assert np.allclose(error, excepted_error, atol=1e-4)
 
+    def test_history_subcomponent_extractione(
+        self, grid_filter: GridBasedFilterDesign, f: np.ndarray
+    ):
+        p_choice = "L1"
+        filter_size = 4
+        component = "gradient"
+
+        grid_filter.subcomponent_extraction(
+            p_choice=p_choice, L=filter_size, component=component, f=f
+        )
+
+        assert grid_filter.history["filter"] is not None
+        assert isinstance(grid_filter.history["filter"], np.ndarray)
+
+        assert grid_filter.history["f_estimated"] is not None
+        assert isinstance(grid_filter.history["f_estimated"], np.ndarray)
+
+        assert grid_filter.history["frequency_responses"] is not None
+        assert isinstance(
+            grid_filter.history["frequency_responses"], np.ndarray
+        )
+
+        assert grid_filter.history["error_per_filter_size"] is not None
+        assert isinstance(
+            grid_filter.history["error_per_filter_size"], np.ndarray
+        )
+
     def test_general_filter(
         self, grid_filter: GridBasedFilterDesign, f: np.ndarray
     ):
@@ -106,10 +133,16 @@ class TestGridBasedFilterDesign:
         )
         f_est = f_est_h + f_est_c + f_est_g
 
-        assert grid_filter.history["L1"] is not None
-        assert grid_filter.history["L2"] is not None
-
         assert np.allclose(
             np.round(f_est, 2),
             f,
         )
+
+    def test_history_general_filter(
+        self, grid_filter: GridBasedFilterDesign, f: np.ndarray
+    ):
+        L1, L2 = 1, 1
+        grid_filter.general_filter(L1=L1, L2=L2, f=f)
+
+        assert grid_filter.history["L1"] is not None
+        assert grid_filter.history["L2"] is not None
