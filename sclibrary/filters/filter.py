@@ -3,7 +3,6 @@
 import numpy as np
 
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
-from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class Filter:
@@ -29,8 +28,23 @@ class Filter:
             "error_per_filter_size": None,
         }
 
+    def set_history(
+        self,
+        filter: np.ndarray,
+        f_estimated: np.ndarray,
+        frequency_responses: np.ndarray,
+        error_per_filter_size: np.ndarray,
+    ) -> None:
+        """Set the history of the filter design."""
+        self.history["filter"] = filter.astype(float)
+        self.history["f_estimated"] = f_estimated.astype(float)
+        self.history["frequency_responses"] = frequency_responses.astype(float)
+        self.history["error_per_filter_size"] = error_per_filter_size.astype(
+            float
+        )
+
     def calculate_error(self, f_estimated: np.ndarray, f_true) -> float:
-        """Calculate the error of the estimated signal."""
+        """Calculate the error of the estimated signal using NRMSE."""
         return np.linalg.norm(f_estimated - f_true) / np.linalg.norm(f_true)
 
     def get_true_signal(self, f: np.ndarray, component: str) -> np.ndarray:
@@ -55,7 +69,7 @@ class Filter:
 
         Args:
             p_choice (str, optional): The choice of matrix P. Defaults
-            to "L1".
+            to "L1". Choose from ['L1', 'L1L', 'L1U'].
 
         Raises:
             ValueError: Invalid P_choice.

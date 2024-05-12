@@ -245,7 +245,7 @@ class SCPlot:
         edge_color: str = "lightblue",
         edge_width: float = 1.0,
         arrowsize: int = 10,
-        edge_cmap=plt.cm.Reds,
+        edge_cmap=plt.cm.bwr,
         edge_vmin=None,
         edge_vmax=None,
         directed: bool = True,
@@ -266,7 +266,7 @@ class SCPlot:
             arrowsize (int, optional): The size of the arrows.
             Defaults to 10.
             edge_cmap (mpl.colors.Colormap, optional): The color map of
-            the edges. Defaults to plt.cm.Reds.
+            the edges. Defaults to plt.cm.bwr.
             edge_vmin (float, optional): The minimum value for the color
             map. Defaults to None.
             edge_vmax (float, optional): The maximum value for the color

@@ -355,14 +355,15 @@ class ChebyshevFilterDesign(Filter):
         Raises:
             ValueError: If the apply method is not run first.
         """
-        P = self.get_p_matrix("L1")
-        U, eigenvals = get_eigendecomposition(lap_mat=P)
-
-        f_true = self.get_true_signal(f=flow, component=component)
 
         f_cheb_tilde = self.history["frequency_responses"]
         if f_cheb_tilde is None:
             raise ValueError("Run the apply method first.")
+
+        P = self.get_p_matrix("L1L")
+        U, eigenvals = get_eigendecomposition(lap_mat=P)
+
+        f_true = self.get_true_signal(f=flow, component=component)
 
         plt.figure(figsize=(15, 5))
         plt.scatter(eigenvals, U.T @ f_true)

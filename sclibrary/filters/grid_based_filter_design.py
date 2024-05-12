@@ -88,134 +88,201 @@ class GridBasedFilterDesign(Filter):
 
         # compute the frequency response for each sampled eigenvalue
         sampled_freq_response = [
-            self._compute_frequency_response(eigenvalue, mu)
+            self._compute_frequency_response(eigenvalue=eigenvalue, mu=mu)
             for eigenvalue in sampled_eigenvals
         ]
 
         sampled_freq_response = np.asarray(sampled_freq_response, dtype=float)
         return sampled_freq_response, sampled_eigenvals
 
-    def _compute_true_continuous_freq_response(
-        self, P: np.ndarray, mu: float = 0.5
-    ) -> np.ndarray:
+    def _apply_filter(
+        self,
+        f: np.ndarray,
+        f_true: np.ndarray,
+        P: np.ndarray,
+        alpha: np.ndarray,
+        U: np.ndarray,
+        eigenvals: np.ndarray,
+        L: int,
+    ) -> tuple:
         """
-        Compute the continuous frequency response for the true eigenvalues.
+        Apply the filter to the input signal.
 
         Args:
+            f (np.ndarray): The input signal.
+            f_true (np.ndarray): The true signal.
             P (np.ndarray): The matrix P.
-            mu (float): Damping factor.
+            alpha (np.ndarray): The filter coefficients.
+            U (np.ndarray): The eigenvectors.
+            eigenvals (np.ndarray): The eigenvalues.
+            L (int): The filter size.
 
         Returns:
-            np.ndarray: True frequency responses.
+            tuple: The filter, the estimated signal, the
+            frequency responses, and the errors.
         """
-        _, eigenvals = get_eigendecomposition(lap_mat=P)
 
-        # compute the frequency response for each eigenvalue
-        g_true = [
-            self._compute_frequency_response(eigenvalue, mu)
-            for eigenvalue in eigenvals
-        ]
-
-        g_true = np.asarray(g_true, dtype=float)
-        return g_true
-
-    def subcomponent_extraction(
-        self,
-        p_choice: str,
-        L: int,
-        component: str,
-        f: np.ndarray,
-    ) -> None:
-        """
-        Apply the grid-based filter to the input signal.
-
-        Args:
-            p_choice (str): The choice of matrix P.
-            L (int): The filter size.
-            component (str): The component of the signal.
-            f (np.ndarray): The noisy signal.
-        """
-        P = self.get_p_matrix(p_choice)
         P_csr = csr_matrix(P)
 
-        U, eigenvals = get_eigendecomposition(lap_mat=P)
-        f_true = self.get_true_signal(component=component, f=f)
-
-        # number of samples
-        num_of_samples = len(eigenvals)
-
-        # true eigenvalues & their frequency responses
-        g_true = self._compute_true_continuous_freq_response(P=P)
-
-        # sample eigenvalues & their frequency responses
-        g, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
-            P=P, num_of_samples=num_of_samples
-        )
-
         # learn the regularization filter with topological filter
-        system_mat = np.zeros((len(eigenvals_sampled), L))
-        system_mat_true = np.zeros((len(eigenvals), L))
+        system_mat = np.zeros((len(eigenvals), L))
 
         f_estimated = None
         # errors
         errors = np.zeros((L))
-        errors_per_filter_size = np.zeros((L))
         # frequency responses
         frequency_responses = np.zeros((L, len(U)))
 
         for l in range(L):
             # building the system matrix
-            system_mat[:, l] = np.power(eigenvals_sampled, l)
-            system_mat_true[:, l] = np.power(eigenvals, l)
+            if l == 0:
+                system_mat[:, l] = np.ones(len(eigenvals))
+            else:
+                system_mat[:, l] = system_mat[:, l - 1] * eigenvals
 
             # solve the system using least squares solution to obtain
             # filter coefficients
-            h = np.linalg.lstsq(system_mat, g, rcond=None)[0]
-            h_true = np.linalg.lstsq(system_mat_true, g_true, rcond=None)[0]
+            h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # build the topology filter
             H = np.zeros_like(P, dtype=float)
-            H_true = np.zeros_like(P, dtype=float)
 
             for i in range(len(h)):
-                H += h[i] * P_csr**i
-                H_true += h_true[i] * P_csr**i
+                H += h[i] * (P_csr**i).toarray()
 
             # estimate the signal
-            f_estimated = csr_matrix(H, dtype=float).dot(f)
-
+            f_estimated = H @ f
             # compute error compared to the true component signal
             errors[l] = self.calculate_error(f_estimated, f_true)
-            # computer error compared to the true filter using the
-            # true eigenvalues
-            errors_per_filter_size[l] = np.linalg.norm(H - H_true)
-
             # frequency response of the filter
             frequency_responses[l] = np.diag(U.T @ H @ U)
 
-            print(f"Filter size: {l} - Error: {errors_per_filter_size[l]}")
+            print(f"Filter size: {l} - Error: {errors[l]}")
+
+        return H, f_estimated, frequency_responses, errors
+
+    def denoise(
+        self,
+        f: np.ndarray,
+        f_true: np.ndarray,
+        p_choice: str,
+        L: int,
+        mu: float = 0.5,
+    ) -> None:
+        """
+        Build a low-pass filter H_P to denoise the input signal.
+
+        Args:
+            f (np.ndarray): The noisy signal.
+            f_true (np.ndarray): The true signal.
+            p_choice (str): The choice of matrix P.
+            L (int): The filter size.
+            mu (float): The damping factor.
+        """
+        P = self.get_p_matrix(p_choice)
+        U, eigenvals = get_eigendecomposition(lap_mat=P)
+
+        # number of samples
+        num_of_samples = len(eigenvals)
+        # sample eigenvalues & their frequency responses
+        g, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
+            P=P, num_of_samples=num_of_samples, mu=mu
+        )
+
+        H, f_estimated, frequency_responses, errors = self._apply_filter(
+            f=f,
+            f_true=f_true,
+            P=P,
+            alpha=g,
+            U=U,
+            eigenvals=eigenvals_sampled,
+            L=L,
+        )
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = f_estimated.astype(float)
-        self.history["frequency_responses"] = frequency_responses.astype(float)
-        self.history["error_per_filter_size"] = errors_per_filter_size.astype(
-            float
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
+
+    def subcomponent_extraction(
+        self,
+        f: np.ndarray,
+        f_true: np.ndarray,
+        p_choice: str,
+        L: int,
+        component: str = None,
+    ) -> None:
+        """
+        Subcomponent extraction using the grid-based simplicial filter H_1.
+
+        The subcomponent extraction can be done using two methods:
+            1. Type one extraction: L1 = L2 = L and α = β = 1.
+            2. Type two extraction: L1 != L2 and α != β.
+
+        Args:
+            f (np.ndarray): The noisy signal.
+            f_true (np.ndarray): The true signal.
+            p_choice (str): The choice of matrix P.
+            L (int): The filter size.
+            component (str, Optional): The component of the signal
+            to be extracted.
+            component (str, Optional): The component of the signal
+            to be extracted. If given, the filter will be designed
+            to extract the subcomponent using the type two extraction.
+        """
+        P = self.get_p_matrix(p_choice)
+        U, eigenvals = get_eigendecomposition(lap_mat=P)
+
+        # number of samples
+        num_of_samples = len(eigenvals)
+        # sample eigenvalues & their frequency responses
+        _, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
+            P=P, num_of_samples=num_of_samples
+        )
+
+        if component is not None:
+            # type one extraction
+            alpha = self.sc.get_component_coefficients(component=component)
+        else:
+            # type two extraction
+            alpha = [0] + [1] * (len(eigenvals) - 1)
+
+        H, f_estimated, frequency_responses, errors = self._apply_filter(
+            P=P,
+            alpha=alpha,
+            f=f,
+            f_true=f_true,
+            U=U,
+            eigenvals=eigenvals_sampled,
+            L=L,
+        )
+
+        # update the results
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
         )
 
     def general_filter(
         self,
+        f: np.ndarray,
+        f_true: np.ndarray,
         L1: int,
         L2: int,
-        f: np.ndarray,
     ) -> np.ndarray:
         """
-        Denoising by a general filter H1 with L1 != L2 = L and α != β.
+        Apply a general filter H1 with L1 != L2 = L and α != β.
 
         Args:
+            f (np.ndarray): The signal to be filtered.
+            f_true (np.ndarray): The true signal.
             L1 (int): The size of the filter for the gradient extraction.
             L2 (int): The size of the filter for the curl extraction.
-            f (np.ndarray): The signal to be filtered.
 
         Returns:
             np.ndarray: The estimated harmonic, curl and gradient components.
@@ -230,10 +297,11 @@ class GridBasedFilterDesign(Filter):
         # gradient extraction
         if L1 > 0:
             self.subcomponent_extraction(
+                f=f,
+                f_true=f_true,
                 p_choice="L1L",
                 L=L1,
                 component=FrequencyComponent.GRADIENT.value,
-                f=f,
             )
             f_est_g = self.history["f_estimated"]
             history["L1"] = self.history
@@ -241,10 +309,11 @@ class GridBasedFilterDesign(Filter):
         # curl extraction
         if L2 > 0:
             self.subcomponent_extraction(
+                f=f,
+                f_true=f_true,
                 p_choice="L1U",
                 L=L2,
                 component=FrequencyComponent.CURL.value,
-                f=f,
             )
             f_est_c = self.history["f_estimated"]
             history["L2"] = self.history

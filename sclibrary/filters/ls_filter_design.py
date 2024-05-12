@@ -16,33 +16,33 @@ class LSFilterDesign(Filter):
 
     def _apply_filter(
         self,
-        L: int,
-        lap_matrix: np.ndarray,
         f: np.ndarray,
         f_true: np.ndarray,
+        lap_matrix: np.ndarray,
         U: np.ndarray,
         eigenvals: np.ndarray,
+        L: int,
         alpha: np.ndarray,
     ) -> tuple:
         """
         Apply the filter to the signal using a type of the laplacian matrix.
 
         Args:
-            L (int): The size of the filter.
-            lap_matrix (np.ndarray): The laplacian matrix. It can be the Hodge
-            Laplacian matrix, the upper or lower laplacian matrix.
             f (np.ndarray): The noisy signal to be filtered.
             f_true (np.ndarray): The true signal.
+            lap_matrix (np.ndarray): The laplacian matrix. It can be the Hodge
+            Laplacian matrix, the upper or lower laplacian matrix.
             U (np.ndarray): The eigenvectors of the laplacian matrix.
             eigenvals (np.ndarray): The eigenvalues of the laplacian matrix.
+            L (int): The size of the filter.
             alpha (np.ndarray): The coefficients of the filter.
 
         Returns:
             tuple: The estimated filter, signal, frequency responses and
             error per filter size.
         """
-        # convert L1 to a sparse matrix
-        L1 = csr_matrix(lap_matrix, dtype=float)
+        # convert lap matrix to a sparse matrix
+        lap_matrix_csr = csr_matrix(lap_matrix, dtype=float)
 
         # create a matrix to store the system
         system_mat = np.zeros((len(eigenvals), L))
@@ -54,19 +54,22 @@ class LSFilterDesign(Filter):
 
         for L in range(L):
             # create the system matrix
-            system_mat[:, L] = np.power(eigenvals, L)
+            if L == 0:
+                system_mat[:, L] = np.ones(len(eigenvals))
+            else:
+                system_mat[:, L] = system_mat[:, L - 1] * eigenvals
 
             # Least square solution to obtain the filter coefficients
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # building the topological filter
-            H = np.zeros_like(L1, dtype=float)
+            H = np.zeros_like(lap_matrix, dtype=float)
 
             for l in range(len(h)):
-                H += h[l] * csr_matrix(L1**l, dtype=float)
+                H += h[l] * (lap_matrix_csr**l).toarray()
 
             # filter the signal
-            f_estimated = csr_matrix(H, dtype=float).dot(f)
+            f_estimated = H @ f
 
             # compute the error for each filter size
             errors[L] = self.calculate_error(f_estimated, f_true)
@@ -76,14 +79,15 @@ class LSFilterDesign(Filter):
 
             print(f"Filter size: {L} - Error: {errors[L]}")
 
-        f_estimated = np.array(f_estimated).astype(float)
-        frequency_responses = np.array(frequency_responses).astype(float)
-        errors = np.array(errors).astype(float)
+        f_estimated = np.asarray(f_estimated)
 
         return H, f_estimated, frequency_responses, errors
 
     def subcomponent_extraction_type_one(
-        self, L: int, component: str, f: np.ndarray
+        self,
+        f: np.ndarray,
+        L: int,
+        component: str,
     ) -> None:
         """
         LS based filter design for subcomponent extraction using the Hodge
@@ -95,9 +99,9 @@ class LSFilterDesign(Filter):
         Hk = sum(l=0, L) h_l * L^l
 
         Args:
+            f (np.ndarray): The signal to be filtered.
             L (int): The size of the filter.
             component (str): The component to be extracted.
-            f (np.ndarray): The signal to be filtered.
         """
         self._reset_history()
 
@@ -122,16 +126,18 @@ class LSFilterDesign(Filter):
         )
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = f_estimated
-        self.history["frequency_responses"] = frequency_responses
-        self.history["error_per_filter_size"] = errors
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
 
     def subcomponent_extraction_type_two(
         self,
-        L: int,
-        component: str,
         f: np.ndarray,
+        component: str,
+        L: int,
         tolerance: float = 1e-6,
     ) -> None:
         """
@@ -148,9 +154,9 @@ class LSFilterDesign(Filter):
         to do so.
 
         Args:
+            f (np.ndarray): The signal to be filtered.
             L (int): The size of the filter.
             component (str): The component to be extracted.
-            f (np.ndarray): The signal to be filtered.
             tolerance (float, optional): The tolerance to consider the
             eigenvalues as unique. Defaults to 1e-6.
         """
@@ -197,25 +203,28 @@ class LSFilterDesign(Filter):
         )
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = f_estimated
-        self.history["frequency_responses"] = frequency_responses
-        self.history["error_per_filter_size"] = errors
+        # update the results
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
 
     def general_filter(
         self,
+        f: np.ndarray,
         L1: int,
         L2: int,
-        f: np.ndarray,
         tolerance: float = 1e-6,
     ) -> np.ndarray:
         """
         Denoising by a general filter H1 with L1 != L2 = L and α != β.
 
         Args:
+            f (np.ndarray): The signal to be filtered.
             L1 (int): The size of the filter for the gradient extraction.
             L2 (int): The size of the filter for the curl extraction.
-            f (np.ndarray): The signal to be filtered.
             tolerance (float, optional): The tolerance to consider the
             eigenvalues as unique. Defaults to 1e-6.
 
@@ -234,9 +243,9 @@ class LSFilterDesign(Filter):
         # gradient extraction
         if L1 > 0:
             self.subcomponent_extraction_type_two(
-                L=L1,
-                component=FrequencyComponent.GRADIENT.value,
                 f=f,
+                component=FrequencyComponent.GRADIENT.value,
+                L=L1,
                 tolerance=tolerance,
             )
             f_est_g = self.history["f_estimated"]
@@ -245,9 +254,9 @@ class LSFilterDesign(Filter):
         # curl extraction
         if L2 > 0:
             self.subcomponent_extraction_type_two(
-                L=L2,
-                component=FrequencyComponent.CURL.value,
                 f=f,
+                component=FrequencyComponent.CURL.value,
+                L=L2,
                 tolerance=tolerance,
             )
             f_est_c = self.history["f_estimated"]
