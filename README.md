@@ -29,7 +29,7 @@ $ poetry run pytest
 To get the test coverage report, run the following command:
 
 ```console
-$ coverage run -m pytest && coverage report -m
+$ poetry run coverage run -m pytest && poetry run coverage report -m
 ```
 
 ### Static code analysis (flake8)
@@ -37,7 +37,7 @@ $ coverage run -m pytest && coverage report -m
 To run the flake8 linter, run the following command:
 
 ```console
-$ flake8 sclibrary
+$ poetry run pflake8 sclibrary
 ```
 
 ## Documentation

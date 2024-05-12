@@ -31,7 +31,7 @@ jobs:
           poetry run pytest
       - name: Generate coverage report
         run: |
-          coverage run -m pytest && coverage report -m
+          poetry run coverage run -m pytest && poetry run coverage report -m
           coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1

@@ -7,22 +7,19 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-coverage = "^7.3.2"
 chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
-flake8 = "^6.1.0"
 gudhi = "^3.9.0"
 hypernetx = "^1.2.5"
 matplotlib = "^3.8.2"
 networkx = "^2.8.8"
 pandas = "^2.1.1"
-pytest = "^7.4.3"
 scipy = "^1.11.4"
 trimesh = "^4.0.10"
 toponetx = { git = "https://github.com/pyt-team/TopoNetX.git", branch = "main" }
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.3.2"
-flake8 = "^6.1.0"
+pyproject-flake8 = "^1.2.3"
 ipykernel = "^6.29.4"
 pytest = "^7.4.3"
 
@@ -39,7 +36,8 @@ show_missing = true
 
 # Linting
 [tool.flake8]
-extend-ignore = ["D100", "D205", "D400", "E203", "E741", "F401"]
+extend-ignore = ["D100", "D205", "D400", "E203", "E741"]
+per-file-ignores = ['__init__.py:F401']
 
 [build-system]
 requires = ["poetry-core"]
