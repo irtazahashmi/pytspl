@@ -3,7 +3,6 @@
 import numpy as np
 
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
-from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class Filter:
@@ -28,6 +27,21 @@ class Filter:
             "frequency_responses": None,
             "error_per_filter_size": None,
         }
+
+    def set_history(
+        self,
+        filter: np.ndarray,
+        f_estimated: np.ndarray,
+        frequency_responses: np.ndarray,
+        error_per_filter_size: np.ndarray,
+    ) -> None:
+        """Set the history of the filter design."""
+        self.history["filter"] = filter.astype(float)
+        self.history["f_estimated"] = f_estimated.astype(float)
+        self.history["frequency_responses"] = frequency_responses.astype(float)
+        self.history["error_per_filter_size"] = error_per_filter_size.astype(
+            float
+        )
 
     def calculate_error(self, f_estimated: np.ndarray, f_true) -> float:
         """Calculate the error of the estimated signal using NRMSE."""
@@ -55,7 +69,7 @@ class Filter:
 
         Args:
             p_choice (str, optional): The choice of matrix P. Defaults
-            to "L1". Choose from ['L1', 'L1L'].
+            to "L1". Choose from ['L1', 'L1L', 'L1U'].
 
         Raises:
             ValueError: Invalid P_choice.
@@ -66,12 +80,15 @@ class Filter:
         P_choices = {
             "L1": self.sc.hodge_laplacian_matrix(rank=1),
             "L1L": self.sc.lower_laplacian_matrix(rank=1),
+            "L1U": self.sc.upper_laplacian_matrix(rank=1),
         }
 
         # eigenvalues
         try:
             P = P_choices[p_choice]
         except KeyError:
-            raise ValueError("Invalid P_choice. Choose from ['L1', 'L1L']")
+            raise ValueError(
+                "Invalid P_choice. Choose from ['L1', 'L1L', 'L1U']"
+            )
 
         return P

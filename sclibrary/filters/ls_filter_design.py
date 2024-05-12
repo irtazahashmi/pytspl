@@ -79,9 +79,7 @@ class LSFilterDesign(Filter):
 
             print(f"Filter size: {L} - Error: {errors[L]}")
 
-        f_estimated = np.array(f_estimated).astype(float)
-        frequency_responses = np.array(frequency_responses).astype(float)
-        errors = np.array(errors).astype(float)
+        f_estimated = np.asarray(f_estimated)
 
         return H, f_estimated, frequency_responses, errors
 
@@ -128,10 +126,12 @@ class LSFilterDesign(Filter):
         )
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = f_estimated
-        self.history["frequency_responses"] = frequency_responses
-        self.history["error_per_filter_size"] = errors
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
 
     def subcomponent_extraction_type_two(
         self,
@@ -203,10 +203,13 @@ class LSFilterDesign(Filter):
         )
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = f_estimated
-        self.history["frequency_responses"] = frequency_responses
-        self.history["error_per_filter_size"] = errors
+        # update the results
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
 
     def general_filter(
         self,
@@ -240,9 +243,9 @@ class LSFilterDesign(Filter):
         # gradient extraction
         if L1 > 0:
             self.subcomponent_extraction_type_two(
-                L=L1,
-                component=FrequencyComponent.GRADIENT.value,
                 f=f,
+                component=FrequencyComponent.GRADIENT.value,
+                L=L1,
                 tolerance=tolerance,
             )
             f_est_g = self.history["f_estimated"]
@@ -251,9 +254,9 @@ class LSFilterDesign(Filter):
         # curl extraction
         if L2 > 0:
             self.subcomponent_extraction_type_two(
-                L=L2,
-                component=FrequencyComponent.CURL.value,
                 f=f,
+                component=FrequencyComponent.CURL.value,
+                L=L2,
                 tolerance=tolerance,
             )
             f_est_c = self.history["f_estimated"]

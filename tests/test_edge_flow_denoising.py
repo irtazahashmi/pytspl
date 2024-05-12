@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import numpy as np
 import pytest
 
@@ -154,3 +156,30 @@ class TestEdgeFlowDenoising:
                 f=f,
                 f_true=f0,
             )
+
+    def test_plot_desired_frequency_response(
+        self, denoising: EdgeFlowDenoising, f0: np.ndarray, f: np.ndarray
+    ):
+        p_choice = "L1"
+        denoising.denoise(
+            p_choice=p_choice,
+            f=f,
+            f_true=f0,
+        )
+
+        with patch("matplotlib.pyplot") as mock_plt:
+            denoising.plot_desired_frequency_response(p_choice)
+            mock_plt.figure.assert_called_once_with(figsize=(10, 6))
+            mock_plt.xlabel.assert_called_once_with("Eigenvalues")
+            mock_plt.ylabel.assert_called_once_with("Frequency Response")
+            mock_plt.title.assert_called_once_with(
+                "Desired Frequency Response"
+            )
+
+    def test_plot_desired_frequency_response_no_history(
+        self, denoising: EdgeFlowDenoising
+    ):
+        p_choice = "L1"
+        # catch ValueError
+        with pytest.raises(ValueError):
+            denoising.plot_desired_frequency_response(p_choice)

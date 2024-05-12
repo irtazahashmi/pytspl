@@ -24,18 +24,18 @@ class EdgeFlowDenoising(Filter):
 
     def denoise(
         self,
-        p_choice: str,
         f: np.ndarray,
         f_true: np.ndarray,
+        p_choice: str,
         mu_vals: np.ndarray = [0.5],
     ):
         """Denoising with low-pass filter H_P.
 
         Args:
-            p_choice (str): The choice of matrix P.
-            component (str): The component of the signal.
             f (np.ndarray): The noisy signal.
             f_true (np.ndarray): The true signal.
+            p_choice (str): The choice of matrix P.
+            component (str): The component of the signal.
             mu_vals (np.ndarray, optional): Regularization parameters.
             Defaults to [0.5].
         """
@@ -46,6 +46,7 @@ class EdgeFlowDenoising(Filter):
 
         errors = np.zeros((len(mu_vals)))
         frequency_responses = np.zeros((len(mu_vals), U1.shape[1]))
+        f_estimated = None
 
         # denoising with low pass filter Hp
         for i, mu in enumerate(mu_vals):
@@ -61,12 +62,13 @@ class EdgeFlowDenoising(Filter):
             print(f"mu: {mu}, error: {errors[i]}")
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = np.array(f_estimated).astype(float)
-        self.history["frequency_responses"] = np.array(
-            frequency_responses
-        ).astype(float)
-        self.history["error_per_filter_size"] = np.array(errors).astype(float)
+        f_estimated = np.asarray(f_estimated)
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
 
     def plot_desired_frequency_response(self, p_choice: str):
         """Plot the desired frequency response of the filter.

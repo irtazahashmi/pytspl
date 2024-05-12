@@ -95,30 +95,6 @@ class GridBasedFilterDesign(Filter):
         sampled_freq_response = np.asarray(sampled_freq_response, dtype=float)
         return sampled_freq_response, sampled_eigenvals
 
-    def _compute_true_continuous_freq_response(
-        self, P: np.ndarray, mu: float = 0.5
-    ) -> np.ndarray:
-        """
-        Compute the continuous frequency response for the true eigenvalues.
-
-        Args:
-            P (np.ndarray): The matrix P.
-            mu (float): Damping factor.
-
-        Returns:
-            np.ndarray: True frequency responses.
-        """
-        _, eigenvals = get_eigendecomposition(lap_mat=P)
-
-        # compute the frequency response for each eigenvalue
-        g_true = [
-            self._compute_frequency_response(eigenvalue, mu)
-            for eigenvalue in eigenvals
-        ]
-
-        g_true = np.asarray(g_true, dtype=float)
-        return g_true
-
     def _apply_filter(
         self,
         f: np.ndarray,
@@ -194,7 +170,7 @@ class GridBasedFilterDesign(Filter):
         mu: float = 0.5,
     ) -> None:
         """
-        Denoise the input signal using a low-pass filter H_P.
+        Build a low-pass filter H_P to denoise the input signal.
 
         Args:
             f (np.ndarray): The noisy signal.
@@ -224,10 +200,12 @@ class GridBasedFilterDesign(Filter):
         )
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = f_estimated.astype(float)
-        self.history["frequency_responses"] = frequency_responses.astype(float)
-        self.history["error_per_filter_size"] = errors.astype(float)
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
 
     def subcomponent_extraction(
         self,
@@ -239,6 +217,10 @@ class GridBasedFilterDesign(Filter):
     ) -> None:
         """
         Subcomponent extraction using the grid-based simplicial filter H_1.
+
+        The subcomponent extraction can be done using two methods:
+            1. Type one extraction: L1 = L2 = L and α = β = 1.
+            2. Type two extraction: L1 != L2 and α != β.
 
         Args:
             f (np.ndarray): The noisy signal.
@@ -261,11 +243,12 @@ class GridBasedFilterDesign(Filter):
             P=P, num_of_samples=num_of_samples
         )
 
-        # type two extraction
-        alpha = [0] + [1] * (len(eigenvals) - 1)
         if component is not None:
             # type one extraction
             alpha = self.sc.get_component_coefficients(component=component)
+        else:
+            # type two extraction
+            alpha = [0] + [1] * (len(eigenvals) - 1)
 
         H, f_estimated, frequency_responses, errors = self._apply_filter(
             P=P,
@@ -278,10 +261,12 @@ class GridBasedFilterDesign(Filter):
         )
 
         # update the results
-        self.history["filter"] = H
-        self.history["f_estimated"] = f_estimated.astype(float)
-        self.history["frequency_responses"] = frequency_responses.astype(float)
-        self.history["error_per_filter_size"] = errors.astype(float)
+        self.set_history(
+            filter=H,
+            f_estimated=f_estimated,
+            frequency_responses=frequency_responses,
+            error_per_filter_size=errors,
+        )
 
     def general_filter(
         self,
@@ -291,7 +276,7 @@ class GridBasedFilterDesign(Filter):
         L2: int,
     ) -> np.ndarray:
         """
-        Denoising by a general filter H1 with L1 != L2 = L and α != β.
+        Apply a general filter H1 with L1 != L2 = L and α != β.
 
         Args:
             f (np.ndarray): The signal to be filtered.
@@ -314,7 +299,7 @@ class GridBasedFilterDesign(Filter):
             self.subcomponent_extraction(
                 f=f,
                 f_true=f_true,
-                p_choice="L1",
+                p_choice="L1L",
                 L=L1,
                 component=FrequencyComponent.GRADIENT.value,
             )
@@ -326,7 +311,7 @@ class GridBasedFilterDesign(Filter):
             self.subcomponent_extraction(
                 f=f,
                 f_true=f_true,
-                p_choice="L1",
+                p_choice="L1U",
                 L=L2,
                 component=FrequencyComponent.CURL.value,
             )
