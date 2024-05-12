@@ -7,12 +7,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+coverage = "^7.3.2"
 chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
+flake8 = "^6.1.0"
 gudhi = "^3.9.0"
 hypernetx = "^1.2.5"
 matplotlib = "^3.8.2"
 networkx = "^2.8.8"
 pandas = "^2.1.1"
+pytest = "^7.4.3"
 scipy = "^1.11.4"
 trimesh = "^4.0.10"
 toponetx = { git = "https://github.com/pyt-team/TopoNetX.git", branch = "main" }
