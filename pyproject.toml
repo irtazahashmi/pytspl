@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "sclibrary"
+version = "0.1.0"
+description = "A Python package for higher-interactions, specifically simplical complexes."
+authors = ["irtazahashmi <irtazahashmi@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+chebpy = { git = "ssh://git@github.com/chebpy/chebpy.git", branch = "master" }
+gudhi = "^3.9.0"
+hypernetx = "^1.2.5"
+matplotlib = "^3.8.2"
+networkx = "^2.8.8"
+pandas = "^2.1.1"
+scipy = "^1.11.4"
+toponetx = { git = "ssh://git@github.com/pyt-team/TopoNetX.git", branch = "main" }
+trimesh = "^4.0.10"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.3.2"
+flake8 = "^6.1.0"
+ipykernel = "^6.29.4"
+pytest = "^7.4.3"
+
+# Testing
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.coverage.run]
+branch = true
+source = ["sclibrary"]
+
+[tool.coverage.report]
+show_missing = true
+
+# Linting
+[tool.flake8]
+extend-ignore = ["D100", "D205", "D400", "E203", "E741", "F401"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -2,32 +2,18 @@
 [![codecov](https://codecov.io/gh/irtazahashmi/sc-graph-library/graph/badge.svg?token=7KQ0U8FW70)](https://codecov.io/gh/irtazahashmi/sc-graph-library)
 [![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
 
-# SimplicialLearn
+# SCLibrary - Simplicial Complexes Library
 
-A Python package for simplicial complexes.
+A Python package for higher-interactions, specifically simplical complexes.
 
 ## Contributing to the library
 
-### Create a virtual environment
+### Install the dependencies
 
-Create a virtual enviroment to make sure the dependencies of each project is kept seperate. To create a virtual environment _my_venv_, run the following command:
-
-```console
-$ python3 -m venv my_venv
-```
-
-Activate the vitual environment _my_venv_ using the following command:
+To install the project dependencies, run the following command:
 
 ```console
-$ source ./my_venv/bin/activate
-```
-
-### Install project requirements
-
-To download the project requirements, run the following command:
-
-```console
-$ python3 -m pip install -r requirements.txt
+$ poetry install
 ```
 
 ## Quality assurance
@@ -37,13 +23,13 @@ $ python3 -m pip install -r requirements.txt
 To run all the **unit tests**, run the following command:
 
 ```console
-$ python3 -m pytest tests/
+$ poetry run pytest
 ```
 
 To get the test coverage report, run the following command:
 
 ```console
-$ coverage run --source=sclibrary -m pytest -v tests && coverage report -m
+$ coverage run -m pytest && coverage report -m
 ```
 
 ### Static code analysis (flake8)
@@ -51,7 +37,7 @@ $ coverage run --source=sclibrary -m pytest -v tests && coverage report -m
 To run the flake8 linter, run the following command:
 
 ```console
-$ python3 -m flake8 sclibrary
+$ flake8 sclibrary
 ```
 
 ## Documentation

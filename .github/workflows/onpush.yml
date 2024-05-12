@@ -19,19 +19,28 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
-      - name: Install dependencies
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+      - name: Setup a local virtual environment (if no poetry.toml file)
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+      - name: Install project dependencies
+        run: poetry install
       - name: Lint with flake8
         run: |
           flake8 sclibrary
       - name: Run tests
         run: |
-          python3 -m pytest
+          poetry run pytest
       - name: Generate coverage report
         run: |
-          coverage run --source=sclibrary -m pytest -v tests
+          coverage run -m pytest && coverage report -m
           coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
