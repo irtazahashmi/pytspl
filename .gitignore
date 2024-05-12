@@ -1,8 +1,10 @@
 # cache
 __pycache__/
-
 # DS_Store
 **/.DS_Store
+
+# build
+dist
 
 # generated docs
 docs/_build

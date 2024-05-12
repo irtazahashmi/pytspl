@@ -15,24 +15,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: "3.10"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python-version: "3.11"
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+      - name: Install project dependencies
+        run: poetry install
       - name: Lint with flake8
         run: |
-          flake8 sclibrary
+          poetry run pflake8 sclibrary
       - name: Run tests
         run: |
-          python3 -m pytest
+          poetry run pytest
       - name: Generate coverage report
         run: |
-          coverage run --source=sclibrary -m pytest -v tests
-          coverage xml
+          poetry run coverage run -m pytest && poetry run coverage report -m
+          poetry run coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
