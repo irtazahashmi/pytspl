@@ -121,7 +121,6 @@ class GridBasedFilterDesign(Filter):
             tuple: The filter, the estimated signal, the
             frequency responses, and the errors.
         """
-
         P_csr = csr_matrix(P)
 
         # learn the regularization filter with topological filter

@@ -78,7 +78,6 @@ class ChebyshevFilterDesign(Filter):
         Returns:
             np.ndarray: The Chebyshev series.
         """
-
         g_g = self._logistic_function(
             cut_off_frequency=cut_off_frequency, steep=steep
         )
@@ -170,7 +169,6 @@ class ChebyshevFilterDesign(Filter):
             np.ndarray: The ideal frequency of the given component and
             p_matrix.
         """
-
         P = self.get_p_matrix(p_choice)
         U, _ = get_eigendecomposition(lap_mat=P)
         H_ideal = U @ np.diag(component_coeffs) @ U.T
@@ -355,7 +353,6 @@ class ChebyshevFilterDesign(Filter):
         Raises:
             ValueError: If the apply method is not run first.
         """
-
         f_cheb_tilde = self.history["frequency_responses"]
         if f_cheb_tilde is None:
             raise ValueError("Run the apply method first.")

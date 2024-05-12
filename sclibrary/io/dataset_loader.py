@@ -34,7 +34,6 @@ def get_dataset_summary(dataset: str) -> dict:
     Returns:
         dict: The summary of the dataset.
     """
-
     network_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_net.tntp"
     coordinates_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_node.tntp"
     flow_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_flow.tntp"
