@@ -236,8 +236,8 @@ test = ["coverage-lcov", "coverage[toml]", "nose"]
 
 [package.source]
 type = "git"
-url = "git@github.com:chebpy/chebpy.git"
-reference = "HEAD"
+url = "https://github.com/chebpy/chebpy.git"
+reference = "master"
 resolved_reference = "c1a2e62d71e50bf6b59f92def324a27caa818498"
 
 [[package]]
@@ -1869,8 +1869,8 @@ test = ["coverage", "jupyter", "mypy (>1.6.0)", "pandas-stubs", "pytest", "pytes
 
 [package.source]
 type = "git"
-url = "git@github.com:pyt-team/TopoNetX.git"
-reference = "HEAD"
+url = "https://github.com/pyt-team/TopoNetX.git"
+reference = "main"
 resolved_reference = "44edf2d34e6664f95db07e81f7259ba22915a733"
 
 [[package]]
@@ -1981,4 +1981,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "ca769dd86254950c1967683ff356395beff9ee07e7678d7c6bb1993768c8ff2d"
+content-hash = "31166e8b332728a7974127f1d4081092d090e9de8574918614102c33ba1525ff"
