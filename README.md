@@ -48,3 +48,9 @@ The code documentation is generated using [Sphinx](https://www.sphinx-doc.org/en
 $ make clean html
 $ make html
 ```
+
+## Contributors
+
+- Irtaza Hashmi - TU Delft
+- Maosheng Yang - TU Delft
+- Dr. Elvin Isufi - TU Delft
