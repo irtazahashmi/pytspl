@@ -130,7 +130,7 @@ class LSFilterDesign(Filter):
             filter=H,
             f_estimated=f_estimated,
             frequency_responses=frequency_responses,
-            error_per_filter_size=errors,
+            extracted_component_error=errors,
         )
 
     def subcomponent_extraction_type_two(
@@ -208,7 +208,7 @@ class LSFilterDesign(Filter):
             filter=H,
             f_estimated=f_estimated,
             frequency_responses=frequency_responses,
-            error_per_filter_size=errors,
+            extracted_component_error=errors,
         )
 
     def general_filter(

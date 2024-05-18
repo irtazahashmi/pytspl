@@ -67,6 +67,78 @@ class TestChebyshevFilterDesign:
         )
         assert np.allclose(g_cheb.funs[0].coeffs, expected_output)
 
+    def test_chebyshev_filter_approximate(
+        self, chebyshev_filter: ChebyshevFilterDesign
+    ):
+        L1L = chebyshev_filter.sc.lower_laplacian_matrix(rank=1)
+        coeffs = np.array(
+            [
+                0.95938561,
+                0.08122877,
+                -0.08122876,
+                0.08122875,
+                -0.08122874,
+                0.08122872,
+                -0.08122871,
+                0.0812287,
+                -0.08122869,
+                0.04061435,
+            ]
+        )
+        alpha_g = 2.74
+        result = chebyshev_filter._chebyshev_filter_approximate(
+            L1L, coeffs, alpha_g, 1
+        )
+        assert result is not None
+        assert isinstance(result, np.ndarray)
+        assert np.allclose(result, np.eye(len(L1L)) * 0.9593, atol=1e-4)
+
+    def test_get_chebyshev_frequency_approx(
+        self, chebyshev_filter: ChebyshevFilterDesign
+    ):
+        coeffs = np.array(
+            [
+                0.95938561,
+                0.08122877,
+                -0.08122876,
+                0.08122875,
+                -0.08122874,
+                0.08122872,
+                -0.08122871,
+                0.0812287,
+                -0.08122869,
+                0.04061435,
+            ]
+        )
+        alpha_g = 2.74
+        k = 2
+        g_cheb = chebyshev_filter.get_chebyshev_frequency_approx(
+            p_choice="L1L", coeffs=coeffs, alpha=alpha_g, k_trunc_order=k
+        )
+        assert g_cheb is not None
+        assert isinstance(g_cheb, np.ndarray)
+
+        expected_first = np.array(
+            [0.0, 0.95938561, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        )
+        excepted_second = np.array(
+            [
+                0.02960241,
+                0.93736168,
+                0.02960241,
+                0.02960241,
+                -0.02960241,
+                -0.02960241,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ]
+        )
+
+        assert np.allclose(g_cheb[:, :, 1][0], expected_first, atol=1e-8)
+        assert np.allclose(g_cheb[:, :, 1][1], excepted_second, atol=1e-3)
+
     def test_get_alpha(self, chebyshev_filter: ChebyshevFilterDesign):
         alpha, lambda_max = chebyshev_filter.get_alpha(p_choice="L1L")
         expected_alpha, expected_lambda_max = 2.74, 5.49
@@ -74,31 +146,66 @@ class TestChebyshevFilterDesign:
         assert np.round(lambda_max, 2) == expected_lambda_max
 
     def test_apply_filter(
+        self,
+        chebyshev_filter: ChebyshevFilterDesign,
+    ):
+        f = np.array(
+            [
+                0.0323,
+                0.4980,
+                2.3825,
+                0.8799,
+                -0.5297,
+                -0.5192,
+                1.0754,
+                0.4732,
+                -1.1667,
+                0.0922,
+            ]
+        )
+
+        k, n = 10, 10
+        component = "gradient"
+        p_choice = "L1L"
+        chebyshev_filter.apply(
+            f=f,
+            component=component,
+            p_choice=p_choice,
+            L=k,
+        )
+        error = chebyshev_filter.history["extracted_component_error"][-1]
+        f_estimated = chebyshev_filter.history["f_estimated"][-1]
+
+        expected_error = 0.222
+        expected_f = np.array(
+            [
+                0.2112,
+                1.1000,
+                1.5808,
+                1.0002,
+                -0.1685,
+                -0.1503,
+                0.6551,
+                -0.2233,
+                -0.9144,
+                -0.2253,
+            ]
+        )
+
+        assert np.allclose(error, expected_error, atol=1e-3)
+        assert np.allclose(f_estimated, expected_f, atol=1e-4)
+
+    def test_apply_filter_history(
         self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
     ):
-        k = 10
+        k = 1
         component = "gradient"
         p_choice = "L1L"
         chebyshev_filter.apply(
             f=f, component=component, p_choice=p_choice, L=k
         )
-        error = chebyshev_filter.history["error_per_filter_size"][-1]
-        f_estimated = chebyshev_filter.history["f_estimated"][-1]
+        history = chebyshev_filter.history
+        assert history is not None
 
-        expected_error = 0.07
-        expected_f = np.array(
-            [
-                2.63,
-                0.43,
-                1.83,
-                -1.88,
-                1.46,
-                1.67,
-                1.05,
-                -0.39,
-                0.79,
-                1.48,
-            ]
-        )
-        assert np.round(error, 2) == expected_error
-        assert np.allclose(np.round(f_estimated, 2), expected_f)
+        for _, result in chebyshev_filter.history.items():
+            assert result is not None

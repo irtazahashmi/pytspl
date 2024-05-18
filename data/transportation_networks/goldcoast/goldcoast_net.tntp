@@ -1,8 +1,8 @@
 <NUMBER OF ZONES> 1068											
 <NUMBER OF NODES> 4807											
 <FIRST THRU NODE> 1069											
-<NUMBER OF LINKS> 11140											
-<ORIGINAL HEADER>~	from	to	capacity (per lane)	length (km)	fftt (min)	alpha	beta	ff speed (km/h)	critical speed (km/h)	lanes	
+<NUMBER OF LINKS> 11140
+<ORIGINAL HEADER>~	from	to	capacity (per lane)	length (km)	fftt (min)	alpha	beta	ff speed (km/h)	critical speed (km/h)	lanes	;
 <END OF METADATA>											
 											
 

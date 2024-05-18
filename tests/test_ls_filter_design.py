@@ -42,7 +42,7 @@ class TestLSFilterDesign:
 
         # test error is decreasing
         assert np.all(
-            np.diff(ls_filter.history["error_per_filter_size"]) < 0.1
+            np.diff(ls_filter.history["extracted_component_error"]) < 0.1
         )
         expected_error = 0.39
         actual_error = ls_filter.calculate_error(
@@ -62,7 +62,7 @@ class TestLSFilterDesign:
 
         # test error is decreasing
         assert np.all(
-            np.diff(ls_filter.history["error_per_filter_size"]) < 0.1
+            np.diff(ls_filter.history["extracted_component_error"]) < 0.1
         )
 
         # test the estimated signal
@@ -75,7 +75,7 @@ class TestLSFilterDesign:
         )
 
         expected_error = 0.0009
-        actual_error = ls_filter.history["error_per_filter_size"]
+        actual_error = ls_filter.history["extracted_component_error"]
         assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
 
     def test_history_subcomp_extract_type_one(
@@ -97,9 +97,9 @@ class TestLSFilterDesign:
         assert ls_filter.history["frequency_responses"] is not None
         assert isinstance(ls_filter.history["frequency_responses"], np.ndarray)
 
-        assert ls_filter.history["error_per_filter_size"] is not None
+        assert ls_filter.history["extracted_component_error"] is not None
         assert isinstance(
-            ls_filter.history["error_per_filter_size"], np.ndarray
+            ls_filter.history["extracted_component_error"], np.ndarray
         )
 
     def test_subcomp_extract_type_two_gradient_f_est(
@@ -131,11 +131,11 @@ class TestLSFilterDesign:
         )
         # test error is decreasing
         assert np.all(
-            np.diff(ls_filter.history["error_per_filter_size"]) < 0.1
+            np.diff(ls_filter.history["extracted_component_error"]) < 0.1
         )
 
         expected_error = 0.0058
-        actual_error = ls_filter.history["error_per_filter_size"]
+        actual_error = ls_filter.history["extracted_component_error"]
         assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
 
     def test_subcomp_extract_type_two_component_error(
@@ -168,9 +168,9 @@ class TestLSFilterDesign:
         assert ls_filter.history["frequency_responses"] is not None
         assert isinstance(ls_filter.history["frequency_responses"], np.ndarray)
 
-        assert ls_filter.history["error_per_filter_size"] is not None
+        assert ls_filter.history["extracted_component_error"] is not None
         assert isinstance(
-            ls_filter.history["error_per_filter_size"], np.ndarray
+            ls_filter.history["extracted_component_error"], np.ndarray
         )
 
     def test_general_filter(self, ls_filter: LSFilterDesign, f: np.ndarray):

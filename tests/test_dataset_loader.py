@@ -72,3 +72,26 @@ class TestDatasetLoader:
 
         assert isinstance(coordinates, dict)
         assert len(coordinates) > 0
+
+    def test_transportation_data_loading(self):
+        from sclibrary.io.dataset_loader import list_transportation_datasets
+
+        datasets = list_transportation_datasets()
+        skip_datasets = ["test_dataset", "goldcoast"]
+        for dataset in datasets:
+            if dataset in skip_datasets:
+                continue
+
+            sc, coordinates, flow_dict = load(dataset=dataset)
+            assert sc is not None
+            assert coordinates is not None
+            assert flow_dict is not None
+
+            assert isinstance(sc, SimplicialComplexNetwork)
+            assert isinstance(coordinates, dict)
+            assert isinstance(flow_dict, dict)
+
+            # number of edge flow is equal to number of edges in sc
+            flow_len = len(flow_dict)
+            mat_len = sc.hodge_laplacian_matrix().shape[0]
+            assert flow_len == mat_len

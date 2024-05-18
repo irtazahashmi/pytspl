@@ -49,6 +49,7 @@ def get_dataset_summary(dataset: str) -> dict:
     features = [feature.strip() for feature in features if feature != ";"]
 
     return {
+        "dataset": dataset,
         "number_of_zones": number_of_zones,
         "number_of_nodes": number_of_nodes,
         "first_thru_node": first_thru_node,
@@ -124,12 +125,18 @@ def load(dataset: str) -> tuple:
 
     # read the flow data
     flow = load_flow(dataset=dataset)
+    visited_nodes = set()
     flow_dict = {}
     if not flow.empty:
         for _, row in flow.iterrows():
             source, target = row["From "], row["To "]
-            if (source, target) in sc.edges:
+            if (source, target) not in visited_nodes or (
+                target,
+                source,
+            ) not in visited_nodes:
                 flow_dict[(source, target)] = row["Volume "].astype(float)
+                visited_nodes.add((source, target))
+                visited_nodes.add((target, source))
 
     return sc, coordinates, flow_dict
 

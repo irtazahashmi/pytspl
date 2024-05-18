@@ -35,7 +35,7 @@ class TestGridBasedFilterDesign:
             f=f, f_true=f0, p_choice=p_choice, L=filter_size, mu=0.5
         )
 
-        error = grid_filter.history["error_per_filter_size"][-1]
+        error = grid_filter.history["extracted_component_error"][-1]
         excepted_error = 0.70
         assert np.allclose(error, excepted_error, atol=0.01)
 
@@ -50,7 +50,7 @@ class TestGridBasedFilterDesign:
         )
 
         excepted_error = 0.73
-        error = grid_filter.history["error_per_filter_size"][-1]
+        error = grid_filter.history["extracted_component_error"][-1]
         assert np.allclose(error, excepted_error, atol=0.01)
 
     def test_denoising_L1_large_filter_order(
@@ -67,7 +67,7 @@ class TestGridBasedFilterDesign:
         )
 
         excepted_error = 0.7026
-        error = grid_filter.history["error_per_filter_size"][-1]
+        error = grid_filter.history["extracted_component_error"][-1]
         assert np.allclose(error, excepted_error, atol=1e-4)
 
     def test_subcomponent_extraction_L1_gradient_f_est(
@@ -108,7 +108,7 @@ class TestGridBasedFilterDesign:
         )
 
         excepted_error = 0.3860
-        error = grid_filter.history["error_per_filter_size"][-1]
+        error = grid_filter.history["extracted_component_error"][-1]
         assert np.allclose(error, excepted_error, atol=1e-4)
 
     def test_history_subcomponent_extraction(
@@ -135,9 +135,9 @@ class TestGridBasedFilterDesign:
             grid_filter.history["frequency_responses"], np.ndarray
         )
 
-        assert grid_filter.history["error_per_filter_size"] is not None
+        assert grid_filter.history["extracted_component_error"] is not None
         assert isinstance(
-            grid_filter.history["error_per_filter_size"], np.ndarray
+            grid_filter.history["extracted_component_error"], np.ndarray
         )
 
     def test_general_filter(
