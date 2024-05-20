@@ -3,8 +3,8 @@ import networkx as nx
 from sclibrary.simplicial_complex import SimplicialComplexNetwork
 
 
-class ExtendedGraph(nx.Graph):
-    """Extended Graph module. Built on top of networkx.Graph."""
+class SCBuilder(nx.Graph):
+    """SC builder module. Built on top of networkx.Graph."""
 
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize the ExtendedGraph class using networkx.Graph."""
@@ -34,8 +34,7 @@ class ExtendedGraph(nx.Graph):
         Returns:
             list: List of triangles that satisfy the condition.
         """
-        cliques = nx.enumerate_all_cliques(self)
-        triangle_nodes = [x for x in cliques if len(x) == 3]
+        triangle_nodes = self.triangles()
 
         conditional_tri = []
         for a, b, c in triangle_nodes:

@@ -4,7 +4,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
-from sclibrary.simplicial_complex.extended_graph import ExtendedGraph
+from sclibrary.simplicial_complex.scbuilder import SCBuilder
 
 """Module for reading simplicial complex network data."""
 
@@ -15,7 +15,7 @@ def read_tntp(
     dest_col: str,
     skip_rows: int,
     delimeter: str = "\t",
-) -> ExtendedGraph:
+) -> SCBuilder:
     """Read a tntp file and returns a graph.
 
     Args:
@@ -56,7 +56,7 @@ def read_tntp(
             for _, row in df.iterrows():
                 G[row[src_col]][row[dest_col]][col] = row[col]
 
-    return ExtendedGraph(G)
+    return SCBuilder(G)
 
 
 def read_csv(
@@ -65,7 +65,7 @@ def read_csv(
     src_col: str,
     dest_col: str,
     feature_cols: list = None,
-) -> ExtendedGraph:
+) -> SCBuilder:
     """Read a csv file and returns a graph.
 
     Args:
@@ -94,7 +94,7 @@ def read_csv(
             for _, row in df.iterrows():
                 G[row[src_col]][row[dest_col]][col] = row[col]
 
-    return ExtendedGraph(G)
+    return SCBuilder(G)
 
 
 def read_B2(B2_filename: str, edges: np.ndarray) -> list:
@@ -125,7 +125,7 @@ def read_B2(B2_filename: str, edges: np.ndarray) -> list:
     return triangles
 
 
-def read_B1(B1_filename: str) -> ExtendedGraph:
+def read_B1(B1_filename: str) -> SCBuilder:
     """
     Read the B1 incidence matrix file.
 
@@ -148,7 +148,7 @@ def read_B1(B1_filename: str) -> ExtendedGraph:
 
     # create graph from adjacency matrix
     g = nx.from_numpy_array(adjacency_mat)
-    return ExtendedGraph(g)
+    return SCBuilder(g)
 
 
 def get_coordinates(

@@ -15,7 +15,7 @@ def graph():
     yield g
 
 
-class TestExtendedGraph:
+class TestSCBuilder:
     def test_triangles(self, graph):
         triangles = graph.triangles()
         expected_triangles = np.array([[0, 1, 2], [0, 2, 3], [5, 4, 6]])

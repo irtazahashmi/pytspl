@@ -8,7 +8,7 @@ from sclibrary.io.network_reader import (
     read_csv,
     read_tntp,
 )
-from sclibrary.simplicial_complex.extended_graph import ExtendedGraph
+from sclibrary.simplicial_complex.scbuilder import SCBuilder
 
 NODES = 7
 EDGES = 10
@@ -35,7 +35,7 @@ class TestNetworkReader:
         feature_cols = ["Distance"]
         g = read_csv(filename, delimeter, src_col, dest_col, feature_cols)
 
-        assert isinstance(g, ExtendedGraph)
+        assert isinstance(g, SCBuilder)
         assert len(g.nodes) == NODES
         assert len(g.edges) == EDGES
 
@@ -54,7 +54,7 @@ class TestNetworkReader:
             dest_col="Head",
             skip_rows=5,
         )
-        assert isinstance(g, ExtendedGraph)
+        assert isinstance(g, SCBuilder)
         assert len(g.nodes) == NODES
         assert len(g.edges) == EDGES
 
@@ -68,7 +68,7 @@ class TestNetworkReader:
         B1 = pd.read_csv(B1_filename, header=None).to_numpy()
         g = read_B1(B1_filename)
 
-        assert isinstance(g, ExtendedGraph)
+        assert isinstance(g, SCBuilder)
         assert len(g.nodes) == NODES
         assert len(g.edges) == EDGES
 
