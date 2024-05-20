@@ -25,7 +25,7 @@ class TestSimplicialComplex:
     def test_get_faces(self, sc: SimplicialComplexNetwork):
         simplex = [0, 1]
         faces = sc.get_faces(simplex=simplex)
-        expected_faces = [(1,), (0,)]
+        expected_faces = [(0,), (1,)]
         assert faces == expected_faces
 
     def test_get_cofaces(self, sc: SimplicialComplexNetwork):

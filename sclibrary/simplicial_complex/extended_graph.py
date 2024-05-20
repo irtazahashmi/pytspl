@@ -62,6 +62,7 @@ class ExtendedGraph(nx.Graph):
         condition: str = "all",
         dist_col_name: str = "distance",
         dist_threshold: float = 1.5,
+        triangles=None,
     ) -> list:
         """
         Get a list of simplicies in the graph.
@@ -81,25 +82,32 @@ class ExtendedGraph(nx.Graph):
         Returns:
             list: List of simplicies.
         """
-        cliques = nx.enumerate_all_cliques(self)
-        # remove 3 nodes cliques
-        simplicies = [x for x in cliques if len(x) <= 2]
+        # 0-simplicies - nodes
+        nodes = [[node] for node in self.nodes()]
+        # 1-simplicies - edges
+        edges = [list(edge) for edge in self.edges()]
+        simplices = nodes + edges
 
-        # add 2-simplicies based on condition
-        if condition == "all":
-            simplicies.extend(self.triangles())
+        # add 2-simplicies based on given triangles
+        if triangles is not None:
+            simplices.extend(triangles)
+        elif condition == "all":
+            # add all 2-simplicies
+            simplices.extend(self.triangles())
         else:
-            simplicies.extend(
+            # add 2-simplicies based on condition
+            simplices.extend(
                 self.triangles_dist_based(dist_col_name, dist_threshold)
             )
 
-        return simplicies
+        return simplices
 
     def to_simplicial_complex(
         self,
         condition: str = "all",
         dist_col_name: str = "distance",
         dist_threshold: float = 1.5,
+        triangles=None,
     ):
         """
         Convert the graph to a simplicial complex using the given condition
@@ -121,10 +129,12 @@ class ExtendedGraph(nx.Graph):
         Returns:
             SimplicialComplexNetwork: Simplicial complex network.
         """
+        # get simplicies
         simplices = self.simplicies(
             condition=condition,
             dist_col_name=dist_col_name,
             dist_threshold=dist_threshold,
+            triangles=triangles,
         )
 
         node_features = {node: self.nodes[node] for node in self.nodes}

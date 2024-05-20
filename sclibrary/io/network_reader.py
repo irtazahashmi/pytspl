@@ -97,50 +97,58 @@ def read_csv(
     return ExtendedGraph(G)
 
 
-def read_incidence_matrix(B1_filename: str) -> ExtendedGraph:
+def read_B2(B2_filename: str, edges: np.ndarray) -> list:
     """
-    Read the B1 and B2 incidence matrix files.
+    Extract triangles from the B2 incidence matrix.
+
+    Args:
+        B2_filename (str): The name of the B2 incidence matrix
+        file.
+        edges (np.ndarray): The edges of the graph.
+
+    Returns:
+        list: List of triangles.
+    """
+    B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
+    num_triangles = B2.shape[1]
+
+    triangles = []
+    for j in range(num_triangles):
+        # Check each column of B2 for triangles
+        col = B2[:, j]
+        ones = np.where(col != 0)[0]
+        triangle = edges[ones]
+        triangle = tuple(set(triangle.flatten()))
+        triangle = tuple(sorted(triangle))
+        triangles.append(triangle)
+
+    return triangles
+
+
+def read_B1(B1_filename: str) -> ExtendedGraph:
+    """
+    Read the B1 incidence matrix file.
 
     Args:
         B1_filename (str): The name of the B1 incidence matrix file.
-        B2_filename (str): The name of the B2 incidence matrix file.
 
     Returns:
-        ExtendedGraph: The graph read from the incidence matrix files.
+        ExtendedGraph: The graph read from the csv file.
     """
-    B1 = pd.read_csv(B1_filename, header=None).values
+    B1 = pd.read_csv(B1_filename, header=None).to_numpy()
 
     # create adjacency matrix
-    nodes = B1.shape[0]
-    edges = B1.shape[1]
-    assert edges > 0
-    assert nodes > 0
+    adjacency_mat = np.zeros((B1.shape[0], B1.shape[0]))
 
-    adjacency = [[0] * nodes for _ in range(nodes)]
+    for col in range(B1.shape[1]):
+        col_nozero = np.where(B1[:, col] != 0)[0]
+        from_node, to_node = col_nozero[0], col_nozero[1]
+        adjacency_mat[from_node, to_node] = 1
+        adjacency_mat[to_node, from_node] = 1
 
-    for edge in range(edges):
-        a, b = -1, -1
-        node = 0
-
-        while node < nodes and a == -1:
-            if B1[node][edge] != 0:
-                a = node
-            node += 1
-
-        while node < nodes and b == -1:
-            if B1[node][edge] != 0:
-                b = node
-            node += 1
-
-        if b == -1:
-            b = a
-
-        adjacency[a][b] = -1
-        adjacency[b][a] = 1
-
-    # create graph
-    G = nx.from_numpy_array(np.array(adjacency))
-    return ExtendedGraph(G)
+    # create graph from adjacency matrix
+    g = nx.from_numpy_array(adjacency_mat)
+    return ExtendedGraph(g)
 
 
 def get_coordinates(

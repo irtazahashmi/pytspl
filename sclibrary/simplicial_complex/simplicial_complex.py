@@ -59,19 +59,29 @@ class SimplicialComplexNetwork:
     @property
     def edges(self) -> list[tuple]:
         """Return the set of edges in the simplicial complex"""
-        edges = [simplex for simplex in self.simplices if len(simplex) == 2]
-        edges = sorted(edges, key=lambda x: (x[0], x[1]))
+        edges = [
+            tuple(simplex)
+            for simplex in self.sc.simplices
+            if len(simplex) == 2
+        ]
         return edges
+
+    @property
+    def triangles(self) -> list[tuple]:
+        """Return the set of triangles in the simplicial complex"""
+        triangles = [
+            simplex for simplex in self.simplices if len(simplex) == 3
+        ]
+        return triangles
 
     @property
     def simplices(self) -> list[tuple]:
         """
-        Get al the simplices of the simplicial complex.
+        Get all the simplices of the simplicial complex.
 
         This includes 0-simplices (nodes), 1-simplices (edges), 2-simplices.
         """
-        simplices = set(self.sc.simplices)
-        simplices = [tuple(simplex) for simplex in simplices]
+        simplices = [tuple(simplex) for simplex in self.sc.simplices]
         return simplices
 
     @property
@@ -115,7 +125,7 @@ class SimplicialComplexNetwork:
 
     def get_faces(self, simplex: Iterable[Hashable]) -> set[tuple]:
         """
-        Return the faces of the simplex.
+        Return the faces of the simplex in order.
 
         Args:
             simplex (Iterable[Hashable]): Simplex for which to find the faces.
@@ -126,7 +136,7 @@ class SimplicialComplexNetwork:
             for face in combinations(simplex, r):
                 faceset.add(tuple(sorted(face)))
         k = len(simplex) - 1
-        faceset = [face for face in faceset if len(face) == k]
+        faceset = sorted([face for face in faceset if len(face) == k])
         return faceset
 
     def get_cofaces(
@@ -163,17 +173,18 @@ class SimplicialComplexNetwork:
         inc_mat = self.sc.incidence_matrix(rank=rank).todense()
         return np.squeeze(np.asarray(inc_mat))
 
-    def adjacency_matrix(self, rank: int) -> np.ndarray:
+    def adjacency_matrix(self, rank: int, signed=True) -> np.ndarray:
         """
         Compute the adjacency matrix of the simplicial complex.
 
         Args:
             rank (int): Rank of the adjacency matrix.
+            signed (bool): If True, return the signed adjacency matrix.
 
         Returns:
             np.ndarray: Adjacency matrix of the simplicial complex.
         """
-        adj_mat = self.sc.adjacency_matrix(rank=rank).todense()
+        adj_mat = self.sc.adjacency_matrix(rank=rank, signed=signed).todense()
         return np.squeeze(np.asarray(adj_mat))
 
     def laplacian_matrix(self) -> np.ndarray:

@@ -164,9 +164,7 @@ def load_paper_data() -> tuple:
         dest_col=dest_col,
         feature_cols=feature_cols,
     )
-    sc = G.to_simplicial_complex(
-        condition="distance", dist_col_name="Distance", dist_threshold=1.5
-    )
+    sc = G.to_simplicial_complex()
 
     # if coordinates exist
     filename = data_folder + "/coordinates.csv"

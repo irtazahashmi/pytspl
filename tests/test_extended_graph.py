@@ -6,7 +6,7 @@ from sclibrary import read_csv
 
 @pytest.fixture
 def graph():
-    filename = "data/sample_data/edges.csv"
+    filename = "data/paper_data/edges.csv"
     delimeter = " "
     src_col = "Source"
     dest_col = "Target"
@@ -18,7 +18,7 @@ def graph():
 class TestExtendedGraph:
     def test_triangles(self, graph):
         triangles = graph.triangles()
-        expected_triangles = np.array([[0, 1, 2], [1, 2, 3], [1, 3, 4]])
+        expected_triangles = np.array([[0, 1, 2], [0, 2, 3], [5, 4, 6]])
         assert np.array_equal(triangles, expected_triangles)
 
     def test_triangles_dist_based(self, graph):
@@ -26,28 +26,34 @@ class TestExtendedGraph:
         triangles = graph.triangles_dist_based(
             dist_col_name="Distance", epsilon=eps
         )
-        expected_triangles = np.array([[1, 2, 3], [1, 3, 4]])
+        expected_triangles = np.array([[0, 1, 2], [5, 4, 6]])
         assert np.array_equal(triangles, expected_triangles)
 
     def test_all_simplicies(self, graph):
         condition = "all"
         simplicies = graph.simplicies(condition=condition)
+        print(simplicies)
         expected_simplicies = [
             [0],
             [1],
             [2],
             [3],
+            [5],
             [4],
+            [6],
             [0, 1],
             [0, 2],
+            [0, 3],
             [1, 2],
-            [1, 3],
-            [1, 4],
             [2, 3],
+            [2, 5],
             [3, 4],
+            [5, 4],
+            [5, 6],
+            [4, 6],
             [0, 1, 2],
-            [1, 2, 3],
-            [1, 3, 4],
+            [0, 2, 3],
+            [5, 4, 6],
         ]
 
         assert simplicies == expected_simplicies
@@ -66,16 +72,21 @@ class TestExtendedGraph:
             [1],
             [2],
             [3],
+            [5],
             [4],
+            [6],
             [0, 1],
             [0, 2],
+            [0, 3],
             [1, 2],
-            [1, 3],
-            [1, 4],
             [2, 3],
+            [2, 5],
             [3, 4],
-            [1, 2, 3],
-            [1, 3, 4],
+            [5, 4],
+            [5, 6],
+            [4, 6],
+            [0, 1, 2],
+            [5, 4, 6],
         ]
 
         assert simplicies == expected_simplicies
