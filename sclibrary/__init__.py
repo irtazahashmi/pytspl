@@ -16,4 +16,4 @@ from sclibrary.io import (
 from sclibrary.plot import SCPlot
 
 # simplicial complex module
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex

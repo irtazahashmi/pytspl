@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 
 from sclibrary.filters.filter import Filter
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 from sclibrary.utils.frequency_component import FrequencyComponent
 
@@ -10,7 +10,7 @@ from sclibrary.utils.frequency_component import FrequencyComponent
 class LSFilterDesign(Filter):
     """Module for the LS filter design."""
 
-    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+    def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the LS filter design using a simplicial complex."""
         super().__init__(simplicial_complex)
 

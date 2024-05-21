@@ -2,13 +2,13 @@
 
 import numpy as np
 
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 
 
 class Filter:
     """Filter design base class."""
 
-    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+    def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the filter design using a simplicial complex."""
         self.sc = simplicial_complex
 

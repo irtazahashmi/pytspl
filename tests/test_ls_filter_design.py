@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplexNetwork
+from sclibrary import SimplicialComplex
 from sclibrary.filters import LSFilterDesign
 
 
 @pytest.fixture(autouse=True)
-def ls_filter(sc: SimplicialComplexNetwork):
+def ls_filter(sc: SimplicialComplex):
     return LSFilterDesign(sc)
 
 
@@ -67,16 +67,17 @@ class TestLSFilterDesign:
 
         # test the estimated signal
         f_expected = np.array(
-            [2.48, 0.56, 1.89, -1.92, 1.33, 1.84, 1.01, -0.51, 0.95, 1.45]
+            [2.48, 0.56, 1.89, -1.92, 1.34, 1.84, 1.01, -0.51, 0.95, 1.45]
         )
+
         assert np.allclose(
             np.round(ls_filter.history["f_estimated"], 2),
             f_expected,
         )
 
-        expected_error = 0.0009
+        expected_error = 3.38e-6
         actual_error = ls_filter.history["extracted_component_error"]
-        assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
+        assert np.isclose(actual_error[-1], expected_error)
 
     def test_history_subcomp_extract_type_one(
         self, ls_filter: LSFilterDesign, f: np.ndarray
@@ -134,9 +135,9 @@ class TestLSFilterDesign:
             np.diff(ls_filter.history["extracted_component_error"]) < 0.1
         )
 
-        expected_error = 0.0058
+        expected_error = 1.12e-6
         actual_error = ls_filter.history["extracted_component_error"]
-        assert np.isclose(actual_error[-1], expected_error, atol=1e-4)
+        assert np.isclose(actual_error[-1], expected_error)
 
     def test_subcomp_extract_type_two_component_error(
         self, ls_filter: LSFilterDesign, f: np.ndarray

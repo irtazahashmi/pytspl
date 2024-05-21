@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplexNetwork
+from sclibrary import SimplicialComplex
 from sclibrary.filters import GridBasedFilterDesign
 
 
 @pytest.fixture(autouse=True)
-def grid_filter(sc: SimplicialComplexNetwork):
+def grid_filter(sc: SimplicialComplex):
     return GridBasedFilterDesign(sc)
 
 

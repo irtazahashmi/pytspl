@@ -6,14 +6,14 @@ from scipy.sparse import csr_matrix
 
 from chebpy import chebfun
 from sclibrary.filters.filter import Filter
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
 
 class ChebyshevFilterDesign(Filter):
     """Chebyshev filter class."""
 
-    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+    def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the Chebyshev filter using the simplicial complex."""
         super().__init__(simplicial_complex=simplicial_complex)
 

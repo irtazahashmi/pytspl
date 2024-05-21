@@ -3,12 +3,12 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplexNetwork
+from sclibrary import SimplicialComplex
 from sclibrary.filters import EdgeFlowDenoising
 
 
 @pytest.fixture(autouse=True)
-def denoising(sc: SimplicialComplexNetwork):
+def denoising(sc: SimplicialComplex):
     return EdgeFlowDenoising(sc)
 
 

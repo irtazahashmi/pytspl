@@ -3,7 +3,7 @@
 import numpy as np
 
 from sclibrary.filters.filter import Filter
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
 
@@ -15,7 +15,7 @@ class EdgeFlowDenoising(Filter):
     f = f0 + ε where, ε is a zero mean Gaussian noise.
     """
 
-    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+    def __init__(self, simplicial_complex: SimplicialComplex):
         """
         Initialize the edge flow denoising filter using the
         simplicial complex.

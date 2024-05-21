@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplexNetwork
+from sclibrary import SimplicialComplex
 from sclibrary.filters import ChebyshevFilterDesign
 
 
 @pytest.fixture(autouse=True)
-def chebyshev_filter(sc: SimplicialComplexNetwork):
+def chebyshev_filter(sc: SimplicialComplex):
     return ChebyshevFilterDesign(sc)
 
 
@@ -42,7 +42,7 @@ class TestChebyshevFilterDesign:
 
     def test_get_chebyshev_series(
         self,
-        sc: SimplicialComplexNetwork,
+        sc: SimplicialComplex,
         chebyshev_filter: ChebyshevFilterDesign,
     ):
         n = len(sc.hodge_laplacian_matrix())

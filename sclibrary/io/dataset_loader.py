@@ -4,7 +4,12 @@ import pprint
 import networkx as nx
 import pandas as pd
 
-from sclibrary.io.network_reader import get_coordinates, read_csv, read_tntp
+from sclibrary.io.network_reader import (
+    read_coordinates,
+    read_csv,
+    read_flow,
+    read_tntp,
+)
 
 """Module for loading transportation network datasets."""
 
@@ -60,26 +65,57 @@ def get_dataset_summary(dataset: str) -> dict:
     }
 
 
-def load_flow(dataset: str) -> pd.DataFrame:
+def load_flow_transportation(dataset: str, edges: list) -> pd.DataFrame:
     """Read the flow data of the transportation dataset.
 
     Args:
         dataset (str): The name of the dataset.
+        edges (list): The list of edges in the simplicial complex.
 
     Returns:
         pd.DataFrame: The flow data of the transportation dataset.
-        Returns an empty DataFrame if the flow data file is not found.
+        Returns an empty dictionary if the flow data is not found.
     """
     flow_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_flow.tntp"
+    df_flow = read_flow(filename=flow_data_path)
+    if df_flow.empty:
+        return {}
 
-    flow = None
-    if os.path.exists(f"{DATA_FOLDER}/{dataset}/{dataset}_flow.tntp"):
-        flow = pd.read_csv(flow_data_path, sep="\t")
-    else:
-        print(f"Flow data file not found for the dataset: {dataset}")
-        return pd.DataFrame()
+    visited_nodes = set()
+    flow_dict = {}
+    if not df_flow.empty:
+        for edge in edges:
+            source, target = edge
+            # index starts at 1
+            source += 1
+            target += 1
 
-    return flow
+            if (source, target) not in visited_nodes:
+                # get the flow volume in the positive direction
+                flow_pos = df_flow[
+                    (df_flow["From "] == source) & (df_flow["To "] == target)
+                ]["Volume "].values[0]
+
+                # check if the flow is in the opposite direction
+                try:
+                    flow_neg = df_flow[
+                        (df_flow["From "] == target)
+                        & (df_flow["To "] == source)
+                    ]["Volume "].values[0]
+                except IndexError:
+                    flow_neg = 0
+
+                # calculate the net flow
+                net_flow = flow_pos - flow_neg
+
+                # zero index the nodes
+                source -= 1
+                target -= 1
+
+                flow_dict[(source, target)] = net_flow
+                visited_nodes.add((source, target))
+
+    return flow_dict
 
 
 def load(dataset: str) -> tuple:
@@ -91,10 +127,15 @@ def load(dataset: str) -> tuple:
         dataset (str): The name of the dataset.
 
     Returns:
-        tuple: The simplicial complex, the coordinates of the nodes if
-        they exist, and the flow data if it exists. Else, the coordinates
-        and flow data will be None.
+        tuple:
+            SimplicialComplex: The simplicial complex of the dataset.
+            dict: The coordinates of the nodes. If the coordinates do not
+            exist, the coordinates are generated using spring layout.
+            dict: The flow data of the dataset. If the flow data does not
+            exist, an empty dictionary is returned.
     """
+    start_index_zero = False
+
     network_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_net.tntp"
     coordinates_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_node.tntp"
 
@@ -107,16 +148,20 @@ def load(dataset: str) -> tuple:
         dest_col="term_node",
         skip_rows=METADATA_ROWS,
         delimeter="\t",
+        # index starts at 1
+        start_index_zero=start_index_zero,
     ).to_simplicial_complex()
 
     # read the coordinates data
-    coordinates = get_coordinates(
+    coordinates = read_coordinates(
         filename=coordinates_data_path,
         node_id_col="node",
         x_col="X",
         y_col="Y",
         delimeter="\t",
+        start_index_zero=start_index_zero,
     )
+
     # generate coordinates using spring layout if coordinates are not provided
     if coordinates is None:
         print("Generating coordinates using spring layout.")
@@ -124,19 +169,7 @@ def load(dataset: str) -> tuple:
         coordinates = nx.spring_layout(graph)
 
     # read the flow data
-    flow = load_flow(dataset=dataset)
-    visited_nodes = set()
-    flow_dict = {}
-    if not flow.empty:
-        for _, row in flow.iterrows():
-            source, target = row["From "], row["To "]
-            if (source, target) not in visited_nodes or (
-                target,
-                source,
-            ) not in visited_nodes:
-                flow_dict[(source, target)] = row["Volume "].astype(float)
-                visited_nodes.add((source, target))
-                visited_nodes.add((target, source))
+    flow_dict = load_flow_transportation(dataset=dataset, edges=sc.edges)
 
     return sc, coordinates, flow_dict
 
@@ -146,29 +179,31 @@ def load_paper_data() -> tuple:
     Read the paper data and return the simplicial complex and coordinates.
 
     Returns:
-        tuple: The simplicial complex and the coordinates of the nodes.
+        tuple:
+            SimplicialComplex: The simplicial complex of the paper data.
+            dict: The coordinates of the nodes. If the coordinates do not
+            exist, the coordinates are generated using spring layout.
     """
     data_folder = "data/paper_data"
 
-    # read csv
+    # read network data
     filename = data_folder + "/edges.csv"
     delimeter = " "
     src_col = "Source"
     dest_col = "Target"
     feature_cols = ["Distance"]
 
-    G = read_csv(
+    sc = read_csv(
         filename=filename,
         delimeter=delimeter,
         src_col=src_col,
         dest_col=dest_col,
         feature_cols=feature_cols,
-    )
-    sc = G.to_simplicial_complex()
+    ).to_simplicial_complex()
 
-    # if coordinates exist
+    # read coordinates data
     filename = data_folder + "/coordinates.csv"
-    coordinates = get_coordinates(
+    coordinates = read_coordinates(
         filename=filename,
         node_id_col="Id",
         x_col="X",
