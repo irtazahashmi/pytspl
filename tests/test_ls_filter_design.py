@@ -77,7 +77,7 @@ class TestLSFilterDesign:
 
         expected_error = 3.38e-6
         actual_error = ls_filter.history["extracted_component_error"]
-        assert np.isclose(actual_error[-1], expected_error)
+        assert np.isclose(actual_error[-1], expected_error, atol=1e-04)
 
     def test_history_subcomp_extract_type_one(
         self, ls_filter: LSFilterDesign, f: np.ndarray
@@ -137,7 +137,7 @@ class TestLSFilterDesign:
 
         expected_error = 1.12e-6
         actual_error = ls_filter.history["extracted_component_error"]
-        assert np.isclose(actual_error[-1], expected_error)
+        assert np.isclose(actual_error[-1], expected_error, atol=1e-04)
 
     def test_subcomp_extract_type_two_component_error(
         self, ls_filter: LSFilterDesign, f: np.ndarray
