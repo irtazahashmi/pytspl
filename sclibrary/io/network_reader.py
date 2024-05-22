@@ -1,12 +1,54 @@
 import os
 
-import networkx as nx
 import numpy as np
 import pandas as pd
 
-from sclibrary.simplicial_complex.extended_graph import ExtendedGraph
+from sclibrary.simplicial_complex.scbuilder import SCBuilder
 
 """Module for reading simplicial complex network data."""
+
+
+def _extract_nodes_edges(
+    df: pd.DataFrame, src_col: str, dest_col: str, start_index_zero: bool
+) -> list:
+    """
+    Extract nodes and edges from the network dataframe.
+
+    Args:
+        df (pd.DataFrame): The dataframe containing the edges.
+        src_col (str): The name of the column containing the source nodes.
+        dest_col (str): The name of the column containing the destination
+        start_index_zero (bool): True, if the node ids start from 0. False,
+        if the node ids start from 1.
+
+    Returns:
+        list: List of nodes and edges.
+    """
+    nodes = set()
+    edges = []
+
+    for _, row in df.iterrows():
+        # subtract 1 to make the node ids 0-indexed
+        from_node = int(row[src_col])
+        to_node = int(row[dest_col])
+
+        if not start_index_zero:
+            from_node -= 1
+            to_node -= 1
+
+        nodes.add(from_node)
+        nodes.add(to_node)
+
+        if (from_node, to_node) in edges or (to_node, from_node) in edges:
+            continue
+
+        edges.append((from_node, to_node))
+
+    nodes = list(range(max(nodes) + 1))
+    # order edges
+    edges.sort()
+
+    return nodes, edges
 
 
 def read_tntp(
@@ -15,7 +57,8 @@ def read_tntp(
     dest_col: str,
     skip_rows: int,
     delimeter: str = "\t",
-) -> ExtendedGraph:
+    start_index_zero: bool = True,
+) -> SCBuilder:
     """Read a tntp file and returns a graph.
 
     Args:
@@ -27,9 +70,11 @@ def read_tntp(
         file.
         delimeter (str): The delimeter used in the tntp file. Defaults to next
         line.
+        start_index_zero (bool): True, if the node ids start from 0. False,
+        if the node ids start from 1.
 
     Returns:
-        ExtendedGraph: The graph read from the tntp file.
+        SCBuilder: SC builder object to build the simplicial complex.
     """
     # Read the file
     df = pd.read_csv(filename, skiprows=skip_rows, sep=delimeter)
@@ -39,24 +84,33 @@ def read_tntp(
     # And drop the silly first andlast columns
     df.drop(["~", ";"], axis=1, inplace=True)
 
-    # Create a graph
-    G = nx.Graph()
-    # add edges
-    for _, row in df.iterrows():
-        G.add_edge(row[src_col], row[dest_col])
+    # get the nodes and edges
+    nodes, edges = _extract_nodes_edges(
+        df=df,
+        src_col=src_col,
+        dest_col=dest_col,
+        start_index_zero=start_index_zero,
+    )
 
     # extract features if any
     feature_cols = [
         col for col in df.columns if col not in [src_col, dest_col]
     ]
 
-    # add features if any
+    edge_features = {}
+    node_features = {}
     if len(feature_cols) > 0:
-        for col in feature_cols:
-            for _, row in df.iterrows():
-                G[row[src_col]][row[dest_col]][col] = row[col]
+        for i, (from_node, to_node) in enumerate(edges):
+            edge_features[(from_node, to_node)] = df.iloc[i][
+                feature_cols
+            ].to_dict()
 
-    return ExtendedGraph(G)
+    return SCBuilder(
+        nodes=nodes,
+        edges=edges,
+        node_features=node_features,
+        edge_features=edge_features,
+    )
 
 
 def read_csv(
@@ -65,7 +119,8 @@ def read_csv(
     src_col: str,
     dest_col: str,
     feature_cols: list = None,
-) -> ExtendedGraph:
+    start_index_zero: bool = True,
+) -> SCBuilder:
     """Read a csv file and returns a graph.
 
     Args:
@@ -76,79 +131,107 @@ def read_csv(
         nodes.
         feature_cols (list, optional): The names of the feature columns.
         Defaults to None.
+        start_index_zero (bool): True, if the node ids start from 0. False,
 
     Returns:
-        ExtendedGraph: The graph read from the csv file.
+       SCBuilder: SC builder object to build the simplicial complex.
     """
     df = pd.read_csv(filename, sep=delimeter)
 
-    # Create a graph
-    G = nx.Graph()
-    # add edges
-    for _, row in df.iterrows():
-        G.add_edge(row[src_col], row[dest_col])
+    # get the nodes and edges
+    nodes, edges = _extract_nodes_edges(
+        df=df,
+        src_col=src_col,
+        dest_col=dest_col,
+        start_index_zero=start_index_zero,
+    )
 
     # add features if any
-    if feature_cols:
-        for col in feature_cols:
-            for _, row in df.iterrows():
-                G[row[src_col]][row[dest_col]][col] = row[col]
+    edge_features = {}
+    node_features = {}
+    if len(feature_cols) > 0:
+        for i, (from_node, to_node) in enumerate(edges):
+            edge_features[(from_node, to_node)] = df.iloc[i][
+                feature_cols
+            ].to_dict()
 
-    return ExtendedGraph(G)
+    return SCBuilder(
+        nodes=nodes,
+        edges=edges,
+        node_features=node_features,
+        edge_features=edge_features,
+    )
 
 
-def read_incidence_matrix(B1_filename: str) -> ExtendedGraph:
+def read_B1(B1_filename: str) -> SCBuilder:
     """
-    Read the B1 and B2 incidence matrix files.
+    Read the B1 incidence matrix file.
 
     Args:
         B1_filename (str): The name of the B1 incidence matrix file.
-        B2_filename (str): The name of the B2 incidence matrix file.
 
     Returns:
-        ExtendedGraph: The graph read from the incidence matrix files.
+        SCBuilder: SC builder object to build the simplicial complex.
     """
-    B1 = pd.read_csv(B1_filename, header=None).values
+    B1 = pd.read_csv(B1_filename, header=None).to_numpy()
 
-    # create adjacency matrix
-    nodes = B1.shape[0]
-    edges = B1.shape[1]
-    assert edges > 0
-    assert nodes > 0
+    num_edges = B1.shape[1]
+    nodes = set()
+    edges = []
 
-    adjacency = [[0] * nodes for _ in range(nodes)]
+    for j in range(num_edges):
+        col = B1[:, j]
+        from_node = np.where(col == -1)[0][0]
+        to_node = np.where(col == 1)[0][0]
 
-    for edge in range(edges):
-        a, b = -1, -1
-        node = 0
+        nodes.add(from_node)
+        nodes.add(to_node)
 
-        while node < nodes and a == -1:
-            if B1[node][edge] != 0:
-                a = node
-            node += 1
+        edges.append((from_node, to_node))
 
-        while node < nodes and b == -1:
-            if B1[node][edge] != 0:
-                b = node
-            node += 1
+    nodes = list(range(max(nodes) + 1))
+    edges.sort()
 
-        if b == -1:
-            b = a
-
-        adjacency[a][b] = -1
-        adjacency[b][a] = 1
-
-    # create graph
-    G = nx.from_numpy_array(np.array(adjacency))
-    return ExtendedGraph(G)
+    return SCBuilder(nodes=nodes, edges=edges)
 
 
-def get_coordinates(
+def read_B2(B2_filename: str, edges: np.ndarray) -> list:
+    """
+    Extract triangles from the B2 incidence matrix.
+
+    Args:
+        B2_filename (str): The name of the B2 incidence matrix
+        file.
+        edges (np.ndarray): The edges of the graph.
+
+    Returns:
+        list: List of triangles.
+    """
+    assert isinstance(edges, np.ndarray)
+
+    B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
+    num_triangles = B2.shape[1]
+
+    triangles = []
+    for j in range(num_triangles):
+        # Check each column of B2 for triangles
+        col = B2[:, j]
+        ones = np.where(col != 0)[0]
+        triangle = edges[ones]
+        triangle = tuple(set(triangle.flatten()))
+        triangle = tuple(sorted(triangle))
+        triangles.append(triangle)
+
+    return triangles
+
+
+def read_coordinates(
     filename: str,
     node_id_col: str,
     x_col: str,
     y_col: str,
     delimeter: str,
+    start_index_zero: bool = True,
 ) -> dict:
     """
     Read a csv file and returns a dictionary of coordinates.
@@ -159,6 +242,8 @@ def get_coordinates(
         x_col (str): The name of the column containing the x coordinates.
         y_col (str): The name of the column containing the y coordinates.
         delimeter (str, optional): The delimeter used in the csv file.
+        start_index_zero (bool): True, if the node ids start from 0. False,
+        if the node ids start from 1.
 
     Returns:
         dict: A dictionary of coordinates (node_id : (x, y)).
@@ -170,6 +255,10 @@ def get_coordinates(
     df_coords = pd.read_csv(filename, sep=delimeter)
     df_coords.columns = [s.strip() for s in df_coords.columns]
 
+    if not start_index_zero:
+        # subtract 1 to make the node ids 0-indexed
+        df_coords[node_id_col] = df_coords[node_id_col] - 1
+
     # create a dictionary of coordinates (node_id : (x, y))
     return dict(
         zip(
@@ -177,3 +266,22 @@ def get_coordinates(
             zip(df_coords[x_col], df_coords[y_col]),
         )
     )
+
+
+def read_flow(filename: str) -> dict:
+    """
+    Read the flow.
+
+    Args:
+        filename (str): The name of the flow file.
+
+    Returns:
+        pd.DataFrame: The flow data.
+    """
+    flow = pd.DataFrame()
+    if os.path.exists(filename):
+        flow = pd.read_csv(filename, sep="\t")
+    else:
+        print("Flow data file not found.")
+
+    return flow

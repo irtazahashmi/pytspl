@@ -2,13 +2,13 @@
 
 import numpy as np
 
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 
 
 class Filter:
     """Filter design base class."""
 
-    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+    def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the filter design using a simplicial complex."""
         self.sc = simplicial_complex
 
@@ -16,7 +16,8 @@ class Filter:
             "filter": None,
             "f_estimated": None,
             "frequency_responses": None,
-            "error_per_filter_size": None,
+            "extracted_component_error": None,
+            "filter_error": None,
         }
 
     def _reset_history(self):
@@ -24,8 +25,8 @@ class Filter:
         self.history = {
             "filter": None,
             "f_estimated": None,
-            "frequency_responses": None,
-            "error_per_filter_size": None,
+            "extracted_component_error": None,
+            "filter_error": None,
         }
 
     def set_history(
@@ -33,15 +34,17 @@ class Filter:
         filter: np.ndarray,
         f_estimated: np.ndarray,
         frequency_responses: np.ndarray,
-        error_per_filter_size: np.ndarray,
+        extracted_component_error: np.ndarray,
+        filter_error: np.ndarray = np.array([]),
     ) -> None:
         """Set the history of the filter design."""
         self.history["filter"] = filter.astype(float)
         self.history["f_estimated"] = f_estimated.astype(float)
         self.history["frequency_responses"] = frequency_responses.astype(float)
-        self.history["error_per_filter_size"] = error_per_filter_size.astype(
-            float
+        self.history["extracted_component_error"] = (
+            extracted_component_error.astype(float)
         )
+        self.history["filter_error"] = filter_error.astype(float)
 
     def calculate_error(self, f_estimated: np.ndarray, f_true) -> float:
         """Calculate the error of the estimated signal using NRMSE."""

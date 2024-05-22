@@ -6,14 +6,14 @@ from scipy.sparse import csr_matrix
 
 from chebpy import chebfun
 from sclibrary.filters.filter import Filter
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
 
 class ChebyshevFilterDesign(Filter):
     """Chebyshev filter class."""
 
-    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+    def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the Chebyshev filter using the simplicial complex."""
         super().__init__(simplicial_complex=simplicial_complex)
 
@@ -87,7 +87,7 @@ class ChebyshevFilterDesign(Filter):
 
     def _chebyshev_filter_approximate(
         self,
-        laplacian_matrix: np.ndarray,
+        P: np.ndarray,
         coefficients: np.ndarray,
         alpha: float,
         k_trnc: int,
@@ -96,7 +96,7 @@ class ChebyshevFilterDesign(Filter):
         Approximate the Chebyshev filter.
 
         Args:
-            laplacian_matrix (np.ndarray): The Laplacian matrix.
+            P (np.ndarray): The Laplacian matrix.
             coefficients (np.ndarray): The coefficients of the Chebyshev
             filter.
             alpha (float): The alpha value.
@@ -108,31 +108,24 @@ class ChebyshevFilterDesign(Filter):
         coeffs = np.array(coefficients[:k_trnc])
         K = len(coeffs)
 
-        I = np.eye(laplacian_matrix.shape[0])
-        H_cheb_approx = np.zeros(
-            (k_trnc, laplacian_matrix.shape[0], laplacian_matrix.shape[1])
-        )
+        I = np.eye(P.shape[0])
+        H_cheb_approx = np.zeros((k_trnc, P.shape[0], P.shape[1]))
 
         for k in range(K):
             if k == 0:
                 H_cheb_approx[k, :, :] = I
             elif k == 1:
-                H_cheb_approx[k, :, :] = (
-                    1 / alpha * (laplacian_matrix - alpha * I)
-                )
+                H_cheb_approx[k, :, :] = 1 / alpha * (P - alpha * I)
             else:
                 H_cheb_approx[k, :, :] = (
-                    2
-                    / alpha
-                    * (laplacian_matrix - alpha * I)
-                    @ H_cheb_approx[k - 1, :, :]
+                    2 / alpha * (P - alpha * I) @ H_cheb_approx[k - 1, :, :]
                     - H_cheb_approx[k - 2, :, :]
                 )
 
+        # combine all approximations using the coefficients
         H_cheb_approx_out = np.sum(
             coeffs[:, np.newaxis, np.newaxis] * H_cheb_approx, axis=0
         )
-        # multiply coefficients and sum on axis
         return H_cheb_approx_out
 
     def get_alpha(self, p_choice: str) -> tuple:
@@ -197,9 +190,11 @@ class ChebyshevFilterDesign(Filter):
         P = self.get_p_matrix(p_choice)
         H_cheb_approx = np.zeros((k_trunc_order, P.shape[0], P.shape[1]))
         for k in range(1, k_trunc_order + 1):
+            print(f"Calculating Chebyshev filter approximation for k = {k}...")
             H_cheb_approx[k - 1 :, :, :] = self._chebyshev_filter_approximate(
-                laplacian_matrix=P, coefficients=coeffs, alpha=alpha, k_trnc=k
+                P=P, coefficients=coeffs, alpha=alpha, k_trnc=k
             )
+
         return H_cheb_approx
 
     def apply(
@@ -208,6 +203,8 @@ class ChebyshevFilterDesign(Filter):
         p_choice: str = "L1L",
         component: str = "gradient",
         L: int = 10,
+        cut_off_frequency: float = 0.01,
+        steep: int = 100,
     ) -> np.ndarray:
         """
         Apply the Chebyshev filter to the given flow f.
@@ -219,48 +216,39 @@ class ChebyshevFilterDesign(Filter):
             component (str, optional): The component of the flow. Defaults
             to "gradient".
             L (int, optional): The filter size. Defaults to 10.
+            cut_off_frequency (float, optional): The cut-off frequency.
+            Defaults to 0.01.
+            steep (int, optional): The steepness of the logistic function.
+            Defaults to 100.
 
         Returns:
             np.ndarray: The Chebyshev filter output.
         """
-        import time
+        print("Applying Chebyshev filter")
+        U, _ = get_eigendecomposition(lap_mat=self.sc.hodge_laplacian_matrix())
 
-        start = time.time()
-
-        # U, _ = get_eigendecomposition
-        # (lap_mat=self.sc.hodge_laplacian_matrix())
         P = self.get_p_matrix(p_choice)
         U_l, _ = get_eigendecomposition(lap_mat=P)
-        print(time.time() - start)
-        start = time.time()
-        print("eigendecomposition done")
+
         f_true = self.get_true_signal(component=component, f=f)
         h_ideal = self.sc.get_component_coefficients(component=component)
-        print(time.time() - start)
-        start = time.time()
-        print("true signal done")
+
         # calculate alpha
         alpha, lambda_max = self.get_alpha(p_choice=p_choice)
-        print(time.time() - start)
-        start = time.time()
-        print("alpha done")
         # get the chebyshev coefficients
         g_chebyshev = self._get_chebyshev_series(
-            n=len(P), domain_min=0, domain_max=lambda_max
+            n=L,
+            domain_min=0,
+            domain_max=lambda_max,
+            cut_off_frequency=cut_off_frequency,
+            steep=steep,
         )
         coeffs = g_chebyshev.funs[0].coeffs
-        print(time.time() - start)
-        start = time.time()
-        print("coeffs done")
 
         # ideal frequency
         H_ideal = self.get_ideal_frequency(
             p_choice=p_choice, component_coeffs=h_ideal
         )
-        print(time.time() - start)
-        start = time.time()
-        print("ideal frequency done")
-
         # chebyshev approx frequency
         H_cheb_approx = self.get_chebyshev_frequency_approx(
             p_choice=p_choice,
@@ -268,9 +256,6 @@ class ChebyshevFilterDesign(Filter):
             alpha=alpha,
             k_trunc_order=L,
         )
-        print(time.time() - start)
-        start = time.time()
-        print("chebyshev approx done")
 
         errors_response = np.zeros(L)
         errors_filter = np.zeros(L)
@@ -278,8 +263,8 @@ class ChebyshevFilterDesign(Filter):
         f_cheb = np.zeros((L, P.shape[0]))
         f_cheb_tilde = np.zeros((L, P.shape[0]))
 
-        error_per_filter_size = np.zeros(L)
-        # error_tilde = np.zeros(L)
+        extracted_comp_error = np.zeros(L)
+        error_tilde = np.zeros(L)
 
         for k in range(L):
             g_cheb_approx = np.diag(
@@ -293,21 +278,25 @@ class ChebyshevFilterDesign(Filter):
 
             # compute the error with respect to the true signal
             f_cheb[k] = np.squeeze(H_cheb_approx[k, :, :]) @ f
-            error_per_filter_size[k] = self.calculate_error(f_cheb[k], f_true)
+            extracted_comp_error[k] = self.calculate_error(f_cheb[k], f_true)
 
             # f_tilde - compute the error on component embedding
-            # f_cheb_tilde[k] = U.T @ f_cheb[k]
-            # error_tilde[k] = self.calculate_error(
-            #     f_cheb_tilde[k], U.T @ f_true
-            # )
+            f_cheb_tilde[k] = U.T @ f_cheb[k]
+            error_tilde[k] = self.calculate_error(
+                f_cheb_tilde[k], U.T @ f_true
+            )
 
-            print(f"Filter size: {k} - Error: {error_per_filter_size[k]}")
+            print(
+                f"Filter size: {k} - Filter error: {errors_filter[k]} - "
+                + f"Error: {extracted_comp_error[k]}"
+            )
 
-        self.history["filter"] = H_cheb_approx.astype(float)
-        self.history["f_estimated"] = f_cheb.astype(float)
-        self.history["frequency_responses"] = f_cheb_tilde.astype(float)
-        self.history["error_per_filter_size"] = error_per_filter_size.astype(
-            float
+        self.set_history(
+            filter=H_cheb_approx,
+            f_estimated=f_cheb,
+            frequency_responses=f_cheb_tilde,
+            extracted_component_error=extracted_comp_error,
+            filter_error=errors_filter,
         )
 
     def plot_chebyshev_series_approx(self, p_choice: str):
@@ -357,9 +346,11 @@ class ChebyshevFilterDesign(Filter):
         if f_cheb_tilde is None:
             raise ValueError("Run the apply method first.")
 
-        P = self.get_p_matrix("L1L")
-        U, eigenvals = get_eigendecomposition(lap_mat=P)
-
+        # get the unique eigenvalues
+        L1 = self.sc.hodge_laplacian_matrix()
+        U, eigenvals = get_eigendecomposition(lap_mat=L1)
+        eigenvals = np.unique(eigenvals)
+        # get the true signal
         f_true = self.get_true_signal(f=flow, component=component)
 
         plt.figure(figsize=(15, 5))

@@ -3,12 +3,12 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplexNetwork
+from sclibrary import SimplicialComplex
 from sclibrary.filters import EdgeFlowDenoising
 
 
 @pytest.fixture(autouse=True)
-def denoising(sc: SimplicialComplexNetwork):
+def denoising(sc: SimplicialComplex):
     return EdgeFlowDenoising(sc)
 
 
@@ -39,7 +39,7 @@ class TestEdgeFlowDenoising:
         )
 
         expected_error = 0.70
-        actual_error = denoising.history["error_per_filter_size"][-1]
+        actual_error = denoising.history["extracted_component_error"][-1]
         assert np.isclose(
             np.round(actual_error, 2),
             expected_error,
@@ -116,7 +116,7 @@ class TestEdgeFlowDenoising:
         ]
 
         assert np.allclose(
-            np.round(denoising.history["error_per_filter_size"], 2),
+            np.round(denoising.history["extracted_component_error"], 2),
             expected_errors,
         )
 
@@ -131,7 +131,7 @@ class TestEdgeFlowDenoising:
         )
 
         expected_error = 0.73
-        actual_error = denoising.history["error_per_filter_size"][-1]
+        actual_error = denoising.history["extracted_component_error"][-1]
         assert np.isclose(
             np.round(actual_error, 2),
             expected_error,

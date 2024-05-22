@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 
 from sclibrary.filters.filter import Filter
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 from sclibrary.utils.frequency_component import FrequencyComponent
 
@@ -10,7 +10,7 @@ from sclibrary.utils.frequency_component import FrequencyComponent
 class GridBasedFilterDesign(Filter):
     """Module for grid-based filter design."""
 
-    def __init__(self, simplicial_complex: SimplicialComplexNetwork):
+    def __init__(self, simplicial_complex: SimplicialComplex):
         """
         Initialize the grid-based filter design using the simplicial
         complex.
@@ -203,7 +203,7 @@ class GridBasedFilterDesign(Filter):
             filter=H,
             f_estimated=f_estimated,
             frequency_responses=frequency_responses,
-            error_per_filter_size=errors,
+            extracted_component_error=errors,
         )
 
     def subcomponent_extraction(
@@ -264,7 +264,7 @@ class GridBasedFilterDesign(Filter):
             filter=H,
             f_estimated=f_estimated,
             frequency_responses=frequency_responses,
-            error_per_filter_size=errors,
+            extracted_component_error=errors,
         )
 
     def general_filter(

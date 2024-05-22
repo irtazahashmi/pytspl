@@ -1,6 +1,6 @@
 import networkx as nx
 
-from sclibrary.simplicial_complex.extended_graph import ExtendedGraph
+from sclibrary.simplicial_complex.scbuilder import SCBuilder
 
 
 def generate_random_simplicial_complex(
@@ -29,7 +29,7 @@ def generate_random_simplicial_complex(
     for i, (u, v) in enumerate(G.edges()):
         G[u][v]["distance"] = weights[i]
 
-    sc = ExtendedGraph(G).to_simplicial_complex(
+    sc = SCBuilder(G).to_simplicial_complex(
         condition="distance", dist_threshold=dist_threshold
     )
     coordinates = nx.spring_layout(G)

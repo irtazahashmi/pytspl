@@ -1,0 +1,17 @@
+<NUMBER OF NODES> 	7 
+<NUMBER OF LINKS> 	10 
+<END OF METADATA> 	 
+
+
+~ 	Tail	Head	;
+    1	0	1	    ;
+    2	1	2	    ;
+    3	0	2	    ;
+    4	2	3	    ;
+    5	2	5	    ;
+    6	0	3	    ;
+    7	3	4	    ;
+    8	4	5	    ;
+    9	5	6	    ;
+    10	4	6	    ;
+

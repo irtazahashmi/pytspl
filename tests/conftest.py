@@ -10,7 +10,7 @@ def sc():
     Read the edges.csv file and create a simplicial complex network for testing.
 
     Yields:
-        SimplicialComplexNetwork: A simplicial complex network object.
+        SimplicialComplex: A simplicial complex network object.
     """
     simplical_complex, _ = dataset_loader.load_paper_data()
     yield simplical_complex

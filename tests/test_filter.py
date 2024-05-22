@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplexNetwork
+from sclibrary import SimplicialComplex
 from sclibrary.filters.filter import Filter
 
 
 @pytest.fixture(autouse=True)
-def filter(sc: SimplicialComplexNetwork):
+def filter(sc: SimplicialComplex):
     return Filter(sc)
 
 

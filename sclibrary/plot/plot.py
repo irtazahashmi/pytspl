@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-from sclibrary.simplicial_complex import SimplicialComplexNetwork
+from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.frequency_component import FrequencyComponent
 
 
@@ -16,12 +16,12 @@ class SCPlot:
 
     def __init__(
         self,
-        simplical_complex: SimplicialComplexNetwork,
+        simplical_complex: SimplicialComplex,
         coordinates: dict = None,
     ) -> None:
         """
         Args:
-            simplical_complex (SimplicialComplexNetwork): The simplicial
+            simplical_complex (SimplicialComplex): The simplicial
             complex network object.
             coordinates (dict, optional): Dict of positions
             [node_id : (x, y)] is used for placing the 0-simplices. The

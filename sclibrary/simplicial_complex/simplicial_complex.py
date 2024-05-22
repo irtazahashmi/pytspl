@@ -15,15 +15,16 @@ from sclibrary.utils.hodgedecomposition import (
     get_gradient_component,
     get_harmonic_component,
 )
-from toponetx.classes import SimplicialComplex
 
 
-class SimplicialComplexNetwork:
+class SimplicialComplex:
     """Module to analyze simplicial complex data."""
 
     def __init__(
         self,
-        simplices: list,
+        nodes: list = [],
+        edges: list = [],
+        triangles: list = [],
         node_features: dict = {},
         edge_features: dict = {},
     ):
@@ -31,56 +32,98 @@ class SimplicialComplexNetwork:
         Create a simplicial complex network from edge list.
 
         Args:
-            simplices (list): List of simplices of the simplicial complex.
+            nodes (list, optional): List of nodes. Defaults to [].
+            edges (list, optional): List of edges. Defaults to [].
+            triangles (list, optional): List of triangles. Defaults to [].
             node_features (dict, optional): Dict of node features.
             Defaults to {}.
             edge_features (dict, optional): Dict of edge features.
             Defaults to {}.
         """
-        self.sc = SimplicialComplex(simplices=simplices)
+        self.nodes = nodes
+        self.edges = edges
+        self.triangles = triangles
+
         self.node_features = node_features
         self.edge_features = edge_features
+
+        self.B1 = self.edges_to_B1(edges, len(nodes))
+        self.B2 = self.triangles_to_B2(triangles, edges)
+
+    def edges_to_B1(self, edges: list, num_nodes: int) -> np.ndarray:
+        """
+        Create the B1 matrix (node-edge) from the edges.
+
+        Args:
+            edges (list): List of edges.
+            num_nodes (int): Number of nodes.
+
+        Returns:
+            np.ndarray: B1 matrix.
+        """
+        B1 = np.zeros((num_nodes, len(edges)))
+
+        for j, edge in enumerate(edges):
+            from_node, to_node = edge
+            B1[from_node, j] = -1
+            B1[to_node, j] = 1
+        return B1
+
+    def triangles_to_B2(self, triangles: list, edges: list) -> np.ndarray:
+        """
+        Create the B2 matrix (edge-triangle) from the triangles.
+
+        Args:
+            triangles (list): List of triangles.
+            edges (list): List of edges.
+
+        Returns:
+            np.ndarray: B2 matrix.
+        """
+        B2 = np.zeros((len(edges), len(triangles)))
+        for j, triangle in enumerate(triangles):
+            a, b, c = triangle
+            try:
+                index_a = edges.index((a, b))
+            except ValueError:
+                index_a = edges.index((b, a))
+            try:
+                index_b = edges.index((b, c))
+            except ValueError:
+                index_b = edges.index((c, b))
+            try:
+                index_c = edges.index((a, c))
+            except ValueError:
+                index_c = edges.index((c, a))
+
+            B2[index_a, j] = 1
+            B2[index_c, j] = -1
+            B2[index_b, j] = 1
+
+        return B2
 
     @property
     def shape(self) -> tuple:
         """Return the shape of the simplicial complex."""
-        return self.sc.shape
+        return (len(self.nodes), len(self.edges), len(self.triangles))
 
     @property
     def max_dim(self) -> int:
         """Return the maximum dimension of the simplicial complex."""
-        return self.sc.dim
-
-    @property
-    def nodes(self) -> set:
-        """Return the set of nodes in the simplicial complex."""
-        return {node for (node,) in self.sc.nodes}
-
-    @property
-    def edges(self) -> list[tuple]:
-        """Return the set of edges in the simplicial complex"""
-        edges = [simplex for simplex in self.simplices if len(simplex) == 2]
-        edges = sorted(edges, key=lambda x: (x[0], x[1]))
-        return edges
+        return max(len(simplex) for simplex in self.simplices) - 1
 
     @property
     def simplices(self) -> list[tuple]:
         """
-        Get al the simplices of the simplicial complex.
+        Get all the simplices of the simplicial complex.
 
         This includes 0-simplices (nodes), 1-simplices (edges), 2-simplices.
-        """
-        simplices = set(self.sc.simplices)
-        simplices = [tuple(simplex) for simplex in simplices]
-        return simplices
 
-    @property
-    def is_connected(self) -> bool:
+        Returns:
+            list[tuple]: List of simplices.
         """
-        Return True if the simplicial complex is connected, False
-        otherwise.
-        """
-        return self.sc.is_connected()
+        nodes = [(node,) for node in self.nodes]
+        return nodes + self.edges + self.triangles
 
     @property
     def edge_feature_names(self) -> list[str]:
@@ -115,10 +158,13 @@ class SimplicialComplexNetwork:
 
     def get_faces(self, simplex: Iterable[Hashable]) -> set[tuple]:
         """
-        Return the faces of the simplex.
+        Return the faces of the simplex in order.
 
         Args:
             simplex (Iterable[Hashable]): Simplex for which to find the faces.
+
+        Returns:
+            set[tuple]: Set of faces of the simplex.
         """
         faceset = set()
         numnodes = len(simplex)
@@ -126,25 +172,8 @@ class SimplicialComplexNetwork:
             for face in combinations(simplex, r):
                 faceset.add(tuple(sorted(face)))
         k = len(simplex) - 1
-        faceset = [face for face in faceset if len(face) == k]
+        faceset = sorted([face for face in faceset if len(face) == k])
         return faceset
-
-    def get_cofaces(
-        self, simplex: Iterable[Hashable], rank: int = 0
-    ) -> list[tuple]:
-        """
-        Return the cofaces of the simplex.
-
-        Args:
-            simplex (Iterable[Hashable]): Simplex for which to find the
-            cofaces.
-            rank (int): Rank of the cofaces. Defaults to 0. If rank is 0,
-            returns all cofaces of the simplex.
-        """
-        cofaces = self.sc.get_cofaces(simplex=simplex, codimension=rank)
-        cofaces = set(cofaces)
-        cofaces = [tuple(coface) for coface in cofaces]
-        return cofaces
 
     def identity_matrix(self) -> np.ndarray:
         """Identity matrix of the simplicial complex."""
@@ -160,21 +189,33 @@ class SimplicialComplexNetwork:
         Returns:
             np.ndarray: Incidence matrix of the simplicial complex.
         """
-        inc_mat = self.sc.incidence_matrix(rank=rank).todense()
-        return np.squeeze(np.asarray(inc_mat))
+        if rank == 0:
+            return np.ones(len(self.nodes), dtype=np.float32)
+        elif rank == 1:
+            return self.B1
+        elif rank == 2:
+            return self.B2
+        else:
+            raise ValueError(
+                "Rank cannot be larger than the dimension of the complex."
+            )
 
-    def adjacency_matrix(self, rank: int) -> np.ndarray:
+    def adjacency_matrix(self) -> np.ndarray:
         """
         Compute the adjacency matrix of the simplicial complex.
-
-        Args:
-            rank (int): Rank of the adjacency matrix.
 
         Returns:
             np.ndarray: Adjacency matrix of the simplicial complex.
         """
-        adj_mat = self.sc.adjacency_matrix(rank=rank).todense()
-        return np.squeeze(np.asarray(adj_mat))
+        adjacency_mat = np.zeros((self.B1.shape[0], self.B1.shape[0]))
+
+        for col in range(self.B1.shape[1]):
+            col_nozero = np.where(self.B1[:, col] != 0)[0]
+            from_node, to_node = col_nozero[0], col_nozero[1]
+            adjacency_mat[from_node, to_node] = 1
+            adjacency_mat[to_node, from_node] = 1
+
+        return adjacency_mat
 
     def laplacian_matrix(self) -> np.ndarray:
         """
@@ -183,34 +224,7 @@ class SimplicialComplexNetwork:
         Returns:
             np.ndarray: Laplacian matrix of the simplicial complex.
         """
-        lap_mat = self.sc.hodge_laplacian_matrix(rank=0).todense()
-        return np.squeeze(np.asarray(lap_mat))
-
-    def normalized_laplacian_matrix(self, rank: int) -> np.ndarray:
-        """
-        Compute the normalized Laplacian matrix of the simplicial complex.
-
-        Args:
-            rank (int): Rank of the normalized Laplacian matrix.
-
-        Returns:
-            np.ndarray: Normalized Laplacian matrix of the simplicial complex.
-        """
-        norm_lap_mat = self.sc.normalized_laplacian_matrix(rank=rank).todense()
-        return np.squeeze(np.asarray(norm_lap_mat))
-
-    def upper_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
-        """
-        Compute the upper Laplacian matrix of the simplicial complex.
-
-        Args:
-            rank (int): Rank of the upper Laplacian matrix.
-
-        Returns:
-            np.ndarray: Upper Laplacian matrix of the simplicial complex.
-        """
-        up_lap_mat = self.sc.up_laplacian_matrix(rank=rank).todense()
-        return np.squeeze(np.asarray(up_lap_mat))
+        return self.B1 @ self.B1.T
 
     def lower_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
@@ -219,11 +233,38 @@ class SimplicialComplexNetwork:
         Args:
             rank (int): Rank of the lower Laplacian matrix.
 
+        ValueError:
+            If the rank is not 1 or 2.
+
         Returns:
             np.ndarray: Lower Laplacian matrix of the simplicial complex.
         """
-        down_lap_mat = self.sc.down_laplacian_matrix(rank=rank).todense()
-        return np.squeeze(np.asarray(down_lap_mat))
+        if rank == 1:
+            return self.B1.T @ self.B1
+        elif rank == 2:
+            return self.B2.T @ self.B2
+        else:
+            raise ValueError("Rank must be either 1 or 2.")
+
+    def upper_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
+        """
+        Compute the upper Laplacian matrix of the simplicial complex.
+
+        Args:
+            rank (int): Rank of the upper Laplacian matrix.
+
+        ValueError:
+            If the rank is not 0 or 1.
+
+        Returns:
+            np.ndarray: Upper Laplacian matrix of the simplicial complex.
+        """
+        if rank == 0:
+            return self.laplacian_matrix()
+        elif rank == 1:
+            return self.B2 @ self.B2.T
+        else:
+            raise ValueError("Rank must be either 0 or 1.")
 
     def hodge_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
         """
@@ -232,11 +273,20 @@ class SimplicialComplexNetwork:
         Args:
             rank (int): Rank of the Hodge Laplacian matrix.
 
+        ValueError:
+            If the rank is not 0, 1, or 2.
+
         Returns:
             np.ndarray: Hodge Laplacian matrix of the simplicial complex.
         """
-        hodge_lap_mat = self.sc.hodge_laplacian_matrix(rank=rank).todense()
-        return np.squeeze(np.asarray(hodge_lap_mat))
+        if rank == 0:
+            return self.laplacian_matrix()
+        elif rank == 1:
+            return self.lower_laplacian_matrix(
+                rank=rank
+            ) + self.upper_laplacian_matrix(rank=rank)
+        else:
+            raise ValueError("Rank must be between 0 and 2.")
 
     def apply_lower_shifting(
         self, flow: np.ndarray, steps: int = 1
