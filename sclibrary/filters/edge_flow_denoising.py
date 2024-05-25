@@ -63,6 +63,7 @@ class EdgeFlowDenoising(Filter):
 
         # update the results
         f_estimated = np.asarray(f_estimated)
+
         self.set_history(
             filter=H,
             f_estimated=f_estimated,

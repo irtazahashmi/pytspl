@@ -183,12 +183,12 @@ class TestSimplicialComplex:
         exptected_h = np.array([-1.001])
         exptected_g = np.array(
             [
-                -1.001,
-                -1.001,
-                -1.002,
-                -1.003,
-                -0.995,
-                1.004,
+                -1.0006,
+                -1.0013,
+                1.0017,
+                -1.0029,
+                -0.9953,
+                1.0041,
             ]
         )
         assert np.allclose(f_tilda_h, exptected_h, atol=1e-3)

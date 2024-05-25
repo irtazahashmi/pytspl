@@ -29,9 +29,7 @@ class TestEigendecomoposition:
         L1l = sc.lower_laplacian_matrix(rank=k).toarray()
         u_g, _ = get_gradient_eigenvectors(L1l)
         # u_g.T @ u_g = I
-        assert np.allclose(
-            np.round(u_g.T @ u_g, decimals=3), np.eye(u_g.shape[1])
-        )
+        assert np.allclose(u_g.T @ u_g, np.eye(u_g.shape[1]))
 
     def test_dimensions_add_up(self, sc: SimplicialComplex):
         # Ng + Nc + Nh = N
@@ -59,17 +57,17 @@ class TestEigendecomoposition:
         u_g, _ = get_gradient_eigenvectors(L1l)
         # U_h.T @ U_c = 0
         assert np.allclose(
-            np.round(u_h.T @ u_c, decimals=3),
+            u_h.T @ u_c,
             np.zeros((u_h.shape[1], u_c.shape[1])),
         )
         # U_h.T @ U_g = 0
         assert np.allclose(
-            np.round(u_h.T @ u_g, decimals=3),
+            u_h.T @ u_g,
             np.zeros((u_h.shape[1], u_g.shape[1])),
         )
         # U_c.T @ U_g = 0
         assert np.allclose(
-            np.round(u_c.T @ u_g, decimals=3),
+            u_c.T @ u_g,
             np.zeros((u_c.shape[1], u_g.shape[1])),
         )
 
@@ -77,7 +75,7 @@ class TestEigendecomoposition:
         k = 1
         L1 = sc.hodge_laplacian_matrix(rank=k).toarray()
 
-        tolerance = 1e-03
+        tolerance = 1e-06
         eigenvectors, eigenvalues = get_eigendecomposition(
             L1, tolerance=tolerance
         )

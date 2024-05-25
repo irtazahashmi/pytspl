@@ -60,7 +60,7 @@ class LSFilterDesign(Filter):
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # building the topological filter
-            H = np.zeros_like(lap_matrix.toarray(), dtype=float)
+            H = np.zeros(lap_matrix.shape, dtype=float)
 
             for l in range(len(h)):
                 H += h[l] * (lap_matrix**l).toarray()

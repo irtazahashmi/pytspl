@@ -1,6 +1,7 @@
 import warnings
 
 import numpy as np
+from scipy.sparse.linalg import eigsh
 
 """Module to compute eigendecomposition"""
 
@@ -82,14 +83,15 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-6) -> tuple:
         lap_mat, np.ndarray
     ), "Laplacian matrix must be a numpy array"
 
-    eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
-    # set eigenvalues below tolerance to zero
-    eigenvalues[eigenvalues < tolerance] = 0
-
     with warnings.catch_warnings(record=True):
-        # sort the eigenvectors according to the sorted eigenvalues
-        eigenvectors = eigenvectors[:, eigenvalues.argsort()].astype(float)
-        # sort the eigenvalues
-        eigenvalues = np.sort(eigenvalues).astype(float)
+        # eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
+        eigenvalues, eigenvectors = eigsh(lap_mat, k=lap_mat.shape[0])
+        # set eigenvalues below tolerance to zero
+        eigenvalues[np.abs(eigenvalues) < tolerance] = 0
+        # set eigenvectors below tolerance to zero
+        eigenvectors[np.abs(eigenvectors) < tolerance] = 0
+
+    eigenvalues = eigenvalues.astype(float)
+    eigenvectors = eigenvectors.astype(float)
 
     return eigenvectors, eigenvalues

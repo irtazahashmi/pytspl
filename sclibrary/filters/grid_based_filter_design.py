@@ -127,7 +127,7 @@ class GridBasedFilterDesign(Filter):
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # build the topology filter
-            H = np.zeros_like(P.toarray(), dtype=float)
+            H = np.zeros(P.shape, dtype=float)
 
             for i in range(len(h)):
                 H += h[i] * (P**i).toarray()

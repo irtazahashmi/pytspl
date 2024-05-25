@@ -100,6 +100,7 @@ class TestEdgeFlowDenoising:
         ]
 
         denoising.denoise(f=f, f_true=f0, p_choice="L1", mu_vals=mu_values)
+
         expected_errors = [
             5.48,
             4.86,
@@ -114,11 +115,18 @@ class TestEdgeFlowDenoising:
             0.06,
             0.05,
         ]
-
+        # error is decreasing
+        assert np.all(
+            np.diff(denoising.history["extracted_component_error"]) < 0
+        )
+        # error values are as expected
         assert np.allclose(
             np.round(denoising.history["extracted_component_error"], 2),
             expected_errors,
         )
+
+        f_estimated = denoising.history["f_estimated"]
+        assert np.allclose(f_estimated, f0, atol=1e-1)
 
     def test_edge_flow_denoising_P_L1L(
         self, denoising: EdgeFlowDenoising, f0: np.ndarray, f: np.ndarray
