@@ -59,9 +59,9 @@ class TestSimplicialComplex:
 
     def test_incidence_matrix(self, sc: SimplicialComplex):
         nodes, edges, triangles = 7, 10, 3
-        inc_mat = sc.incidence_matrix(rank=1)
+        inc_mat = sc.incidence_matrix(rank=1).toarray()
         assert inc_mat.shape == (nodes, edges)
-        inc_mat_2 = sc.incidence_matrix(rank=2)
+        inc_mat_2 = sc.incidence_matrix(rank=2).toarray()
         assert inc_mat_2.shape == (edges, triangles)
         # Bk * Bk+1 = 0
         assert np.array_equal(
@@ -70,81 +70,80 @@ class TestSimplicialComplex:
 
     def test_adjacency_matrix(self, sc: SimplicialComplex):
         nodes = 7
-        adj_mat = sc.adjacency_matrix()
+        adj_mat = sc.adjacency_matrix().toarray()
         assert adj_mat.shape == (nodes, nodes)
 
     def test_laplacian_matrix(self, sc: SimplicialComplex):
         nodes = 7
-        lap_mat = sc.laplacian_matrix()
+        lap_mat = sc.laplacian_matrix().toarray()
         assert lap_mat.shape == (nodes, nodes)
         # sum of each row is 0
         assert np.allclose(np.sum(lap_mat, axis=1), np.zeros(nodes))
         # sum of each column is 0
         assert np.allclose(np.sum(lap_mat, axis=0), np.zeros(nodes))
         # Laplacian matrix = B1@B1.T
-        expected = sc.incidence_matrix(rank=1) @ sc.incidence_matrix(rank=1).T
-        assert np.array_equal(lap_mat, expected)
+        B1 = sc.incidence_matrix(rank=1)
+        expected = B1 @ B1.T
+        assert np.array_equal(lap_mat, expected.toarray())
 
     def test_lower_laplacian_matrix(self, sc: SimplicialComplex):
         # L(k, l) = Bk.T * Bk
         edges = 10
-        lap_mat_1 = sc.lower_laplacian_matrix(rank=1)
+        lap_mat_1 = sc.lower_laplacian_matrix(rank=1).toarray()
         assert lap_mat_1.shape == (edges, edges)
-        L_1 = sc.incidence_matrix(rank=1).T @ sc.incidence_matrix(rank=1)
-        assert np.array_equal(lap_mat_1, L_1)
+        B1 = sc.incidence_matrix(rank=1)
+        L1 = B1.T @ B1
+        assert np.array_equal(lap_mat_1, L1.toarray())
 
     def test_upper_laplacian_matrix(self, sc: SimplicialComplex):
         # L(k, l) = Bk+1 * Bk+1.T
         edges, k = 10, 1
-        lap_mat_2 = sc.upper_laplacian_matrix(rank=k)
+        lap_mat_2 = sc.upper_laplacian_matrix(rank=k).toarray()
         assert lap_mat_2.shape == (edges, edges)
-        L_2 = (
-            sc.incidence_matrix(rank=k + 1) @ sc.incidence_matrix(rank=k + 1).T
-        )
-        assert np.array_equal(lap_mat_2, L_2)
+        B2 = sc.incidence_matrix(rank=k + 1)
+        L2 = B2 @ B2.T
+        assert np.array_equal(lap_mat_2, L2.toarray())
 
     def test_hodge_laplacian_matrix(self, sc: SimplicialComplex):
         nodes, edges, k = 7, 10, 0
         # L0 = B1 * B1.T
-        lap_mat_0 = sc.hodge_laplacian_matrix(rank=k)
+        lap_mat_0 = sc.hodge_laplacian_matrix(rank=k).toarray()
         assert lap_mat_0.shape == (nodes, nodes)
-        L_0 = (
-            sc.incidence_matrix(rank=k + 1) @ sc.incidence_matrix(rank=k + 1).T
-        )
-        assert np.array_equal(lap_mat_0, L_0)
+        B1 = sc.incidence_matrix(rank=k + 1)
+        L0 = B1 @ B1.T
+        assert np.array_equal(lap_mat_0, L0.toarray())
 
         # Lk = Bk.T * Bk + Bk+1 * Bk+1.T for k > 0
         k = 1
-        lap_mat_1 = sc.hodge_laplacian_matrix(rank=k)
+        lap_mat_1 = sc.hodge_laplacian_matrix(rank=k).toarray()
         assert lap_mat_1.shape == (edges, edges)
-        L_1 = (
-            sc.incidence_matrix(rank=k).T @ sc.incidence_matrix(rank=k)
-            + sc.incidence_matrix(rank=k + 1)
-            @ sc.incidence_matrix(rank=k + 1).T
-        )
+        B1 = sc.incidence_matrix(rank=k)
+        B2 = sc.incidence_matrix(rank=k + 1)
+        L1 = B1.T @ B1 + B2 @ B2.T
 
-        assert np.array_equal(lap_mat_1, L_1)
+        assert np.array_equal(lap_mat_1, L1.toarray())
 
     def test_hodge_laplacian_matrix_lower_upper(self, sc: SimplicialComplex):
         # Lk = L(k, upper) + L(k, lower)
         k = 1
-        L_1_calculated = sc.upper_laplacian_matrix(
+        L1_calculated = sc.upper_laplacian_matrix(
             rank=k
         ) + sc.lower_laplacian_matrix(rank=k)
         assert np.array_equal(
-            sc.hodge_laplacian_matrix(rank=k), L_1_calculated
+            sc.hodge_laplacian_matrix(rank=k).toarray(),
+            L1_calculated.toarray(),
         )
 
     def test_hodge_laplacian_matrix_is_orthogonal(self, sc: SimplicialComplex):
         edges, k = 10, 1
-        l_1 = sc.hodge_laplacian_matrix(rank=k)
-        l_1_u = sc.upper_laplacian_matrix(rank=k)
-        l_1_l = sc.lower_laplacian_matrix(rank=k)
+        L1 = sc.hodge_laplacian_matrix(rank=k)
+        L1u = sc.upper_laplacian_matrix(rank=k)
+        L1l = sc.lower_laplacian_matrix(rank=k)
         # L(k) = L(k, upper) + L(k, lower)
-        assert np.allclose(l_1, l_1_u + l_1_l)
+        assert np.allclose(L1.toarray(), (L1u + L1l).toarray())
         # dot(L(k), L(k, upper), L(k, lower)) = 0
         assert np.array_equal(
-            np.dot(l_1, np.dot(l_1_u, l_1_l)), np.zeros((edges, edges))
+            (L1 @ L1l @ L1u).toarray(), np.zeros((edges, edges))
         )
 
     def test_apply_lower_shifting(self, sc: SimplicialComplex):

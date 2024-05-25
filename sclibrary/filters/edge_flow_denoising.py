@@ -39,10 +39,10 @@ class EdgeFlowDenoising(Filter):
             mu_vals (np.ndarray, optional): Regularization parameters.
             Defaults to [0.5].
         """
-        P = self.get_p_matrix(p_choice)
+        P = self.get_p_matrix(p_choice).toarray()
 
         identity = np.eye(P.shape[0])
-        U1, _ = get_eigendecomposition(P)
+        U1, _ = get_eigendecomposition(lap_mat=P)
 
         errors = np.zeros((len(mu_vals)))
         frequency_responses = np.zeros((len(mu_vals), U1.shape[1]))
@@ -81,8 +81,8 @@ class EdgeFlowDenoising(Filter):
         if self.history["frequency_responses"] is None:
             raise ValueError("Run the denoising method first.")
 
-        P = self.get_p_matrix(p_choice)
-        _, eigenvals = get_eigendecomposition(P)
+        P = self.get_p_matrix(p_choice).toarray()
+        _, eigenvals = get_eigendecomposition(lap_mat=P)
 
         frequency_responses = self.history["frequency_responses"]
 

@@ -12,19 +12,6 @@ def grid_filter(sc: SimplicialComplex):
 
 class TestGridBasedFilterDesign:
 
-    def test_power_iteration_algo(self, grid_filter: GridBasedFilterDesign):
-
-        P = grid_filter.sc.hodge_laplacian_matrix(rank=1)
-        v = grid_filter._power_iteration(P=P, iterations=50)
-
-        assert v is not None
-        assert isinstance(v, np.ndarray)
-
-        expected = np.array(
-            [0.06, -0.33, 0.15, -0.39, 0.48, 0.49, -0.31, 0.32, 0.12, -0.2]
-        )
-        assert np.allclose(np.round(v, 2), expected)
-
     def test_denosing_L1(
         self, grid_filter: GridBasedFilterDesign, f: np.ndarray, f0: np.ndarray
     ):

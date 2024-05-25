@@ -17,21 +17,6 @@ class GridBasedFilterDesign(Filter):
         """
         super().__init__(simplicial_complex)
 
-    def _power_iteration(
-        self, P: np.ndarray, iterations: int = 50
-    ) -> np.ndarray:
-        """Power iteration algorithm to approximate the largest eigenvalue."""
-        v = np.ones(P.shape[0])
-
-        for _ in range(iterations):
-            v = csr_matrix(P).dot(v)
-            v = v / np.linalg.norm(v)
-
-        v = v.astype(float)
-        # add small value to avoid division by zero
-        v = v + 1e-10
-        return v
-
     def _sample_grid_points(
         self, P: np.ndarray, num_of_samples: int
     ) -> np.ndarray:
@@ -47,9 +32,9 @@ class GridBasedFilterDesign(Filter):
             np.ndarray: Sampled grid points.
         """
         # Get the largest eigenvalue
-        v = self._power_iteration(P=P)
+        v = self.power_iteration(P=P)
         lambda_min = 0
-        lambda_max = np.mean(csr_matrix(P).dot(v) / v)
+        lambda_max = np.mean(P @ v / v)
         return np.linspace(lambda_min, lambda_max, num_of_samples)
 
     @staticmethod
@@ -99,7 +84,7 @@ class GridBasedFilterDesign(Filter):
         self,
         f: np.ndarray,
         f_true: np.ndarray,
-        P: np.ndarray,
+        P: csr_matrix,
         alpha: np.ndarray,
         U: np.ndarray,
         eigenvals: np.ndarray,
@@ -111,7 +96,7 @@ class GridBasedFilterDesign(Filter):
         Args:
             f (np.ndarray): The input signal.
             f_true (np.ndarray): The true signal.
-            P (np.ndarray): The matrix P.
+            P (csr_matrix): The matrix P.
             alpha (np.ndarray): The filter coefficients.
             U (np.ndarray): The eigenvectors.
             eigenvals (np.ndarray): The eigenvalues.
@@ -121,8 +106,6 @@ class GridBasedFilterDesign(Filter):
             tuple: The filter, the estimated signal, the
             frequency responses, and the errors.
         """
-        P_csr = csr_matrix(P)
-
         # learn the regularization filter with topological filter
         system_mat = np.zeros((len(eigenvals), L))
 
@@ -144,10 +127,10 @@ class GridBasedFilterDesign(Filter):
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # build the topology filter
-            H = np.zeros_like(P, dtype=float)
+            H = np.zeros_like(P.toarray(), dtype=float)
 
             for i in range(len(h)):
-                H += h[i] * (P_csr**i).toarray()
+                H += h[i] * (P**i).toarray()
 
             # estimate the signal
             f_estimated = H @ f
@@ -179,13 +162,13 @@ class GridBasedFilterDesign(Filter):
             mu (float): The damping factor.
         """
         P = self.get_p_matrix(p_choice)
-        U, eigenvals = get_eigendecomposition(lap_mat=P)
+        U, eigenvals = get_eigendecomposition(lap_mat=P.toarray())
 
         # number of samples
         num_of_samples = len(eigenvals)
         # sample eigenvalues & their frequency responses
         g, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
-            P=P, num_of_samples=num_of_samples, mu=mu
+            P=P.toarray(), num_of_samples=num_of_samples, mu=mu
         )
 
         H, f_estimated, frequency_responses, errors = self._apply_filter(
@@ -233,13 +216,13 @@ class GridBasedFilterDesign(Filter):
             to extract the subcomponent using the type two extraction.
         """
         P = self.get_p_matrix(p_choice)
-        U, eigenvals = get_eigendecomposition(lap_mat=P)
+        U, eigenvals = get_eigendecomposition(lap_mat=P.toarray())
 
         # number of samples
         num_of_samples = len(eigenvals)
         # sample eigenvalues & their frequency responses
         _, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
-            P=P, num_of_samples=num_of_samples
+            P=P.toarray(), num_of_samples=num_of_samples
         )
 
         if component is not None:

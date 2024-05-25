@@ -179,7 +179,19 @@ class SimplicialComplex:
         """Identity matrix of the simplicial complex."""
         return np.eye(len(self.nodes))
 
-    def incidence_matrix(self, rank: int) -> np.ndarray:
+    def tocsr(self, matrix: np.ndarray) -> csr_matrix:
+        """
+        Convert a numpy array to a csr_matrix.
+
+        Args:
+            matrix (np.ndarray): Numpy array to convert.
+
+        Returns:
+            csr_matrix: Compressed Sparse Row matrix.
+        """
+        return csr_matrix(matrix, dtype=float)
+
+    def incidence_matrix(self, rank: int) -> csr_matrix:
         """
         Compute the incidence matrix of the simplicial complex.
 
@@ -187,25 +199,25 @@ class SimplicialComplex:
             rank (int): Rank of the incidence matrix.
 
         Returns:
-            np.ndarray: Incidence matrix of the simplicial complex.
+            csr_matrix: Incidence matrix of the simplicial complex.
         """
         if rank == 0:
-            return np.ones(len(self.nodes), dtype=np.float32)
+            return np.ones(len(self.nodes), dtype=float)
         elif rank == 1:
-            return self.B1
+            return self.tocsr(self.B1)
         elif rank == 2:
-            return self.B2
+            return self.tocsr(self.B2)
         else:
             raise ValueError(
                 "Rank cannot be larger than the dimension of the complex."
             )
 
-    def adjacency_matrix(self) -> np.ndarray:
+    def adjacency_matrix(self) -> csr_matrix:
         """
         Compute the adjacency matrix of the simplicial complex.
 
         Returns:
-            np.ndarray: Adjacency matrix of the simplicial complex.
+            csr_matrix: Adjacency matrix of the simplicial complex.
         """
         adjacency_mat = np.zeros((self.B1.shape[0], self.B1.shape[0]))
 
@@ -215,18 +227,20 @@ class SimplicialComplex:
             adjacency_mat[from_node, to_node] = 1
             adjacency_mat[to_node, from_node] = 1
 
+        adjacency_mat = csr_matrix(adjacency_mat)
         return adjacency_mat
 
-    def laplacian_matrix(self) -> np.ndarray:
+    def laplacian_matrix(self) -> csr_matrix:
         """
         Compute the Laplacian matrix of the simplicial complex.
 
         Returns:
-            np.ndarray: Laplacian matrix of the simplicial complex.
+            csr_matrix: Laplacian matrix of the simplicial complex.
         """
-        return self.B1 @ self.B1.T
+        B1 = self.incidence_matrix(rank=1)
+        return B1 @ B1.T
 
-    def lower_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
+    def lower_laplacian_matrix(self, rank: int = 1) -> csr_matrix:
         """
         Compute the lower Laplacian matrix of the simplicial complex.
 
@@ -237,16 +251,18 @@ class SimplicialComplex:
             If the rank is not 1 or 2.
 
         Returns:
-            np.ndarray: Lower Laplacian matrix of the simplicial complex.
+            csr_matrix: Lower Laplacian matrix of the simplicial complex.
         """
         if rank == 1:
-            return self.B1.T @ self.B1
+            B1 = self.incidence_matrix(rank=1)
+            return B1.T @ B1
         elif rank == 2:
-            return self.B2.T @ self.B2
+            B2 = self.incidence_matrix(rank=2)
+            return B2.T @ B2
         else:
             raise ValueError("Rank must be either 1 or 2.")
 
-    def upper_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
+    def upper_laplacian_matrix(self, rank: int = 1) -> csr_matrix:
         """
         Compute the upper Laplacian matrix of the simplicial complex.
 
@@ -257,16 +273,17 @@ class SimplicialComplex:
             If the rank is not 0 or 1.
 
         Returns:
-            np.ndarray: Upper Laplacian matrix of the simplicial complex.
+            csr_matrix: Upper Laplacian matrix of the simplicial complex.
         """
         if rank == 0:
             return self.laplacian_matrix()
         elif rank == 1:
-            return self.B2 @ self.B2.T
+            B2 = self.incidence_matrix(rank=2)
+            return B2 @ B2.T
         else:
             raise ValueError("Rank must be either 0 or 1.")
 
-    def hodge_laplacian_matrix(self, rank: int = 1) -> np.ndarray:
+    def hodge_laplacian_matrix(self, rank: int = 1) -> csr_matrix:
         """
         Compute the Hodge Laplacian matrix of the simplicial complex.
 
@@ -277,7 +294,7 @@ class SimplicialComplex:
             If the rank is not 0, 1, or 2.
 
         Returns:
-            np.ndarray: Hodge Laplacian matrix of the simplicial complex.
+            csr_matrix: Hodge Laplacian matrix of the simplicial complex.
         """
         if rank == 0:
             return self.laplacian_matrix()
@@ -306,10 +323,10 @@ class SimplicialComplex:
 
         if steps == 1:
             # L(1, l) @ f
-            flow = csr_matrix(L1L).dot(flow)
+            flow = L1L @ flow
         else:
             # L(1, l)**2 @ f
-            flow = csr_matrix(L1L).dot(csr_matrix(L1L.T).dot(flow))
+            flow = L1L @ (L1L @ flow)
 
         return flow
 
@@ -331,10 +348,10 @@ class SimplicialComplex:
 
         if steps == 1:
             # L(1, u) @ f
-            flow = csr_matrix(L1U).dot(flow)
+            flow = L1U @ flow
         else:
             # L(1, u)**2 @ f
-            flow = csr_matrix(L1U).dot(csr_matrix(L1U.T).dot(flow))
+            flow = L1U @ (L1U @ flow)
 
         return flow
 
@@ -364,9 +381,9 @@ class SimplicialComplex:
             Harmonic, curl, and gradient basis.
         """
         k = 1
-        L1 = self.hodge_laplacian_matrix(rank=k)
-        L1U = self.upper_laplacian_matrix(rank=k)
-        L1L = self.lower_laplacian_matrix(rank=k)
+        L1 = self.hodge_laplacian_matrix(rank=k).toarray()
+        L1U = self.upper_laplacian_matrix(rank=k).toarray()
+        L1L = self.lower_laplacian_matrix(rank=k).toarray()
 
         # eigendeomposition
         u_h, _ = get_harmonic_eigenvectors(L1)
@@ -376,9 +393,9 @@ class SimplicialComplex:
         # each entry of an embedding represents the weight the flow has on the
         # corresponding eigenvector
         # coefficients of the flow on the harmonic, curl, and gradient basis
-        f_tilda_h = csr_matrix(u_h.T).dot(flow).astype(float)
-        f_tilda_c = csr_matrix(u_c.T).dot(flow).astype(float)
-        f_tilda_g = csr_matrix(u_g.T).dot(flow).astype(float)
+        f_tilda_h = u_h.T @ flow
+        f_tilda_c = u_c.T @ flow
+        f_tilda_g = u_g.T @ flow
 
         return f_tilda_h, f_tilda_c, f_tilda_g
 
@@ -390,19 +407,22 @@ class SimplicialComplex:
             component (str, optional): Component of the eigendecomposition
             to return. Defaults to "harmonic".
 
+        ValueError:
+            If the component is not one of 'harmonic', 'curl', or 'gradient'.
+
         Returns:
             tuple: Eigenvectors and eigenvalues of the simplicial complex.
         """
         if component == FrequencyComponent.HARMONIC.value:
-            L1 = self.hodge_laplacian_matrix(rank=1)
+            L1 = self.hodge_laplacian_matrix(rank=1).toarray()
             u_h, eig_h = get_harmonic_eigenvectors(L1)
             return u_h, eig_h
         elif component == FrequencyComponent.CURL.value:
-            L1U = self.upper_laplacian_matrix(rank=1)
+            L1U = self.upper_laplacian_matrix(rank=1).toarray()
             u_c, eig_c = get_curl_eigenvectors(L1U)
             return u_c, eig_c
         elif component == FrequencyComponent.GRADIENT.value:
-            L1L = self.lower_laplacian_matrix(rank=1)
+            L1L = self.lower_laplacian_matrix(rank=1).toarray()
             u_g, eig_g = get_gradient_eigenvectors(L1L)
             return u_g, eig_g
         else:
@@ -438,8 +458,8 @@ class SimplicialComplex:
 
         if component == FrequencyComponent.HARMONIC.value:
             f_h = get_harmonic_component(
-                incidence_matrix_b1=B1,
-                incidence_matrix_b2=B2,
+                B1=B1,
+                B2=B2,
                 flow=flow,
                 round_fig=round_fig,
                 round_sig_fig=round_sig_fig,
@@ -447,7 +467,7 @@ class SimplicialComplex:
             return f_h
         elif component == FrequencyComponent.CURL.value:
             f_c = get_curl_component(
-                incidence_matrix=B2,
+                B2=B2,
                 flow=flow,
                 round_fig=round_fig,
                 round_sig_fig=round_sig_fig,
@@ -455,7 +475,7 @@ class SimplicialComplex:
             return f_c
         elif component == FrequencyComponent.GRADIENT.value:
             f_g = get_gradient_component(
-                incidence_matrix=B1,
+                B1=B1,
                 flow=flow,
                 round_fig=round_fig,
                 round_sig_fig=round_sig_fig,
@@ -486,7 +506,7 @@ class SimplicialComplex:
             np.ndarray: The component coefficients of the simplicial complex
             for the given component.
         """
-        L1 = self.hodge_laplacian_matrix(rank=1)
+        L1 = self.hodge_laplacian_matrix(rank=1).toarray()
 
         U_H, e_h = self.get_eigendecomposition(
             FrequencyComponent.HARMONIC.value
@@ -536,7 +556,7 @@ class SimplicialComplex:
         Returns:
             np.ndarray: The component coefficients of the simplicial complex.
         """
-        L1 = self.hodge_laplacian_matrix(rank=1)
+        L1 = self.hodge_laplacian_matrix(rank=1).toarray()
         u_h, _ = self.get_eigendecomposition(FrequencyComponent.HARMONIC.value)
         u_g, _ = self.get_eigendecomposition(FrequencyComponent.GRADIENT.value)
 

@@ -59,7 +59,7 @@ def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
     return u_g, eigenvalues
 
 
-def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
+def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-6) -> tuple:
     """
     Calculate the eigenvectors of the Laplacian matrix using
     eigendecomposition.
@@ -72,21 +72,24 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
     Args:
         lap_mat (np.ndarray): The Laplacian matrix L(k).
         tolerance (float): The tolerance for eigenvalues to be considered zero.
+        Defaults to 1e-6.
 
     Returns:
         eigenvectors (np.ndarray): The eigenvectors U(k)
         eigenvalues (np.ndarray): The eigenvalues.
     """
+    assert isinstance(
+        lap_mat, np.ndarray
+    ), "Laplacian matrix must be a numpy array"
+
     eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
     # set eigenvalues below tolerance to zero
     eigenvalues[eigenvalues < tolerance] = 0
 
     with warnings.catch_warnings(record=True):
         # sort the eigenvectors according to the sorted eigenvalues
-        eigenvectors = eigenvectors[:, eigenvalues.argsort()].astype(
-            np.float64
-        )
+        eigenvectors = eigenvectors[:, eigenvalues.argsort()].astype(float)
         # sort the eigenvalues
-        eigenvalues = np.sort(eigenvalues).astype(np.float64)
+        eigenvalues = np.sort(eigenvalues).astype(float)
 
     return eigenvectors, eigenvalues

@@ -101,11 +101,8 @@ class TestDatasetLoader:
         assert isinstance(sc, SimplicialComplex)
         assert isinstance(coordinates, dict)
 
-        B1_calculated = sc.incidence_matrix(rank=1)
-        B2_calculated = sc.incidence_matrix(rank=2)
-
-        print(B1)
-        print("Me", B1_calculated)
+        B1_calculated = sc.incidence_matrix(rank=1).toarray()
+        B2_calculated = sc.incidence_matrix(rank=2).toarray()
 
         assert np.array_equal(B1, B1_calculated)
         assert np.array_equal(B2, B2_calculated)

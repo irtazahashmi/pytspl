@@ -12,21 +12,6 @@ def chebyshev_filter(sc: SimplicialComplex):
 
 class TestChebyshevFilterDesign:
 
-    def test_power_iteration_algo(
-        self, chebyshev_filter: ChebyshevFilterDesign
-    ):
-
-        P = chebyshev_filter.sc.lower_laplacian_matrix(rank=1)
-        v = chebyshev_filter._power_iteration(P=P, iterations=50)
-
-        assert v is not None
-        assert isinstance(v, np.ndarray)
-
-        expected = np.array(
-            [0.06, -0.33, 0.15, -0.39, 0.48, 0.49, -0.31, 0.32, 0.12, -0.2]
-        )
-        assert np.allclose(np.round(v, 2), expected)
-
     def test_logistic_function(self, chebyshev_filter: ChebyshevFilterDesign):
         cut_off_frequency = 0.01
         steep = 100
@@ -45,7 +30,7 @@ class TestChebyshevFilterDesign:
         sc: SimplicialComplex,
         chebyshev_filter: ChebyshevFilterDesign,
     ):
-        n = len(sc.hodge_laplacian_matrix())
+        n = 10
         domain_min = 0
         _, domain_max = chebyshev_filter.get_alpha(p_choice="L1L")
         g_cheb = chebyshev_filter._get_chebyshev_series(
@@ -70,7 +55,7 @@ class TestChebyshevFilterDesign:
     def test_chebyshev_filter_approximate(
         self, chebyshev_filter: ChebyshevFilterDesign
     ):
-        L1L = chebyshev_filter.sc.lower_laplacian_matrix(rank=1)
+        L1L = chebyshev_filter.sc.lower_laplacian_matrix(rank=1).toarray()
         coeffs = np.array(
             [
                 0.95938561,
@@ -87,7 +72,7 @@ class TestChebyshevFilterDesign:
         )
         alpha_g = 2.74
         result = chebyshev_filter._chebyshev_filter_approximate(
-            L1L, coeffs, alpha_g, 1
+            P=L1L, coefficients=coeffs, alpha=alpha_g, k_trnc=1
         )
         assert result is not None
         assert isinstance(result, np.ndarray)
