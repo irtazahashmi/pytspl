@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from sclibrary import SimplicialComplex
 from sclibrary.io.dataset_loader import (
@@ -7,7 +8,6 @@ from sclibrary.io.dataset_loader import (
     load,
     load_paper_data,
 )
-from sclibrary.io.network_reader import read_B1, read_B2
 
 
 class TestDatasetLoader:
@@ -91,8 +91,6 @@ class TestDatasetLoader:
             assert sc.edges == list(flow_dict.keys())
 
     def test_load_paper_data(self):
-        import pandas as pd
-
         B1 = pd.read_csv("data/paper_data/B1.csv", header=None).to_numpy()
         B2 = pd.read_csv("data/paper_data/B2t.csv", header=None).to_numpy().T
 

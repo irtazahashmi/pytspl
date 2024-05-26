@@ -1,13 +1,15 @@
 import numpy as np
+import pandas as pd
 import pytest
 
 from sclibrary import dataset_loader
+from sclibrary.io.network_reader import read_B1, read_B2
 
 
 @pytest.fixture(scope="module")
-def sc():
+def sc_mock():
     """
-    Read the edges.csv file and create a simplicial complex network for testing.
+    Read the paper data and return the mock simplicial complex.
 
     Yields:
         SimplicialComplex: A simplicial complex network object.
@@ -17,15 +19,15 @@ def sc():
 
 
 @pytest.fixture(scope="module")
-def f0():
+def f0_mock():
     """
-    True flow for the simplicial complex above.
+    True flow for the mock simplicial complex.
     Used for testing purposes.
 
     Returns:
         np.ndarray: True flow.
     """
-    return np.array(
+    yield np.array(
         [
             2.25,
             0.13,
@@ -42,14 +44,48 @@ def f0():
 
 
 @pytest.fixture(scope="module")
-def f():
+def f_mock():
     """
-    Noisy flow for the simplicial complex above.
+    Noisy flow for the mock simplicial complex.
     Used for testing purposes.
 
     Returns:
         np.ndarray: Noisy flow.
     """
-    return np.array(
+    yield np.array(
         [2.90, 0.25, 1.78, -1.50, 1.76, 1.53, 1.32, 0.08, 0.67, 1.73]
     )
+
+
+@pytest.fixture(scope="module")
+def sc_chicago_mock():
+    """
+    Read the Chicago data and return the mock simplicial complex.
+
+    Yields:
+        SimplicialComplex: A simplicial complex network object.
+    """
+    B1_filename = "data/test_dataset/B1_chicago_sketch.csv"
+    B2_filename = "data/test_dataset/B2t_chicago_sketch.csv"
+
+    scbuilder = read_B1(B1_filename=B1_filename)
+    edges = np.asarray(scbuilder.edges)
+    triangles = read_B2(B2_filename=B2_filename, edges=edges)
+    sc = scbuilder.to_simplicial_complex(triangles=triangles)
+    yield sc
+
+
+@pytest.fixture(scope="module")
+def f0_chicago_mock():
+    """
+    True flow for the Chicago mock simplicial complex.
+    Used for testing purposes.
+
+    Returns:
+        np.ndarray: True flow.
+    """
+    flow_path = "data/test_dataset/flow_chicago_sketch.csv"
+    flow = (
+        pd.read_csv(flow_path, delimiter=",", header=None).to_numpy().flatten()
+    )
+    yield flow

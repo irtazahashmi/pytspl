@@ -6,20 +6,20 @@ from sclibrary.filters import LSFilterDesign
 
 
 @pytest.fixture(autouse=True)
-def ls_filter(sc: SimplicialComplex):
-    return LSFilterDesign(sc)
+def ls_filter(sc_mock: SimplicialComplex):
+    return LSFilterDesign(sc_mock)
 
 
 class TestLSFilterDesign:
 
     def test_subcomp_extract_type_one_gradient_f_est(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 4
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_one(
-            L=filter_size, component=component, f=f
+            L=filter_size, component=component, f=f_mock
         )
 
         f_expected = np.array(
@@ -31,13 +31,13 @@ class TestLSFilterDesign:
         )
 
     def test_subcomp_extract_type_one_gradient_error(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 4
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_one(
-            L=filter_size, component=component, f=f
+            L=filter_size, component=component, f=f_mock
         )
 
         # test error is decreasing
@@ -46,18 +46,18 @@ class TestLSFilterDesign:
         )
         expected_error = 0.39
         actual_error = ls_filter.calculate_error(
-            ls_filter.history["f_estimated"], f
+            ls_filter.history["f_estimated"], f_mock
         )
         assert np.isclose(actual_error, expected_error, atol=1e-2)
 
     def test_subcomp_extract_type_one_gradient_large_filter_order(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 16
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_one(
-            L=filter_size, component=component, f=f
+            L=filter_size, component=component, f=f_mock
         )
 
         # test error is decreasing
@@ -80,13 +80,13 @@ class TestLSFilterDesign:
         assert np.isclose(actual_error[-1], expected_error, atol=1e-05)
 
     def test_history_subcomp_extract_type_one(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 4
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_one(
-            L=filter_size, component=component, f=f
+            L=filter_size, component=component, f=f_mock
         )
 
         assert ls_filter.history["filter"] is not None
@@ -104,13 +104,13 @@ class TestLSFilterDesign:
         )
 
     def test_subcomp_extract_type_two_gradient_f_est(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 4
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_two(
-            L=filter_size, component=component, f=f
+            L=filter_size, component=component, f=f_mock
         )
 
         f_expected = np.array(
@@ -122,13 +122,13 @@ class TestLSFilterDesign:
         )
 
     def test_subcomp_extract_type_two_gradient_large_filter_order(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 16
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_two(
-            L=filter_size, component=component, f=f
+            L=filter_size, component=component, f=f_mock
         )
         # test error is decreasing
         assert np.all(
@@ -140,24 +140,24 @@ class TestLSFilterDesign:
         assert np.isclose(actual_error[-1], expected_error, atol=1e-05)
 
     def test_subcomp_extract_type_two_component_error(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 4
         component = "unknown"
 
         with pytest.raises(ValueError):
             ls_filter.subcomponent_extraction_type_two(
-                L=filter_size, component=component, f=f
+                L=filter_size, component=component, f=f_mock
             )
 
     def test_history_subcomp_extract_type_two(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         filter_size = 4
         component = "gradient"
 
         ls_filter.subcomponent_extraction_type_two(
-            L=filter_size, component=component, f=f
+            L=filter_size, component=component, f=f_mock
         )
 
         assert ls_filter.history["filter"] is not None
@@ -174,10 +174,14 @@ class TestLSFilterDesign:
             ls_filter.history["extracted_component_error"], np.ndarray
         )
 
-    def test_general_filter(self, ls_filter: LSFilterDesign, f: np.ndarray):
+    def test_general_filter(
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
+    ):
 
         L1, L2 = 1, 1
-        f_est_h, f_est_c, f_est_g = ls_filter.general_filter(L1=L1, L2=L2, f=f)
+        f_est_h, f_est_c, f_est_g = ls_filter.general_filter(
+            L1=L1, L2=L2, f=f_mock
+        )
         f_est = f_est_h + f_est_c + f_est_g
 
         assert ls_filter.history["L1"] is not None
@@ -185,14 +189,14 @@ class TestLSFilterDesign:
 
         assert np.allclose(
             np.round(f_est, 2),
-            f,
+            f_mock,
         )
 
     def test_history_general_filter(
-        self, ls_filter: LSFilterDesign, f: np.ndarray
+        self, ls_filter: LSFilterDesign, f_mock: np.ndarray
     ):
         L1, L2 = 1, 1
-        ls_filter.general_filter(L1=L1, L2=L2, f=f)
+        ls_filter.general_filter(L1=L1, L2=L2, f=f_mock)
 
         assert ls_filter.history["L1"] is not None
         assert ls_filter.history["L2"] is not None

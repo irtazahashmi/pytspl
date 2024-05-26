@@ -16,8 +16,7 @@ def get_divergence(B1: csr_matrix, flow: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: The divergence of the flow.
     """
-    divergence = B1 @ flow
-    return divergence
+    return B1 @ flow
 
 
 def get_gradient_component(

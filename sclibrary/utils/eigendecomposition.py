@@ -91,7 +91,4 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-6) -> tuple:
         # set eigenvectors below tolerance to zero
         eigenvectors[np.abs(eigenvectors) < tolerance] = 0
 
-    eigenvalues = eigenvalues.astype(float)
-    eigenvectors = eigenvectors.astype(float)
-
     return eigenvectors, eigenvalues

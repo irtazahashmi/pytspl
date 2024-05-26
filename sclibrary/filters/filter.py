@@ -115,6 +115,4 @@ class Filter:
             v = v / np.linalg.norm(v)
 
         v = v.astype(float)
-        # add small value to avoid division by zero
-        v = v + 1e-10
         return v

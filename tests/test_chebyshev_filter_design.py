@@ -6,8 +6,31 @@ from sclibrary.filters import ChebyshevFilterDesign
 
 
 @pytest.fixture(autouse=True)
-def chebyshev_filter(sc: SimplicialComplex):
-    return ChebyshevFilterDesign(sc)
+def chebyshev_filter(sc_mock: SimplicialComplex):
+    return ChebyshevFilterDesign(sc_mock)
+
+
+@pytest.fixture
+def cheb_filter_chicago(sc_chicago_mock: SimplicialComplex):
+    return ChebyshevFilterDesign(sc_chicago_mock)
+
+
+@pytest.fixture
+def f():
+    return np.array(
+        [
+            0.0323,
+            0.4980,
+            2.3825,
+            0.8799,
+            -0.5297,
+            -0.5192,
+            1.0754,
+            0.4732,
+            -1.1667,
+            0.0922,
+        ]
+    )
 
 
 class TestChebyshevFilterDesign:
@@ -27,7 +50,6 @@ class TestChebyshevFilterDesign:
 
     def test_get_chebyshev_series(
         self,
-        sc: SimplicialComplex,
         chebyshev_filter: ChebyshevFilterDesign,
     ):
         n = 10
@@ -130,26 +152,11 @@ class TestChebyshevFilterDesign:
         assert np.round(alpha, 2) == expected_alpha
         assert np.round(lambda_max, 2) == expected_lambda_max
 
-    def test_apply_filter(
-        self,
-        chebyshev_filter: ChebyshevFilterDesign,
+    def test_apply_filter_order_10(
+        self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
     ):
-        f = np.array(
-            [
-                0.0323,
-                0.4980,
-                2.3825,
-                0.8799,
-                -0.5297,
-                -0.5192,
-                1.0754,
-                0.4732,
-                -1.1667,
-                0.0922,
-            ]
-        )
 
-        k, n = 10, 10
+        k = 10
         component = "gradient"
         p_choice = "L1L"
         chebyshev_filter.apply(
@@ -179,6 +186,54 @@ class TestChebyshevFilterDesign:
 
         assert np.allclose(error, expected_error, atol=1e-3)
         assert np.allclose(f_estimated, expected_f, atol=1e-4)
+
+    def test_apply_filter_order_200(
+        self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
+    ):
+        k = 200
+        cut_off_frequency = 0.1
+
+        component = "gradient"
+        p_choice = "L1L"
+        chebyshev_filter.apply(
+            f=f,
+            component=component,
+            p_choice=p_choice,
+            L=k,
+            cut_off_frequency=cut_off_frequency,
+        )
+
+        actual_error = chebyshev_filter.history["extracted_component_error"][
+            -1
+        ]
+        expected_error = 4e-05
+
+        assert actual_error < expected_error
+
+    def test_apply_filter_order_30_chicago(
+        self,
+        cheb_filter_chicago: ChebyshevFilterDesign,
+        f0_chicago_mock: np.ndarray,
+    ):
+        k = 30
+        cut_off_frequency = 0.01
+
+        component = "gradient"
+        p_choice = "L1L"
+        cheb_filter_chicago.apply(
+            f=f0_chicago_mock,
+            component=component,
+            p_choice=p_choice,
+            L=k,
+            cut_off_frequency=cut_off_frequency,
+        )
+
+        actual_error = cheb_filter_chicago.history[
+            "extracted_component_error"
+        ][-1]
+        expected_error = 0.2
+
+        assert actual_error < expected_error
 
     def test_apply_filter_history(
         self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray

@@ -81,6 +81,7 @@ class ChebyshevFilterDesign(Filter):
         Returns:
             np.ndarray: The Chebyshev filter approximation.
         """
+        # coeffs = np.asarray(coefficients[:k_trnc])
         coeffs = np.asarray(coefficients[:k_trnc])
         K = len(coeffs)
 
@@ -118,7 +119,7 @@ class ChebyshevFilterDesign(Filter):
         P = self.get_p_matrix(p_choice).toarray()
         v = self.power_iteration(P=P)
         # mean of the largest eigenvalue
-        lambda_max = np.mean(P @ v / v)
+        lambda_max = np.mean((P @ v) / v)
         # perform a transformation to shit the domain to [0, lambda_g_max]
         alpha = lambda_max / 2
         return alpha, lambda_max
@@ -164,9 +165,11 @@ class ChebyshevFilterDesign(Filter):
             np.ndarray: The Chebyshev frequency approximation.
         """
         P = self.get_p_matrix(p_choice).toarray()
+
         H_cheb_approx = np.zeros(
             (k_trunc_order, P.shape[0], P.shape[1]), dtype=float
         )
+
         for k in range(1, k_trunc_order + 1):
             print(f"Calculating Chebyshev filter approximation for k = {k}...")
             H_cheb_approx[k - 1 :, :, :] = self._chebyshev_filter_approximate(
@@ -202,7 +205,6 @@ class ChebyshevFilterDesign(Filter):
         Returns:
             np.ndarray: The Chebyshev filter output.
         """
-        print("Applying Chebyshev filter")
         L1 = self.sc.hodge_laplacian_matrix().toarray()
         U, _ = get_eigendecomposition(lap_mat=L1)
 
@@ -214,6 +216,7 @@ class ChebyshevFilterDesign(Filter):
 
         # calculate alpha
         alpha, lambda_max = self.get_alpha(p_choice=p_choice)
+
         # get the chebyshev coefficients
         g_chebyshev = self._get_chebyshev_series(
             n=L,
@@ -267,7 +270,7 @@ class ChebyshevFilterDesign(Filter):
 
             print(
                 f"Filter size: {k} - Filter error: {errors_filter[k]} - "
-                + f"Error: {extracted_comp_error[k]}"
+                + f"Error: {extracted_comp_error[k]}, - Error response: {errors_response[k]}"
             )
 
         self.set_history(
@@ -328,13 +331,14 @@ class ChebyshevFilterDesign(Filter):
         # get the unique eigenvalues
         L1 = self.sc.hodge_laplacian_matrix().toarray()
         U, eigenvals = get_eigendecomposition(lap_mat=L1)
-        eigenvals = np.unique(eigenvals)
         # get the true signal
         f_true = self.get_true_signal(f=flow, component=component)
 
         plt.figure(figsize=(15, 5))
         plt.scatter(eigenvals, U.T @ f_true)
         plt.scatter(eigenvals, f_cheb_tilde[-1])
-        plt.title("Frequency response on the eigenvalues vs chebyshev approx")
+        plt.title(
+            "Frequency response on the eigenvalues vs chebyshev filter approx"
+        )
         # add legend
         plt.legend(["True flow", "Chebyshev approx"])

@@ -8,20 +8,23 @@ from sclibrary.filters import EdgeFlowDenoising
 
 
 @pytest.fixture(autouse=True)
-def denoising(sc: SimplicialComplex):
-    return EdgeFlowDenoising(sc)
+def denoising(sc_mock: SimplicialComplex):
+    return EdgeFlowDenoising(sc_mock)
 
 
 class TestEdgeFlowDenoising:
 
     def test_edge_flow_denoising_history(
-        self, denoising: EdgeFlowDenoising, f0: np.ndarray, f: np.ndarray
+        self,
+        denoising: EdgeFlowDenoising,
+        f0_mock: np.ndarray,
+        f_mock: np.ndarray,
     ):
         p_choice = "L1"
         denoising.denoise(
             p_choice=p_choice,
-            f=f,
-            f_true=f0,
+            f=f_mock,
+            f_true=f0_mock,
         )
 
         # none of the attributes should be None for the history
@@ -29,13 +32,16 @@ class TestEdgeFlowDenoising:
             assert result is not None
 
     def test_edge_flow_denoising_P_L1(
-        self, denoising: EdgeFlowDenoising, f0: np.ndarray, f: np.ndarray
+        self,
+        denoising: EdgeFlowDenoising,
+        f0_mock: np.ndarray,
+        f_mock: np.ndarray,
     ):
         p_choice = "L1"
         denoising.denoise(
             p_choice=p_choice,
-            f=f,
-            f_true=f0,
+            f=f_mock,
+            f_true=f0_mock,
         )
 
         expected_error = 0.70
@@ -129,13 +135,16 @@ class TestEdgeFlowDenoising:
         assert np.allclose(f_estimated, f0, atol=1e-1)
 
     def test_edge_flow_denoising_P_L1L(
-        self, denoising: EdgeFlowDenoising, f0: np.ndarray, f: np.ndarray
+        self,
+        denoising: EdgeFlowDenoising,
+        f0_mock: np.ndarray,
+        f_mock: np.ndarray,
     ):
         p_choice = "L1L"
         denoising.denoise(
             p_choice=p_choice,
-            f=f,
-            f_true=f0,
+            f=f_mock,
+            f_true=f0_mock,
         )
 
         expected_error = 0.73
@@ -154,25 +163,31 @@ class TestEdgeFlowDenoising:
         )
 
     def test_edge_flow_denoising_P_not_found(
-        self, denoising: EdgeFlowDenoising, f0: np.ndarray, f: np.ndarray
+        self,
+        denoising: EdgeFlowDenoising,
+        f0_mock: np.ndarray,
+        f_mock: np.ndarray,
     ):
         p_choice = "unknown"
         # catch ValueError
         with pytest.raises(ValueError):
             denoising.denoise(
                 p_choice=p_choice,
-                f=f,
-                f_true=f0,
+                f=f_mock,
+                f_true=f0_mock,
             )
 
     def test_plot_desired_frequency_response(
-        self, denoising: EdgeFlowDenoising, f0: np.ndarray, f: np.ndarray
+        self,
+        denoising: EdgeFlowDenoising,
+        f0_mock: np.ndarray,
+        f_mock: np.ndarray,
     ):
         p_choice = "L1"
         denoising.denoise(
             p_choice=p_choice,
-            f=f,
-            f_true=f0,
+            f=f_mock,
+            f_true=f0_mock,
         )
 
         with patch("matplotlib.pyplot") as mock_plt:
