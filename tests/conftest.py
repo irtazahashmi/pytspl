@@ -19,6 +19,18 @@ def sc_mock():
 
 
 @pytest.fixture(scope="module")
+def coordinates_mock():
+    """
+    Read the coordinates of the paper data and return the coordinates.
+
+    Yields:
+        dict: Coordinates of the simplicial complex.
+    """
+    _, coordinates = dataset_loader.load_paper_data()
+    yield coordinates
+
+
+@pytest.fixture(scope="module")
 def f0_mock():
     """
     True flow for the mock simplicial complex.

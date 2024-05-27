@@ -179,7 +179,7 @@ class TestChebyshevFilterDesign:
     def test_apply_filter_order_200(
         self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
     ):
-        k = 200
+        k, n = 200, 200
         cut_off_frequency = 0.1
 
         component = "gradient"
@@ -189,6 +189,7 @@ class TestChebyshevFilterDesign:
             component=component,
             p_choice=p_choice,
             L=k,
+            n=n,
             cut_off_frequency=cut_off_frequency,
         )
 
@@ -204,7 +205,7 @@ class TestChebyshevFilterDesign:
         cheb_filter_chicago: ChebyshevFilterDesign,
         f0_chicago_mock: np.ndarray,
     ):
-        k = 30
+        k, n = 30, 100
         cut_off_frequency = 0.01
 
         component = "gradient"
@@ -214,6 +215,7 @@ class TestChebyshevFilterDesign:
             component=component,
             p_choice=p_choice,
             L=k,
+            n=n,
             cut_off_frequency=cut_off_frequency,
         )
 
@@ -241,3 +243,45 @@ class TestChebyshevFilterDesign:
 
         for _, result in chebyshev_filter.history.items():
             assert result is not None
+
+    def test_plot_chebyshev_series_approx(
+        self, chebyshev_filter: ChebyshevFilterDesign
+    ):
+        import matplotlib.pyplot as plt
+
+        # Call the plot_chebyshev_series_approx method
+        chebyshev_filter.plot_chebyshev_series_approx(p_choice="L1L", n=10)
+        # Check if the plot is displayed
+        assert plt.gcf().number == 1
+
+    def test_plot_chebyshev_series_approx(
+        self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
+    ):
+        import matplotlib.pyplot as plt
+
+        k, n = 10, 10
+        component = "gradient"
+        p_choice = "L1L"
+        chebyshev_filter.apply(
+            f=f,
+            component=component,
+            p_choice=p_choice,
+            L=k,
+            n=n,
+        )
+
+        # Call the plot_chebyshev_series_approx method
+        chebyshev_filter.plot_frequency_response_approx(
+            flow=f, component=component
+        )
+        # Check if the plot is displayed
+        assert plt.gcf().number == 1
+
+    def test_plot_chebyshev_series_approx_without_running_filter(
+        self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
+    ):
+        # catch ValueError when the filter is not applied
+        with pytest.raises(ValueError):
+            chebyshev_filter.plot_frequency_response_approx(
+                flow=f, component="gradient"
+            )
