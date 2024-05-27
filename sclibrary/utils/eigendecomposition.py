@@ -60,7 +60,7 @@ def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
     return u_g, eigenvalues
 
 
-def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-6) -> tuple:
+def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-3) -> tuple:
     """
     Calculate the eigenvectors of the Laplacian matrix using
     eigendecomposition.
@@ -73,7 +73,7 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-6) -> tuple:
     Args:
         lap_mat (np.ndarray): The Laplacian matrix L(k).
         tolerance (float): The tolerance for eigenvalues to be considered zero.
-        Defaults to 1e-6.
+        Defaults to 1e-3.
 
     Returns:
         eigenvectors (np.ndarray): The eigenvectors U(k)

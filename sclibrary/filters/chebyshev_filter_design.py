@@ -81,11 +81,10 @@ class ChebyshevFilterDesign(Filter):
         Returns:
             np.ndarray: The Chebyshev filter approximation.
         """
-        # coeffs = np.asarray(coefficients[:k_trnc])
         coeffs = np.asarray(coefficients[:k_trnc])
         K = len(coeffs)
 
-        I = np.eye(P.shape[0])
+        I = np.eye(P.shape[0], P.shape[1])
         H_cheb_approx = np.zeros((k_trnc, P.shape[0], P.shape[1]), dtype=float)
 
         for k in range(K):
@@ -139,7 +138,7 @@ class ChebyshevFilterDesign(Filter):
             np.ndarray: The ideal frequency of the given component and
             p_matrix.
         """
-        P = self.get_p_matrix(p_choice).toarray()
+        P = self.get_p_matrix("L1").toarray()
         U, _ = get_eigendecomposition(lap_mat=P)
         H_ideal = U @ np.diag(component_coeffs) @ U.T
         return H_ideal
@@ -170,10 +169,10 @@ class ChebyshevFilterDesign(Filter):
             (k_trunc_order, P.shape[0], P.shape[1]), dtype=float
         )
 
-        for k in range(1, k_trunc_order + 1):
+        for k in range(k_trunc_order):
             print(f"Calculating Chebyshev filter approximation for k = {k}...")
             H_cheb_approx[k - 1 :, :, :] = self._chebyshev_filter_approximate(
-                P=P, coefficients=coeffs, alpha=alpha, k_trnc=k
+                P=P, coefficients=coeffs, alpha=alpha, k_trnc=k + 1
             )
 
         return H_cheb_approx
@@ -184,9 +183,10 @@ class ChebyshevFilterDesign(Filter):
         p_choice: str = "L1L",
         component: str = "gradient",
         L: int = 10,
+        n: int = None,
         cut_off_frequency: float = 0.01,
         steep: int = 100,
-    ) -> np.ndarray:
+    ) -> None:
         """
         Apply the Chebyshev filter to the given flow f.
 
@@ -197,14 +197,17 @@ class ChebyshevFilterDesign(Filter):
             component (str, optional): The component of the flow. Defaults
             to "gradient".
             L (int, optional): The filter size. Defaults to 10.
+            n (int, optional): The number of points. Defaults to 100.
             cut_off_frequency (float, optional): The cut-off frequency.
             Defaults to 0.01.
             steep (int, optional): The steepness of the logistic function.
             Defaults to 100.
-
-        Returns:
-            np.ndarray: The Chebyshev filter output.
         """
+        if n is None:
+            # if n is not provided, the filter size is the same as the
+            # number of points
+            n = L
+
         L1 = self.sc.hodge_laplacian_matrix().toarray()
         U, _ = get_eigendecomposition(lap_mat=L1)
 
@@ -219,7 +222,7 @@ class ChebyshevFilterDesign(Filter):
 
         # get the chebyshev coefficients
         g_chebyshev = self._get_chebyshev_series(
-            n=L,
+            n=n,
             domain_min=0,
             domain_max=lambda_max,
             cut_off_frequency=cut_off_frequency,
@@ -231,6 +234,7 @@ class ChebyshevFilterDesign(Filter):
         H_ideal = self.get_ideal_frequency(
             p_choice=p_choice, component_coeffs=h_ideal
         )
+
         # chebyshev approx frequency
         H_cheb_approx = self.get_chebyshev_frequency_approx(
             p_choice=p_choice,
@@ -250,12 +254,12 @@ class ChebyshevFilterDesign(Filter):
 
         for k in range(L):
             g_cheb_approx = np.diag(
-                U_l.T @ np.squeeze(H_cheb_approx[k, :, :]) @ U_l.T
+                U_l.T @ np.squeeze(H_cheb_approx[k, :, :]) @ U_l
             )
-            # compute the error with respect to the ideal frequency response
+            # compute the error with respect to the true component extraction
             errors_response[k] = self.calculate_error(g_cheb_approx, h_ideal)
             errors_filter[k] = np.linalg.norm(
-                np.squeeze(H_cheb_approx[k, :, :]) - H_ideal, 2
+                np.squeeze(H_cheb_approx[k, :, :]) - H_ideal, ord=2
             )
 
             # compute the error with respect to the true signal
@@ -269,8 +273,9 @@ class ChebyshevFilterDesign(Filter):
             )
 
             print(
-                f"Filter size: {k} - Filter error: {errors_filter[k]} - "
-                + f"Error: {extracted_comp_error[k]}, - Error response: {errors_response[k]}"
+                f"Filter size: {k} - Error: {extracted_comp_error[k]} - "
+                + f"Filter error: {errors_filter[k]} - "
+                + f"Error response: {errors_response[k]}"
             )
 
         self.set_history(
@@ -281,22 +286,28 @@ class ChebyshevFilterDesign(Filter):
             filter_error=errors_filter,
         )
 
-    def plot_chebyshev_series_approx(self, p_choice: str):
+    def plot_chebyshev_series_approx(
+        self, p_choice: str, n: int = None
+    ) -> None:
         """
         Plot the Chebyshev series approximation.
 
         Args:
             p_choice (str): The choice of P matrix.
+            n (int, optional): The number of points. Defaults to None.
         """
         P = self.get_p_matrix(p_choice).toarray()
         _, eigenvals = get_eigendecomposition(lap_mat=P)
+
+        if n is None:
+            n = len(P)
 
         g = self._logistic_function()
 
         # mean of the largest eigenvalue
         _, lambda_max = self.get_alpha(p_choice=p_choice)
         g_chebysev = self._get_chebyshev_series(
-            n=len(P), domain_min=0, domain_max=lambda_max
+            n=n, domain_min=0, domain_max=lambda_max
         )
 
         plt.figure(figsize=(15, 5))
@@ -313,7 +324,7 @@ class ChebyshevFilterDesign(Filter):
         self,
         flow: np.ndarray,
         component: str,
-    ):
+    ) -> None:
         """
         Plot the frequency response approximation.
 

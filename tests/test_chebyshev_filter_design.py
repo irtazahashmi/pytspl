@@ -33,6 +33,18 @@ def f():
     )
 
 
+@pytest.fixture
+def coeffs(chebyshev_filter: ChebyshevFilterDesign):
+    n = 10
+    domain_min = 0
+    _, domain_max = chebyshev_filter.get_alpha(p_choice="L1L")
+    g_cheb = chebyshev_filter._get_chebyshev_series(
+        n=n, domain_min=domain_min, domain_max=domain_max
+    )
+    coeffs = g_cheb.funs[0].coeffs
+    yield coeffs
+
+
 class TestChebyshevFilterDesign:
 
     def test_logistic_function(self, chebyshev_filter: ChebyshevFilterDesign):
@@ -50,14 +62,8 @@ class TestChebyshevFilterDesign:
 
     def test_get_chebyshev_series(
         self,
-        chebyshev_filter: ChebyshevFilterDesign,
+        coeffs: np.ndarray,
     ):
-        n = 10
-        domain_min = 0
-        _, domain_max = chebyshev_filter.get_alpha(p_choice="L1L")
-        g_cheb = chebyshev_filter._get_chebyshev_series(
-            n=n, domain_min=domain_min, domain_max=domain_max
-        )
         expected_output = np.array(
             [
                 0.95938561,
@@ -72,79 +78,62 @@ class TestChebyshevFilterDesign:
                 0.04061435,
             ]
         )
-        assert np.allclose(g_cheb.funs[0].coeffs, expected_output)
+        assert np.allclose(coeffs, expected_output)
 
     def test_chebyshev_filter_approximate(
-        self, chebyshev_filter: ChebyshevFilterDesign
+        self, chebyshev_filter: ChebyshevFilterDesign, coeffs: np.ndarray
     ):
         L1L = chebyshev_filter.sc.lower_laplacian_matrix(rank=1).toarray()
-        coeffs = np.array(
-            [
-                0.95938561,
-                0.08122877,
-                -0.08122876,
-                0.08122875,
-                -0.08122874,
-                0.08122872,
-                -0.08122871,
-                0.0812287,
-                -0.08122869,
-                0.04061435,
-            ]
-        )
+
         alpha_g = 2.74
+
         result = chebyshev_filter._chebyshev_filter_approximate(
             P=L1L, coefficients=coeffs, alpha=alpha_g, k_trnc=1
         )
-        assert result is not None
         assert isinstance(result, np.ndarray)
         assert np.allclose(result, np.eye(len(L1L)) * 0.9593, atol=1e-4)
 
     def test_get_chebyshev_frequency_approx(
-        self, chebyshev_filter: ChebyshevFilterDesign
+        self, chebyshev_filter: ChebyshevFilterDesign, coeffs: np.ndarray
     ):
-        coeffs = np.array(
-            [
-                0.95938561,
-                0.08122877,
-                -0.08122876,
-                0.08122875,
-                -0.08122874,
-                0.08122872,
-                -0.08122871,
-                0.0812287,
-                -0.08122869,
-                0.04061435,
-            ]
-        )
-        alpha_g = 2.74
-        k = 2
+
+        k, alpha_g = 2, 2.74
         g_cheb = chebyshev_filter.get_chebyshev_frequency_approx(
             p_choice="L1L", coeffs=coeffs, alpha=alpha_g, k_trunc_order=k
         )
-        assert g_cheb is not None
         assert isinstance(g_cheb, np.ndarray)
 
         expected_first = np.array(
-            [0.0, 0.95938561, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [
+                0.93744792,
+                0.02964554,
+                0.02964554,
+                -0.02964554,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ],
         )
         excepted_second = np.array(
             [
-                0.02960241,
-                0.93736168,
-                0.02960241,
-                0.02960241,
-                -0.02960241,
-                -0.02960241,
+                0.02964554,
+                0.93744792,
+                0.02964554,
+                0.02964554,
+                -0.02964554,
+                -0.02964554,
                 0.0,
                 0.0,
                 0.0,
                 0.0,
-            ]
+            ],
         )
 
-        assert np.allclose(g_cheb[:, :, 1][0], expected_first, atol=1e-8)
-        assert np.allclose(g_cheb[:, :, 1][1], excepted_second, atol=1e-3)
+        assert np.allclose(g_cheb[:, :, 0][0], expected_first, atol=1e-8)
+        assert np.allclose(g_cheb[:, :, 1][0], excepted_second, atol=1e-8)
 
     def test_get_alpha(self, chebyshev_filter: ChebyshevFilterDesign):
         alpha, lambda_max = chebyshev_filter.get_alpha(p_choice="L1L")
@@ -228,12 +217,15 @@ class TestChebyshevFilterDesign:
             cut_off_frequency=cut_off_frequency,
         )
 
-        actual_error = cheb_filter_chicago.history[
+        actual_comp_error = cheb_filter_chicago.history[
             "extracted_component_error"
         ][-1]
-        expected_error = 0.2
+        expected_comp_error = 0.2
+        assert actual_comp_error < expected_comp_error
 
-        assert actual_error < expected_error
+        actual_filter_error = cheb_filter_chicago.history["filter_error"][-1]
+        expected_filter_error = 0.4
+        assert actual_filter_error < expected_filter_error
 
     def test_apply_filter_history(
         self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
