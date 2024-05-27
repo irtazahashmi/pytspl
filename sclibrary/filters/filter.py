@@ -1,6 +1,7 @@
 """Filter module for filter design and denoising."""
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from sclibrary.simplicial_complex import SimplicialComplex
 
@@ -66,7 +67,7 @@ class Filter:
         )
         return f_true
 
-    def get_p_matrix(self, p_choice: str = "L1") -> np.ndarray:
+    def get_p_matrix(self, p_choice: str = "L1") -> csr_matrix:
         """
         Get the matrix P for the filter design.
 
@@ -78,7 +79,7 @@ class Filter:
             ValueError: Invalid P_choice.
 
         Returns:
-            np.ndarray: The matrix P.
+            csr_matrix: The matrix P.
         """
         P_choices = {
             "L1": self.sc.hodge_laplacian_matrix(rank=1),
@@ -86,7 +87,6 @@ class Filter:
             "L1U": self.sc.upper_laplacian_matrix(rank=1),
         }
 
-        # eigenvalues
         try:
             P = P_choices[p_choice]
         except KeyError:
@@ -95,3 +95,24 @@ class Filter:
             )
 
         return P
+
+    def power_iteration(
+        self, P: np.ndarray, iterations: int = 50
+    ) -> np.ndarray:
+        """Power iteration algorithm to approximate the largest eigenvalue.
+
+        Args:
+            P (np.ndarray): The input matrix.
+            iterations (int): The number of iterations.
+
+        Returns:
+            np.ndarray: The approximated largest eigenvalue.
+        """
+        v = np.ones(P.shape[0])
+
+        for _ in range(iterations):
+            v = P @ v
+            v = v / np.linalg.norm(v)
+
+        v = v.astype(float)
+        return v

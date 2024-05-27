@@ -1,4 +1,3 @@
-import networkx as nx
 import numpy as np
 import pandas as pd
 
@@ -45,7 +44,7 @@ class TestNetworkReader:
 
         sc = scbuilder.to_simplicial_complex()
 
-        incidence_mat = sc.incidence_matrix(rank=1)
+        incidence_mat = sc.incidence_matrix(rank=1).toarray()
         assert incidence_mat.shape[0] == NODES
         assert incidence_mat.shape[1] == EDGES
         assert np.array_equal(incidence_mat, INCIDENCE_MATRIX)
@@ -60,7 +59,7 @@ class TestNetworkReader:
             filename, delimeter, src_col, dest_col, feature_cols
         ).to_simplicial_complex()
 
-        incidence_mat = sc.incidence_matrix(rank=1)
+        incidence_mat = sc.incidence_matrix(rank=1).toarray()
         assert incidence_mat.shape[0] == NODES
         assert incidence_mat.shape[1] == EDGES
         assert np.array_equal(incidence_mat, INCIDENCE_MATRIX)
@@ -73,7 +72,7 @@ class TestNetworkReader:
         assert len(sc.nodes) == NODES
         assert len(sc.edges) == EDGES
 
-        incidence_mat = sc.incidence_matrix(rank=1)
+        incidence_mat = sc.incidence_matrix(rank=1).toarray()
         assert np.array_equal(incidence_mat, B1)
 
     def test_B1_chicago_data(self):
@@ -87,7 +86,7 @@ class TestNetworkReader:
         assert len(scbuilder.edges) == edges
 
         sc = scbuilder.to_simplicial_complex()
-        B1_calculated = sc.incidence_matrix(rank=1)
+        B1_calculated = sc.incidence_matrix(rank=1).toarray()
 
         assert np.array_equal(B1, B1_calculated)
 
@@ -101,7 +100,7 @@ class TestNetworkReader:
         triangles = read_B2(B2_filename=B2_filename, edges=edges)
         sc = scbuilder.to_simplicial_complex(triangles=triangles)
 
-        B2_calculated = sc.incidence_matrix(rank=2)
+        B2_calculated = sc.incidence_matrix(rank=2).toarray()
         assert np.array_equal(B2, B2_calculated)
 
     def test_read_coordinates(self):

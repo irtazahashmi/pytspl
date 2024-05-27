@@ -1,4 +1,3 @@
-import itertools
 from collections.abc import Iterable
 from numbers import Number
 
@@ -48,6 +47,7 @@ class SCPlot:
             G = nx.Graph()
             G.add_edges_from(self.sc.edges)
             layout = nx.spring_layout(G)
+            self.pos = layout
             # set the axis limits to a square
             ax.set_xlim([-1.1, 1.1])
             ax.set_ylim([-1.1, 1.1])
@@ -71,25 +71,6 @@ class SCPlot:
         ax.axis("off")
 
         return layout
-
-    def _get_triangles(self) -> list:
-        """Return the 2-simplices."""
-        # generate 2-simplices
-        triangles = list(
-            set(
-                itertools.chain(
-                    *[
-                        [
-                            tuple(sorted((i, j, k)))
-                            for i, j, k in itertools.combinations(simplex, 3)
-                        ]
-                        for simplex in self.sc.simplices
-                    ]
-                )
-            )
-        )
-
-        return triangles
 
     def create_edge_flow(self, flow: np.ndarray) -> dict:
         """
@@ -155,7 +136,7 @@ class SCPlot:
 
         self._init_axes(ax=ax)
 
-        if np.iterable(node_color) and np.alltrue(
+        if np.iterable(node_color) and np.all(
             [isinstance(c, Number) for c in node_color]
         ):
             if cmap is not None:
@@ -183,7 +164,6 @@ class SCPlot:
             s=node_size,
             c=node_color,
             edgecolors=node_edge_colors,
-            cmap=cmap,
             vmin=vmin,
             vmax=vmax,
             alpha=alpha,
@@ -298,7 +278,7 @@ class SCPlot:
         graph.add_edges_from(edges)
 
         # edge color is iterable and all elements are numbers
-        if np.iterable(edge_color) and np.alltrue(
+        if np.iterable(edge_color) and np.all(
             [isinstance(c, Number) for c in edge_color]
         ):
             # check if edge_cmap is a colormap
@@ -346,7 +326,7 @@ class SCPlot:
         )
 
         # fill the 2-simplices (triangles)
-        for i, j, k in self._get_triangles():
+        for i, j, k in self.sc.triangles:
             (x0, y0) = self.pos[i]
             (x1, y1) = self.pos[j]
             (x2, y2) = self.pos[k]

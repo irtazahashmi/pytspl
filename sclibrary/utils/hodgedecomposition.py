@@ -2,14 +2,13 @@ import numpy as np
 from scipy.sparse import csr_matrix
 
 
-def get_divergence(
-    incidence_matrix: np.ndarray, flow: np.ndarray
-) -> np.ndarray:
+def get_divergence(B1: csr_matrix, flow: np.ndarray) -> np.ndarray:
     """
     Get the divergence of a flow on a graph.
 
     Args:
-        incidence_matrix (np.ndarray): The incidence matrix of the graph (B1).
+        B1 (csr_matrix): The incidence matrix of the graph, nodes to
+        edges (B1).
         flow (np.ndarray): The flow on the graph.
         round_sig_fig (int, optional): Round to significant figure.
         Defaults to 2.
@@ -17,12 +16,11 @@ def get_divergence(
     Returns:
         np.ndarray: The divergence of the flow.
     """
-    divergence = csr_matrix(incidence_matrix, dtype=float).dot(flow)
-    return divergence
+    return B1 @ flow
 
 
 def get_gradient_component(
-    incidence_matrix: np.ndarray,
+    B1: csr_matrix,
     flow: np.ndarray,
     round_fig: bool = True,
     round_sig_fig: int = 2,
@@ -31,7 +29,8 @@ def get_gradient_component(
     Calculate the gradient flow of a flow on a graph.
 
     Args:
-        incidence_matrix (np.ndarray): The incidence matrix of the graph (B2).
+        B1 (csr_matrix): The incidence matrix of the graph, nodes
+        to edges (B1).
         flow (np.ndarray): The flow on the graph.
         round_sig_fig (int, optional): Round to significant figure.
         Defaults to 2.
@@ -39,8 +38,8 @@ def get_gradient_component(
     Returns:
         np.ndarray: The gradient flow.
     """
-    p = np.linalg.lstsq(incidence_matrix.T, flow, rcond=None)[0]
-    gradient_flow = csr_matrix(incidence_matrix.T, dtype=float).dot(p)
+    p = np.linalg.lstsq(B1.T.toarray(), flow, rcond=None)[0]
+    gradient_flow = B1.T @ p
 
     if round_fig:
         gradient_flow = np.round(gradient_flow, round_sig_fig)
@@ -49,7 +48,7 @@ def get_gradient_component(
 
 
 def get_curl_component(
-    incidence_matrix: np.ndarray,
+    B2: csr_matrix,
     flow: np.ndarray,
     round_fig: bool = True,
     round_sig_fig: int = 2,
@@ -58,7 +57,8 @@ def get_curl_component(
     Calculate the curl flow of a flow on a graph.
 
     Args:
-        incidence_matrix (np.ndarray): The incidence matrix of the graph (B2).
+        B2 (csr_matrix): The incidence matrix of the graph, edges
+        to triangles (B2).
         flow (np.ndarray): The flow on the graph.
         round_sig_fig (int, optional): Round to significant figure.
         Defaults to 2.
@@ -66,8 +66,8 @@ def get_curl_component(
     Returns:
         np.ndarray: The curl flow.
     """
-    w = np.linalg.lstsq(incidence_matrix, flow, rcond=None)[0]
-    curl_flow = csr_matrix(incidence_matrix, dtype=float).dot(w)
+    w = np.linalg.lstsq(B2.toarray(), flow, rcond=None)[0]
+    curl_flow = B2 @ w
 
     if round_fig:
         curl_flow = np.round(curl_flow, round_sig_fig)
@@ -76,8 +76,8 @@ def get_curl_component(
 
 
 def get_harmonic_component(
-    incidence_matrix_b1: np.ndarray,
-    incidence_matrix_b2: np.ndarray,
+    B1: csr_matrix,
+    B2: csr_matrix,
     flow: np.ndarray,
     round_fig: bool = True,
     round_sig_fig: int = 2,
@@ -86,6 +86,9 @@ def get_harmonic_component(
     Calculate the harmonic flow of a flow on a graph.
 
     Args:
+        B1 (csr_matrix): The incidence matrix of the graph, nodes
+        to edges (B1).
+        B2 (csr_matrix): The incidence matrix of the graph,
         flow (np.ndarray): The flow on the graph.
         round_sig_fig (int, optional): Round to significant figure.
         Defaults to 2.
@@ -93,13 +96,9 @@ def get_harmonic_component(
     Returns:
         np.ndarray: The harmonic flow.
     """
-    gradient_flow = get_gradient_component(
-        incidence_matrix=incidence_matrix_b1, flow=flow, round_fig=False
-    )
+    gradient_flow = get_gradient_component(B1=B1, flow=flow, round_fig=False)
 
-    curl_flow = get_curl_component(
-        incidence_matrix=incidence_matrix_b2, flow=flow, round_fig=False
-    )
+    curl_flow = get_curl_component(B2=B2, flow=flow, round_fig=False)
 
     harmonic_flow = flow - gradient_flow - curl_flow
 

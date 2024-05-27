@@ -1,6 +1,7 @@
 import warnings
 
 import numpy as np
+from scipy.sparse.linalg import eigsh
 
 """Module to compute eigendecomposition"""
 
@@ -59,7 +60,7 @@ def get_gradient_eigenvectors(lower_lap_mat: np.ndarray) -> tuple:
     return u_g, eigenvalues
 
 
-def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
+def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-3) -> tuple:
     """
     Calculate the eigenvectors of the Laplacian matrix using
     eigendecomposition.
@@ -72,21 +73,22 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-03) -> tuple:
     Args:
         lap_mat (np.ndarray): The Laplacian matrix L(k).
         tolerance (float): The tolerance for eigenvalues to be considered zero.
+        Defaults to 1e-3.
 
     Returns:
         eigenvectors (np.ndarray): The eigenvectors U(k)
         eigenvalues (np.ndarray): The eigenvalues.
     """
-    eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
-    # set eigenvalues below tolerance to zero
-    eigenvalues[eigenvalues < tolerance] = 0
+    assert isinstance(
+        lap_mat, np.ndarray
+    ), "Laplacian matrix must be a numpy array"
 
     with warnings.catch_warnings(record=True):
-        # sort the eigenvectors according to the sorted eigenvalues
-        eigenvectors = eigenvectors[:, eigenvalues.argsort()].astype(
-            np.float64
-        )
-        # sort the eigenvalues
-        eigenvalues = np.sort(eigenvalues).astype(np.float64)
+        # eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
+        eigenvalues, eigenvectors = eigsh(lap_mat, k=lap_mat.shape[0])
+        # set eigenvalues below tolerance to zero
+        eigenvalues[np.abs(eigenvalues) < tolerance] = 0
+        # set eigenvectors below tolerance to zero
+        eigenvectors[np.abs(eigenvectors) < tolerance] = 0
 
     return eigenvectors, eigenvalues

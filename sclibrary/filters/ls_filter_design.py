@@ -18,11 +18,11 @@ class LSFilterDesign(Filter):
         self,
         f: np.ndarray,
         f_true: np.ndarray,
-        lap_matrix: np.ndarray,
+        lap_matrix: csr_matrix,
         U: np.ndarray,
         eigenvals: np.ndarray,
-        L: int,
         alpha: np.ndarray,
+        L: int,
     ) -> tuple:
         """
         Apply the filter to the signal using a type of the laplacian matrix.
@@ -30,20 +30,17 @@ class LSFilterDesign(Filter):
         Args:
             f (np.ndarray): The noisy signal to be filtered.
             f_true (np.ndarray): The true signal.
-            lap_matrix (np.ndarray): The laplacian matrix. It can be the Hodge
+            lap_matrix (csr_matrix): The laplacian matrix. It can be the Hodge
             Laplacian matrix, the upper or lower laplacian matrix.
             U (np.ndarray): The eigenvectors of the laplacian matrix.
             eigenvals (np.ndarray): The eigenvalues of the laplacian matrix.
-            L (int): The size of the filter.
             alpha (np.ndarray): The coefficients of the filter.
+            L (int): The size of the filter.
 
         Returns:
             tuple: The estimated filter, signal, frequency responses and
             error per filter size.
         """
-        # convert lap matrix to a sparse matrix
-        lap_matrix_csr = csr_matrix(lap_matrix, dtype=float)
-
         # create a matrix to store the system
         system_mat = np.zeros((len(eigenvals), L))
 
@@ -63,10 +60,10 @@ class LSFilterDesign(Filter):
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
 
             # building the topological filter
-            H = np.zeros_like(lap_matrix, dtype=float)
+            H = np.zeros(lap_matrix.shape, dtype=float)
 
             for l in range(len(h)):
-                H += h[l] * (lap_matrix_csr**l).toarray()
+                H += h[l] * (lap_matrix**l).toarray()
 
             # filter the signal
             f_estimated = H @ f
@@ -86,8 +83,8 @@ class LSFilterDesign(Filter):
     def subcomponent_extraction_type_one(
         self,
         f: np.ndarray,
-        L: int,
         component: str,
+        L: int,
     ) -> None:
         """
         LS based filter design for subcomponent extraction using the Hodge
@@ -100,14 +97,14 @@ class LSFilterDesign(Filter):
 
         Args:
             f (np.ndarray): The signal to be filtered.
-            L (int): The size of the filter.
             component (str): The component to be extracted.
+            L (int): The size of the filter.
         """
         self._reset_history()
 
         # eigendecomposition of the Hodge Laplacian matrix
         L1 = self.sc.hodge_laplacian_matrix(rank=1)
-        U, eigenvals = get_eigendecomposition(lap_mat=L1)
+        U, eigenvals = get_eigendecomposition(lap_mat=L1.toarray())
 
         # get the true signal
         f_true = self.get_true_signal(component=component, f=f)
@@ -180,7 +177,7 @@ class LSFilterDesign(Filter):
 
         # get the eigenvalues
         U, eigenvals = get_eigendecomposition(
-            lap_mat=lap_matrix, tolerance=tolerance
+            lap_mat=lap_matrix.toarray(), tolerance=tolerance
         )
         # unique eigenvalues
         eigenvals = np.unique(eigenvals)
