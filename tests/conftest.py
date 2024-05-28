@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from sclibrary import dataset_loader
-from sclibrary.io.network_reader import read_B1, read_B2
+from sclibrary.io.network_reader import read_B1_B2, read_B2
 
 
 @pytest.fixture(scope="module")
@@ -80,9 +80,9 @@ def sc_chicago_mock():
     B1_filename = "data/test_dataset/B1_chicago_sketch.csv"
     B2_filename = "data/test_dataset/B2t_chicago_sketch.csv"
 
-    scbuilder = read_B1(B1_filename=B1_filename)
-    edges = np.asarray(scbuilder.edges)
-    triangles = read_B2(B2_filename=B2_filename, edges=edges)
+    scbuilder, triangles = read_B1_B2(
+        B1_filename=B1_filename, B2_filename=B2_filename
+    )
     sc = scbuilder.to_simplicial_complex(triangles=triangles)
     yield sc
 

@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 
 from sclibrary.io.network_reader import (
-    read_B1,
-    read_B2,
+    read_B1_B2,
     read_coordinates,
     read_csv,
     read_flow,
@@ -14,7 +13,7 @@ from sclibrary.simplicial_complex.scbuilder import SCBuilder
 NODES = 7
 EDGES = 10
 
-INCIDENCE_MATRIX = np.asarray(
+INC_MAT_B1 = np.asarray(
     [
         [-1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -23,6 +22,22 @@ INCIDENCE_MATRIX = np.asarray(
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, -1.0, -1.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, -1.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0],
+    ]
+)
+
+# from above
+INC_MAT_B2 = np.asarray(
+    [
+        [1, 0, 0],
+        [-1, 1, 0],
+        [0, -1, 0],
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 1],
+        [0, 0, -1],
+        [0, 0, 1],
     ]
 )
 
@@ -47,7 +62,7 @@ class TestNetworkReader:
         incidence_mat = sc.incidence_matrix(rank=1).toarray()
         assert incidence_mat.shape[0] == NODES
         assert incidence_mat.shape[1] == EDGES
-        assert np.array_equal(incidence_mat, INCIDENCE_MATRIX)
+        assert np.array_equal(incidence_mat, INC_MAT_B1)
 
     def test_read_csv(self):
         filename = "data/paper_data/edges.csv"
@@ -62,45 +77,49 @@ class TestNetworkReader:
         incidence_mat = sc.incidence_matrix(rank=1).toarray()
         assert incidence_mat.shape[0] == NODES
         assert incidence_mat.shape[1] == EDGES
-        assert np.array_equal(incidence_mat, INCIDENCE_MATRIX)
+        assert np.array_equal(incidence_mat, INC_MAT_B1)
 
-    def test_B1_test_data(self):
+    def test_B1_B2_test_data(self):
         B1_filename = "data/paper_data/B1.csv"
+        B2_filename = "data/paper_data/B2t.csv"
         B1 = pd.read_csv(B1_filename, header=None).to_numpy()
-        sc = read_B1(B1_filename=B1_filename).to_simplicial_complex()
+
+        scbuilder, triangles = read_B1_B2(
+            B1_filename=B1_filename, B2_filename=B2_filename
+        )
+        sc = scbuilder.to_simplicial_complex(triangles=triangles)
 
         assert len(sc.nodes) == NODES
         assert len(sc.edges) == EDGES
 
-        incidence_mat = sc.incidence_matrix(rank=1).toarray()
-        assert np.array_equal(incidence_mat, B1)
+        inc_mat_B1 = sc.incidence_matrix(rank=1).toarray()
+        assert np.array_equal(inc_mat_B1, B1)
 
-    def test_B1_chicago_data(self):
+        inc_mat_B2 = sc.incidence_matrix(rank=2).toarray()
+        assert np.array_equal(inc_mat_B2, INC_MAT_B2)
+
+    def test_B1_B2_chicago_data(self):
         nodes, edges = 546, 1088
         B1_filename = "data/test_dataset/B1_chicago_sketch.csv"
-        B1 = pd.read_csv(B1_filename, header=None).to_numpy()
+        B2_filename = "data/test_dataset/B2t_chicago_sketch.csv"
 
-        scbuilder = read_B1(B1_filename=B1_filename)
+        B1 = pd.read_csv(B1_filename, header=None).to_numpy()
+        B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
+
+        scbuilder, triangles = read_B1_B2(
+            B1_filename=B1_filename, B2_filename=B2_filename
+        )
+
         assert isinstance(scbuilder, SCBuilder)
         assert len(scbuilder.nodes) == nodes
         assert len(scbuilder.edges) == edges
 
-        sc = scbuilder.to_simplicial_complex()
-        B1_calculated = sc.incidence_matrix(rank=1).toarray()
-
-        assert np.array_equal(B1, B1_calculated)
-
-    def test_B2_chicago_data(self):
-        B1_filename = "data/test_dataset/B1_chicago_sketch.csv"
-        B2_filename = "data/test_dataset/B2t_chicago_sketch.csv"
-        B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
-
-        scbuilder = read_B1(B1_filename=B1_filename)
-        edges = np.asarray(scbuilder.edges)
-        triangles = read_B2(B2_filename=B2_filename, edges=edges)
         sc = scbuilder.to_simplicial_complex(triangles=triangles)
 
+        B1_calculated = sc.incidence_matrix(rank=1).toarray()
         B2_calculated = sc.incidence_matrix(rank=2).toarray()
+
+        assert np.array_equal(B1, B1_calculated)
         assert np.array_equal(B2, B2_calculated)
 
     def test_read_coordinates(self):
