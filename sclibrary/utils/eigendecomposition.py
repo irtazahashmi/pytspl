@@ -1,9 +1,13 @@
+"""Module to extract eigendecomposition into eigenvalues and eigenvectors.
+
+Once the eigendecomposition is calculated, the components are extracted
+into harmonic, curl and gradient eigenvalues and eigenvectors.
+"""
+
 import warnings
 
 import numpy as np
 from scipy.sparse.linalg import eigsh
-
-"""Module to compute eigendecomposition"""
 
 
 def get_harmonic_eigenvectors(hodgle_lap_mat: np.ndarray) -> tuple:

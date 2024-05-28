@@ -1,3 +1,7 @@
+"""Grid-based filter design module for denoising and subcomponent
+extraction.
+"""
+
 import numpy as np
 from scipy.sparse import csr_matrix
 
@@ -8,7 +12,9 @@ from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class GridBasedFilterDesign(Filter):
-    """Module for grid-based filter design."""
+    """Module for grid-based filter design that inherits from the
+    Filter base class.
+    """
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """

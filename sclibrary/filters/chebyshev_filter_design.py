@@ -123,16 +123,12 @@ class ChebyshevFilterDesign(Filter):
         alpha = lambda_max / 2
         return alpha, lambda_max
 
-    def get_ideal_frequency(
-        self, component_coeffs: np.ndarray, p_choice: str
-    ) -> np.ndarray:
+    def get_ideal_frequency(self, component_coeffs: np.ndarray) -> np.ndarray:
         """
         Calculate the ideal frequency of the component.
 
         Args:
             component coeffs: The masked coefficients of the component.
-            p_choice (str): The ideal frequency calculated using the p_choice
-            matrix
 
         Returns:
             np.ndarray: The ideal frequency of the given component and
@@ -231,9 +227,7 @@ class ChebyshevFilterDesign(Filter):
         coeffs = g_chebyshev.funs[0].coeffs
 
         # ideal frequency
-        H_ideal = self.get_ideal_frequency(
-            p_choice=p_choice, component_coeffs=h_ideal
-        )
+        H_ideal = self.get_ideal_frequency(component_coeffs=h_ideal)
 
         # chebyshev approx frequency
         H_cheb_approx = self.get_chebyshev_frequency_approx(

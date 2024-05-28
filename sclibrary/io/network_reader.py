@@ -1,11 +1,24 @@
+"""Module for reading simplicial complex network data.
+
+The network can be read as the following formats:
+- TNTP
+- CSV
+- B1 and B2 incidence matrices
+
+Once the data is read, the SCBuilder object is created to build the
+simplicial complex using the nodes, edges and triangles (based on
+the user defined condition).
+
+The module also provides functionality to read the coordinates
+and flow data.
+"""
+
 import os
 
 import numpy as np
 import pandas as pd
 
 from sclibrary.simplicial_complex.scbuilder import SCBuilder
-
-"""Module for reading simplicial complex network data."""
 
 
 def _extract_nodes_edges(

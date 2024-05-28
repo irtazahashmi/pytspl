@@ -1,3 +1,7 @@
+"""Module for preprocessing and loading transportation network
+datasets for analysis.
+"""
+
 import os
 import pprint
 
@@ -10,8 +14,6 @@ from sclibrary.io.network_reader import (
     read_flow,
     read_tntp,
 )
-
-"""Module for loading transportation network datasets."""
 
 DATA_FOLDER = "data/transportation_networks"
 METADATA_ROWS = 8

@@ -1,3 +1,5 @@
+"""Module for analyzing simplicial complex data."""
+
 from itertools import combinations
 from typing import Hashable, Iterable
 
@@ -18,7 +20,7 @@ from sclibrary.utils.hodgedecomposition import (
 
 
 class SimplicialComplex:
-    """Module to analyze simplicial complex data."""
+    """Class for the simplicial complex network."""
 
     def __init__(
         self,

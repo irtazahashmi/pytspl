@@ -1,3 +1,7 @@
+"""LS-based filter design module for subcomponent extraction of type I
+and type II filters.
+"""
+
 import numpy as np
 from scipy.sparse import csr_matrix
 
@@ -8,7 +12,9 @@ from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class LSFilterDesign(Filter):
-    """Module for the LS filter design."""
+    """Module for e LS filter design that inherits from the
+    Filter base class.
+    """
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the LS filter design using a simplicial complex."""

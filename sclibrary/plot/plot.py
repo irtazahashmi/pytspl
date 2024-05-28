@@ -1,3 +1,5 @@
+"""Module for plotting simplicial complexes."""
+
 from collections.abc import Iterable
 from numbers import Number
 
@@ -11,7 +13,7 @@ from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class SCPlot:
-    """Module for plotting simplicial complexes."""
+    """Class for plotting simplicial complexes."""
 
     def __init__(
         self,

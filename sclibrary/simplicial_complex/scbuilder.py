@@ -1,13 +1,19 @@
+"""SC builder module to build simplicial complex networks using
+0-simplicies (nodes), 1-simplices (edges) and 2-simplicies (triangles).
+
+The 2-simplices can be added in three ways:
+    - Triangles passed as an argument.
+    - All triangles in the simplicial complex.
+    - Triangles based on a condition e.g. distance.
+"""
+
 import networkx as nx
 
 from sclibrary.simplicial_complex import SimplicialComplex
 
 
 class SCBuilder:
-    """
-    SC builder module to build simplicial complex networks using
-    0-simplicies (nodes), 1-simplicies (edges) and 2-simplicies (triangles).
-    """
+    """SC builder class to build simplicial complex networks."""
 
     def __init__(
         self,
