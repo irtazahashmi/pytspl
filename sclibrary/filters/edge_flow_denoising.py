@@ -2,12 +2,12 @@
 
 import numpy as np
 
-from sclibrary.filters.filter import Filter
+from sclibrary.filters.base_filter import BaseFilter
 from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
 
-class EdgeFlowDenoising(Filter):
+class EdgeFlowDenoising(BaseFilter):
     """
     Edge flow denoising with a low-pass filter H_P.
 
@@ -55,7 +55,7 @@ class EdgeFlowDenoising(Filter):
             # estimate frequency response
             f_estimated = H @ f
             # calculate error for each mu
-            errors[i] = self.calculate_error(f_estimated, f_true)
+            errors[i] = self.calculate_error_NRMSE(f_estimated, f_true)
             # filter frequency response (H_1_tilda)
             frequency_responses[i] = np.diag(U1.T @ H @ U1)
 

@@ -5,13 +5,13 @@ extraction.
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from sclibrary.filters.filter import Filter
+from sclibrary.filters.base_filter import BaseFilter
 from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 from sclibrary.utils.frequency_component import FrequencyComponent
 
 
-class GridBasedFilterDesign(Filter):
+class GridBasedFilterDesign(BaseFilter):
     """Module for grid-based filter design that inherits from the
     Filter base class.
     """
@@ -141,7 +141,7 @@ class GridBasedFilterDesign(Filter):
             # estimate the signal
             f_estimated = H @ f
             # compute error compared to the true component signal
-            errors[l] = self.calculate_error(f_estimated, f_true)
+            errors[l] = self.calculate_error_NRMSE(f_estimated, f_true)
             # frequency response of the filter
             frequency_responses[l] = np.diag(U.T @ H @ U)
 
