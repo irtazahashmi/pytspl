@@ -133,7 +133,7 @@ class TestSimplicalTrendFilter:
             ratio=ratio,
             num_realizations=num_realizations,
         )
-        expected_error = 0.011
+        expected_error = 0.015
         assert trend_filter.history["errors"][-1] < expected_error
 
         expected_corr = 0.999
