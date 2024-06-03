@@ -7,7 +7,7 @@ It imports all the necessary modules and classes to be used by the user.
 from sclibrary.io import (
     dataset_loader,
     generate_random_simplicial_complex,
-    read_B1,
+    read_B1_B2,
     read_csv,
     read_tntp,
 )

@@ -1,14 +1,20 @@
+"""LS-based filter design module for subcomponent extraction of type I
+and type II filters.
+"""
+
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from sclibrary.filters.filter import Filter
+from sclibrary.filters.base_filter import BaseFilter
 from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 from sclibrary.utils.frequency_component import FrequencyComponent
 
 
-class LSFilterDesign(Filter):
-    """Module for the LS filter design."""
+class LSFilterDesign(BaseFilter):
+    """Module for e LS filter design that inherits from the
+    Filter base class.
+    """
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the LS filter design using a simplicial complex."""
@@ -69,7 +75,7 @@ class LSFilterDesign(Filter):
             f_estimated = H @ f
 
             # compute the error for each filter size
-            errors[L] = self.calculate_error(f_estimated, f_true)
+            errors[L] = self.calculate_error_NRMSE(f_estimated, f_true)
 
             # filter frequency response (H_1_tilda)
             frequency_responses[L] = np.diag(U.T @ H @ U)

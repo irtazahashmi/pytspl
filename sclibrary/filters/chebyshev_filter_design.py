@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from chebpy import chebfun
-from sclibrary.filters.filter import Filter
+from sclibrary.filters.base_filter import BaseFilter
 from sclibrary.simplicial_complex import SimplicialComplex
 from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
 
-class ChebyshevFilterDesign(Filter):
+class ChebyshevFilterDesign(BaseFilter):
     """Chebyshev filter class."""
 
     def __init__(self, simplicial_complex: SimplicialComplex):
@@ -117,22 +117,19 @@ class ChebyshevFilterDesign(Filter):
         """
         P = self.get_p_matrix(p_choice).toarray()
         v = self.power_iteration(P=P)
+
         # mean of the largest eigenvalue
         lambda_max = np.mean((P @ v) / v)
         # perform a transformation to shit the domain to [0, lambda_g_max]
         alpha = lambda_max / 2
         return alpha, lambda_max
 
-    def get_ideal_frequency(
-        self, component_coeffs: np.ndarray, p_choice: str
-    ) -> np.ndarray:
+    def get_ideal_frequency(self, component_coeffs: np.ndarray) -> np.ndarray:
         """
         Calculate the ideal frequency of the component.
 
         Args:
             component coeffs: The masked coefficients of the component.
-            p_choice (str): The ideal frequency calculated using the p_choice
-            matrix
 
         Returns:
             np.ndarray: The ideal frequency of the given component and
@@ -231,9 +228,7 @@ class ChebyshevFilterDesign(Filter):
         coeffs = g_chebyshev.funs[0].coeffs
 
         # ideal frequency
-        H_ideal = self.get_ideal_frequency(
-            p_choice=p_choice, component_coeffs=h_ideal
-        )
+        H_ideal = self.get_ideal_frequency(component_coeffs=h_ideal)
 
         # chebyshev approx frequency
         H_cheb_approx = self.get_chebyshev_frequency_approx(
@@ -257,18 +252,22 @@ class ChebyshevFilterDesign(Filter):
                 U_l.T @ np.squeeze(H_cheb_approx[k, :, :]) @ U_l
             )
             # compute the error with respect to the true component extraction
-            errors_response[k] = self.calculate_error(g_cheb_approx, h_ideal)
+            errors_response[k] = self.calculate_error_NRMSE(
+                g_cheb_approx, h_ideal
+            )
             errors_filter[k] = np.linalg.norm(
                 np.squeeze(H_cheb_approx[k, :, :]) - H_ideal, ord=2
             )
 
             # compute the error with respect to the true signal
             f_cheb[k] = np.squeeze(H_cheb_approx[k, :, :]) @ f
-            extracted_comp_error[k] = self.calculate_error(f_cheb[k], f_true)
+            extracted_comp_error[k] = self.calculate_error_NRMSE(
+                f_cheb[k], f_true
+            )
 
             # f_tilde - compute the error on component embedding
             f_cheb_tilde[k] = U.T @ f_cheb[k]
-            error_tilde[k] = self.calculate_error(
+            error_tilde[k] = self.calculate_error_NRMSE(
                 f_cheb_tilde[k], U.T @ f_true
             )
 
@@ -287,7 +286,11 @@ class ChebyshevFilterDesign(Filter):
         )
 
     def plot_chebyshev_series_approx(
-        self, p_choice: str, n: int = None
+        self,
+        p_choice: str,
+        n: int = None,
+        cut_off_frequency: float = 0.01,
+        steep: int = 100,
     ) -> None:
         """
         Plot the Chebyshev series approximation.
@@ -295,6 +298,10 @@ class ChebyshevFilterDesign(Filter):
         Args:
             p_choice (str): The choice of P matrix.
             n (int, optional): The number of points. Defaults to None.
+            cut_off_frequency (float, optional): The cut-off frequency.
+            Defaults to 0.01.
+            steep (int, optional): The steepness of the logistic function.
+            Defaults to 100.
         """
         P = self.get_p_matrix(p_choice).toarray()
         _, eigenvals = get_eigendecomposition(lap_mat=P)
@@ -307,8 +314,14 @@ class ChebyshevFilterDesign(Filter):
         # mean of the largest eigenvalue
         _, lambda_max = self.get_alpha(p_choice=p_choice)
         g_chebysev = self._get_chebyshev_series(
-            n=n, domain_min=0, domain_max=lambda_max
+            n=n,
+            domain_min=0,
+            domain_max=lambda_max,
+            cut_off_frequency=cut_off_frequency,
+            steep=steep,
         )
+
+        print(g_chebysev(eigenvals))
 
         plt.figure(figsize=(15, 5))
         # eigenvalues

@@ -1,3 +1,12 @@
+"""Module for calculating the Hodge decomposition of a flow on a graph.
+
+The following components can be extracted:
+- Divergence
+- Gradient
+- Curl
+- Harmonic
+"""
+
 import numpy as np
 from scipy.sparse import csr_matrix
 

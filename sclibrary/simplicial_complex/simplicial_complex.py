@@ -1,3 +1,5 @@
+"""Module for analyzing simplicial complex data."""
+
 from itertools import combinations
 from typing import Hashable, Iterable
 
@@ -18,7 +20,7 @@ from sclibrary.utils.hodgedecomposition import (
 
 
 class SimplicialComplex:
-    """Module to analyze simplicial complex data."""
+    """Class for the simplicial complex network."""
 
     def __init__(
         self,
@@ -49,6 +51,18 @@ class SimplicialComplex:
 
         self.B1 = self.edges_to_B1(edges, len(nodes))
         self.B2 = self.triangles_to_B2(triangles, edges)
+
+        self.print_summary()
+
+    def print_summary(self):
+        """
+        Print the summary of the simplicial complex.
+        """
+        print(f"Num. of nodes: {len(self.nodes)}")
+        print(f"Num. of edges: {len(self.edges)}")
+        print(f"Num. of triangles: {len(self.triangles)}")
+        print(f"Shape: {self.shape}")
+        print(f"Max Dimension: {self.max_dim}")
 
     def edges_to_B1(self, edges: list, num_nodes: int) -> np.ndarray:
         """

@@ -45,7 +45,7 @@ class TestLSFilterDesign:
             np.diff(ls_filter.history["extracted_component_error"]) < 0.1
         )
         expected_error = 0.39
-        actual_error = ls_filter.calculate_error(
+        actual_error = ls_filter.calculate_error_NRMSE(
             ls_filter.history["f_estimated"], f_mock
         )
         assert np.isclose(actual_error, expected_error, atol=1e-2)

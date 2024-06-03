@@ -1,3 +1,5 @@
+"""Module for generating random simplicial complexes."""
+
 import networkx as nx
 
 from sclibrary.simplicial_complex.scbuilder import SCBuilder

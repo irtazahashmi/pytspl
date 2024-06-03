@@ -1,11 +1,24 @@
+"""Module for reading simplicial complex network data.
+
+The network can be read as the following formats:
+- TNTP
+- CSV
+- B1 and B2 incidence matrices
+
+Once the data is read, the SCBuilder object is created to build the
+simplicial complex using the nodes, edges and triangles (based on
+the user defined condition).
+
+The module also provides functionality to read the coordinates
+and flow data.
+"""
+
 import os
 
 import numpy as np
 import pandas as pd
 
 from sclibrary.simplicial_complex.scbuilder import SCBuilder
-
-"""Module for reading simplicial complex network data."""
 
 
 def _extract_nodes_edges(
@@ -163,15 +176,47 @@ def read_csv(
     )
 
 
-def read_B1(B1_filename: str) -> SCBuilder:
+def read_B2(B2_filename: str, edges: np.ndarray) -> list:
     """
-    Read the B1 incidence matrix file.
+    Extract triangles from the B2 incidence matrix.
+
+    Args:
+        B2_filename (str): The name of the B2 incidence matrix
+        file.
+        edges (np.ndarray): The edges of the graph.
+
+    Returns:
+        list: List of triangles.
+    """
+    assert isinstance(edges, np.ndarray), "Edges should be a numpy array."
+
+    B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
+    num_triangles = B2.shape[1]
+
+    triangles = []
+    for j in range(num_triangles):
+        # Check each column of B2 for triangles
+        col = B2[:, j]
+        ones = np.where(col != 0)[0]
+        triangle = edges[ones]
+        triangle = tuple(set(triangle.flatten()))
+        triangle = tuple(sorted(triangle))
+        triangles.append(triangle)
+
+    return triangles
+
+
+def read_B1_B2(B1_filename: str, B2_filename: str) -> tuple:
+    """
+    Read the B1 and B2 incidence matrices.
 
     Args:
         B1_filename (str): The name of the B1 incidence matrix file.
+        B2_filename (str): The name of the B2 incidence matrix file.
 
     Returns:
         SCBuilder: SC builder object to build the simplicial complex.
+        list: List of triangles (2-simplices).
     """
     B1 = pd.read_csv(B1_filename, header=None).to_numpy()
 
@@ -192,37 +237,10 @@ def read_B1(B1_filename: str) -> SCBuilder:
     nodes = list(range(max(nodes) + 1))
     edges.sort()
 
-    return SCBuilder(nodes=nodes, edges=edges)
+    scbuilder = SCBuilder(nodes=nodes, edges=edges)
+    triangles = read_B2(B2_filename, np.asarray(edges))
 
-
-def read_B2(B2_filename: str, edges: np.ndarray) -> list:
-    """
-    Extract triangles from the B2 incidence matrix.
-
-    Args:
-        B2_filename (str): The name of the B2 incidence matrix
-        file.
-        edges (np.ndarray): The edges of the graph.
-
-    Returns:
-        list: List of triangles.
-    """
-    assert isinstance(edges, np.ndarray)
-
-    B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
-    num_triangles = B2.shape[1]
-
-    triangles = []
-    for j in range(num_triangles):
-        # Check each column of B2 for triangles
-        col = B2[:, j]
-        ones = np.where(col != 0)[0]
-        triangle = edges[ones]
-        triangle = tuple(set(triangle.flatten()))
-        triangle = tuple(sorted(triangle))
-        triangles.append(triangle)
-
-    return triangles
+    return scbuilder, triangles
 
 
 def read_coordinates(
