@@ -47,9 +47,30 @@ class BaseFilter:
         )
         self.history["filter_error"] = filter_error.astype(float)
 
-    def calculate_error_NRMSE(self, f_estimated: np.ndarray, f_true) -> float:
+    @staticmethod
+    def calculate_error_NRMSE(f_estimated: np.ndarray, f_true) -> float:
         """Calculate the error of the estimated signal using NRMSE."""
         return np.linalg.norm(f_estimated - f_true) / np.linalg.norm(f_true)
+
+    @staticmethod
+    def power_iteration(P: np.ndarray, iterations: int = 50) -> np.ndarray:
+        """Power iteration algorithm to approximate the largest eigenvalue.
+
+        Args:
+            P (np.ndarray): The input matrix.
+            iterations (int): The number of iterations.
+
+        Returns:
+            np.ndarray: The approximated largest eigenvalue.
+        """
+        v = np.ones(P.shape[0])
+
+        for _ in range(iterations):
+            v = P @ v
+            v = v / np.linalg.norm(v)
+
+        v = v.astype(float)
+        return v
 
     def get_true_signal(self, f: np.ndarray, component: str) -> np.ndarray:
         """
@@ -95,24 +116,3 @@ class BaseFilter:
             )
 
         return P
-
-    def power_iteration(
-        self, P: np.ndarray, iterations: int = 50
-    ) -> np.ndarray:
-        """Power iteration algorithm to approximate the largest eigenvalue.
-
-        Args:
-            P (np.ndarray): The input matrix.
-            iterations (int): The number of iterations.
-
-        Returns:
-            np.ndarray: The approximated largest eigenvalue.
-        """
-        v = np.ones(P.shape[0])
-
-        for _ in range(iterations):
-            v = P @ v
-            v = v / np.linalg.norm(v)
-
-        v = v.astype(float)
-        return v
