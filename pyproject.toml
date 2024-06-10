@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11"
 chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
 cvxpy = "^1.5.1"
+gpytorch = "^1.11"
 gudhi = "^3.9.0"
 hypernetx = "^1.2.5"
 matplotlib = "^3.8.2"
@@ -16,6 +17,8 @@ networkx = "^2.8.8"
 pandas = "^2.1.1"
 scipy = "^1.11.4"
 trimesh = "^4.0.10"
+torcheval = "^0.0.7"
+torchvision = "^0.18.0"
 toponetx = { git = "https://github.com/pyt-team/TopoNetX.git", branch = "main" }
 
 
@@ -38,7 +41,7 @@ show_missing = true
 
 # Linting
 [tool.flake8]
-extend-ignore = ["D205", "D400", "E203", "E741"]
+extend-ignore = ["E203", "E741"]
 per-file-ignores = ['__init__.py:F401']
 
 [build-system]

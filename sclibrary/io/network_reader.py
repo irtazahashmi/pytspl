@@ -1,4 +1,4 @@
-"""Module for reading simplicial complex network data.
+"""Module for preprocessing simplicial complex network data.
 
 The network can be read as the following formats:
 - TNTP
