@@ -26,10 +26,7 @@ jobs:
       - name: Lint with flake8
         run: |
           poetry run pflake8 sclibrary
-      - name: Run tests
-        run: |
-          poetry run pytest
-      - name: Generate coverage report
+      - name: Run tests and generate coverage report
         run: |
           poetry run coverage run -m pytest && poetry run coverage report -m
           poetry run coverage xml

@@ -1,13 +1,53 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from sclibrary import SimplicialComplex
-from sclibrary.io.dataset_loader import load, load_paper_data
+from sclibrary.io.dataset_loader import list_datasets, load
 
 
 class TestDatasetLoader:
 
-    def test_load_dataset(self):
+    def test_list_datasets(self):
+        datasets = list_datasets()
+        assert isinstance(datasets, list)
+        assert len(datasets) > 0
+
+    def test_load_dataset_paper(self):
+        B1 = pd.read_csv("data/paper_data/B1.csv", header=None).to_numpy()
+        B2 = pd.read_csv("data/paper_data/B2t.csv", header=None).to_numpy().T
+
+        dataset = "paper"
+
+        sc, coordinates = load(dataset=dataset)
+
+        assert isinstance(sc, SimplicialComplex)
+        assert isinstance(coordinates, dict)
+
+        B1_calculated = sc.incidence_matrix(rank=1).toarray()
+        B2_calculated = sc.incidence_matrix(rank=2).toarray()
+
+        assert np.array_equal(B1, B1_calculated)
+        assert np.array_equal(B2, B2_calculated)
+
+        # coordinate nodes should be equal to sc nodes
+        assert sc.nodes == list(coordinates.keys())
+
+    def test_load_unknown_dataset(self):
+        dataset = "unknown"
+        with pytest.raises(ValueError):
+            load(dataset=dataset)
+
+    def test_load_dataset_forex(self):
+        dataset = "forex"
+
+        sc, coordinates, flow = load(dataset=dataset)
+
+        assert isinstance(sc, SimplicialComplex)
+        assert isinstance(coordinates, dict)
+        assert isinstance(flow, dict)
+
+    def test_load_dataset_transportation(self):
         dataset = "siouxfalls"
 
         sc, coordinates, flow_dict = load(dataset=dataset)
@@ -51,21 +91,3 @@ class TestDatasetLoader:
             # number of edges should be equal to the number of
             # flow data
             assert sc.edges == list(flow_dict.keys())
-
-    def test_load_paper_data(self):
-        B1 = pd.read_csv("data/paper_data/B1.csv", header=None).to_numpy()
-        B2 = pd.read_csv("data/paper_data/B2t.csv", header=None).to_numpy().T
-
-        sc, coordinates = load_paper_data()
-
-        assert isinstance(sc, SimplicialComplex)
-        assert isinstance(coordinates, dict)
-
-        B1_calculated = sc.incidence_matrix(rank=1).toarray()
-        B2_calculated = sc.incidence_matrix(rank=2).toarray()
-
-        assert np.array_equal(B1, B1_calculated)
-        assert np.array_equal(B2, B2_calculated)
-
-        # coordinate nodes should be equal to sc nodes
-        assert sc.nodes == list(coordinates.keys())

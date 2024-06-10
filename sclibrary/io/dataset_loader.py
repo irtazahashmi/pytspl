@@ -1,6 +1,7 @@
 """Module for preprocessing and loading datasets for analysis.
 """
 
+import networkx as nx
 import pandas as pd
 
 from sclibrary.io.network_reader import read_B1_B2, read_coordinates, read_csv
@@ -63,8 +64,7 @@ def load_paper_data() -> tuple:
     Returns:
         tuple:
             SimplicialComplex: The simplicial complex of the paper data.
-            dict: The coordinates of the nodes. If the coordinates do not
-            exist, the coordinates are generated using spring layout.
+            dict: The coordinates of the nodes.
     """
     data_folder = "data/paper_data"
 
@@ -105,6 +105,7 @@ def load_forex_data() -> tuple:
             SimplicialComplex: The simplicial complex of the forex data.
             dict: The coordinates of the nodes. If the coordinates do not
             exist, the coordinates are generated using spring layout.
+            dict: The flow data of the forex data.
     """
     data_folder = "data/foreign_exchange"
     B1_filename = f"{data_folder}/B1.csv"
@@ -116,8 +117,12 @@ def load_forex_data() -> tuple:
     )
     sc = scbuilder.to_simplicial_complex(triangles=triangles)
 
-    # no coordinates for forex data
-    coordinates = None
+    # no coordinates for forex data - generate using spring layout
+    print("Generating coordinates using spring layout.")
+    graph = nx.Graph(sc.edges)
+    coordinates = nx.spring_layout(graph)
+
     flow = pd.read_csv(y_filename, header=None).values[:, 0]
+    flow = {edge: flow[i] for i, edge in enumerate(sc.edges)}
 
     return sc, coordinates, flow
