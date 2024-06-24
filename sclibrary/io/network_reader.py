@@ -1,4 +1,4 @@
-"""Module for reading simplicial complex network data.
+"""Module for preprocessing simplicial complex network data.
 
 The network can be read as the following formats:
 - TNTP
@@ -162,6 +162,7 @@ def read_csv(
     # add features if any
     edge_features = {}
     node_features = {}
+
     if len(feature_cols) > 0:
         for i, (from_node, to_node) in enumerate(edges):
             edge_features[(from_node, to_node)] = df.iloc[i][
