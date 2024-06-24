@@ -27,10 +27,11 @@ class ExactGPModel(gpytorch.models.ExactGP):
         """
         super(ExactGPModel, self).__init__(train_x, train_y, likelihood)
 
-        if mean_function is None:
-            self.mean_module = gpytorch.means.ConstantMean()
-        elif mean_function == "zero":
+        if mean_function == "zero":
             self.mean_module = gpytorch.means.ZeroMean()
+        else:
+            self.mean_module = gpytorch.means.ConstantMean()
+
         self.covar_module = gpytorch.kernels.ScaleKernel(
             kernel, outputscale_constraint=Positive()
         )
