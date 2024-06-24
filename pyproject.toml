@@ -5,6 +5,7 @@ description = "A Python package for higher-interactions, specifically simplical 
 authors = ["irtazahashmi <irtazahashmi@gmail.com>"]
 readme = "README.md"
 
+# Dependencies
 [tool.poetry.dependencies]
 python = "^3.11"
 chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
@@ -20,7 +21,6 @@ trimesh = "^4.0.10"
 torcheval = "^0.0.7"
 torchvision = "^0.18.0"
 toponetx = { git = "https://github.com/pyt-team/TopoNetX.git", branch = "main" }
-
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.3.2"
