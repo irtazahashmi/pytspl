@@ -35,6 +35,8 @@ pythonpath = ["."]
 [tool.coverage.run]
 source = ["sclibrary"]
 branch = true
+# the hodge gp module for each dataset is not tested and is not included in the coverage report
+omit = ["sclibrary/hogde_gp/forex/*"]
 
 [tool.coverage.report]
 show_missing = true

@@ -54,7 +54,7 @@ def load(dataset: str) -> tuple:
     elif dataset == "forex":
         return load_forex_data()
     else:
-        return load_transportation_dataset(dataset)
+        return load_transportation_dataset(dataset=dataset)
 
 
 def load_paper_data() -> tuple:

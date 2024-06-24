@@ -162,6 +162,7 @@ def read_csv(
     # add features if any
     edge_features = {}
     node_features = {}
+
     if len(feature_cols) > 0:
         for i, (from_node, to_node) in enumerate(edges):
             edge_features[(from_node, to_node)] = df.iloc[i][

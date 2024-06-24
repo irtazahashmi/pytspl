@@ -2598,7 +2598,7 @@ typing-extensions = "*"
 [package.extras]
 all = ["TopoNetX[dev,doc]", "hypernetx (<2.0.0)"]
 dev = ["TopoNetX[lint,test]"]
-doc = ["jupyter", "nbsphinx", "nbsphinx-link", "numpydoc", "pydata-sphinx-theme", "sphinx", "sphinx-gallery"]
+doc = ["jupyter", "nbsphinx", "nbsphinx_link", "numpydoc", "pydata-sphinx-theme", "sphinx", "sphinx_gallery"]
 lint = ["pre-commit"]
 test = ["coverage", "jupyter", "mypy (>1.6.0)", "pandas-stubs", "pytest", "pytest-cov", "types-requests"]
 

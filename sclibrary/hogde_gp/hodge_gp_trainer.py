@@ -42,19 +42,103 @@ class HodgeGPTrainer:
 
         self.output_device = torch.device(output_device)
 
+    def get_laplacians(self) -> list:
+        """
+        Return the Laplacian matrices as a list of tensors.
+
+        Returns:
+            list(torch.tensor): The Laplacian matrices.
+        """
+        print("L1: ", self.L1.shape)
+        print("L1l: ", self.L1l.shape)
+        print("L1u: ", self.L1u.shape)
+
+        L1 = torch.tensor(self.L1, dtype=DATA_TYPE)
+        L1_down = torch.tensor(self.L1l, dtype=DATA_TYPE)
+        L1_up = torch.tensor(self.L1u, dtype=DATA_TYPE)
+
+        laplacians = [L1, L1_down, L1_up]
+        laplacians = [
+            laplacian.to(self.output_device) for laplacian in laplacians
+        ]
+
+        return laplacians
+
+    def get_incidence_matrices(self) -> list:
+        """
+        Return the incidence matrices as a list of tensors.
+
+        Returns:
+            list(torch.tensor): The incidence matrices.
+        """
+        print("B1: ", self.B1.shape)
+        print("B2: ", self.B2.shape)
+
+        B1 = torch.tensor(self.B1, dtype=DATA_TYPE)
+        B2 = torch.tensor(self.B2, dtype=DATA_TYPE)
+
+        output_device = self.output_device
+        incidence_matrices = [B1.to(output_device), B2.to(output_device)]
+
+        return incidence_matrices
+
+    def get_eigenpairs(self) -> list:
+        """
+        Return the eigenpairs of the Laplacian matrices.
+
+        Returns:
+            list(torch.tensor): The eigenpairs of the Laplacian matrices.
+        """
+        eigvals, eigvecs = np.linalg.eigh(self.L1)
+
+        total_var = np.diag(eigvecs.T @ self.L1 @ eigvecs)
+        total_div = np.diag(eigvecs.T @ self.L1l @ eigvecs)
+        total_curl = np.diag(eigvecs.T @ self.L1u @ eigvecs)
+
+        harm_eflow = np.where(np.array(total_var) <= 1e-4)[0]
+        grad_eflow = np.where(np.array(total_div) > 1e-4)[0]
+        curl_eflow = np.where(np.array(total_curl) >= 1e-3)[0]
+
+        harm_evectors = torch.tensor(eigvecs[:, harm_eflow], dtype=DATA_TYPE)
+        grad_evectors = torch.tensor(eigvecs[:, grad_eflow], dtype=DATA_TYPE)
+        curl_evectors = torch.tensor(eigvecs[:, curl_eflow], dtype=DATA_TYPE)
+        harm_evalues = torch.tensor(eigvals[harm_eflow], dtype=DATA_TYPE)
+        grad_evalues = torch.tensor(eigvals[grad_eflow], dtype=DATA_TYPE)
+        curl_evalues = torch.tensor(eigvals[curl_eflow], dtype=DATA_TYPE)
+
+        output_device = self.output_device
+
+        harm_evectors = harm_evectors.to(output_device)
+        grad_evectors = grad_evectors.to(output_device)
+        curl_evectors = curl_evectors.to(output_device)
+        harm_evalues = harm_evalues.to(output_device)
+        grad_evalues = grad_evalues.to(output_device)
+        curl_evalues = curl_evalues.to(output_device)
+
+        eigenpairs = [
+            harm_evectors,
+            grad_evectors,
+            curl_evectors,
+            harm_evalues,
+            grad_evalues,
+            curl_evalues,
+        ]
+
+        return eigenpairs
+
     def normalize_data(
-        self, y_train: np.ndarray, y_test: np.ndarray, y: np.ndarray
+        self, y_train: torch.tensor, y_test: torch.tensor, y: torch.tensor
     ) -> tuple:
         """
         Normalize the target values.
 
         Args:
-            y_train (np.ndarray): The training target values.
-            y_test (np.ndarray): The testing target values.
-            y (np.ndarray): The target values.
+            y_train (torch.tensor): The training target values.
+            y_test (torch.tensor): The testing target values.
+            y (torch.tensor): The target values.
 
         Returns:
-            tuple(np.ndarray, np.ndarray, np.ndarray): The normalized
+            tuple(torch.tensor, torch.tensor, torch.tensor): The normalized
             target values.
         """
         orig_mean, orig_std = torch.mean(y_train), torch.std(y_train)
@@ -129,90 +213,6 @@ class HodgeGPTrainer:
         self.y_test = y_test
 
         return x_train, y_train, x_test, y_test, x, y
-
-    def get_laplacians(self) -> list:
-        """
-        Return the Laplacian matrices as a list of tensors.
-
-        Returns:
-            list(torch.tensor): The Laplacian matrices.
-        """
-        print("L1: ", self.L1.shape)
-        print("L1l: ", self.L1l.shape)
-        print("L1u: ", self.L1u.shape)
-
-        L1 = torch.tensor(self.L1, dtype=DATA_TYPE)
-        L1_down = torch.tensor(self.L1l, dtype=DATA_TYPE)
-        L1_up = torch.tensor(self.L1u, dtype=DATA_TYPE)
-
-        laplacians = [L1, L1_down, L1_up]
-        laplacians = [
-            laplacian.to(self.output_device) for laplacian in laplacians
-        ]
-
-        return laplacians
-
-    def get_incidence_mats(self) -> list:
-        """
-        Return the incidence matrices as a list of tensors.
-
-        Returns:
-            list(torch.tensor): The incidence matrices.
-        """
-        print("B1: ", self.B1.shape)
-        print("B2: ", self.B2.shape)
-
-        B1 = torch.tensor(self.B1, dtype=DATA_TYPE)
-        B2 = torch.tensor(self.B2, dtype=DATA_TYPE)
-
-        output_device = self.output_device
-        incidence_matrices = [B1.to(output_device), B2.to(output_device)]
-
-        return incidence_matrices
-
-    def get_eigenpairs(self) -> list:
-        """
-        Return the eigenpairs of the Laplacian matrices.
-
-        Returns:
-            list(torch.tensor): The eigenpairs of the Laplacian matrices.
-        """
-        eigvals, eigvecs = np.linalg.eigh(self.L1)
-
-        total_var = np.diag(eigvecs.T @ self.L1 @ eigvecs)
-        total_div = np.diag(eigvecs.T @ self.L1l @ eigvecs)
-        total_curl = np.diag(eigvecs.T @ self.L1u @ eigvecs)
-
-        harm_eflow = np.where(np.array(total_var) <= 1e-4)[0]
-        grad_eflow = np.where(np.array(total_div) > 1e-4)[0]
-        curl_eflow = np.where(np.array(total_curl) >= 1e-3)[0]
-
-        harm_evectors = torch.tensor(eigvecs[:, harm_eflow], dtype=DATA_TYPE)
-        grad_evectors = torch.tensor(eigvecs[:, grad_eflow], dtype=DATA_TYPE)
-        curl_evectors = torch.tensor(eigvecs[:, curl_eflow], dtype=DATA_TYPE)
-        harm_evalues = torch.tensor(eigvals[harm_eflow], dtype=DATA_TYPE)
-        grad_evalues = torch.tensor(eigvals[grad_eflow], dtype=DATA_TYPE)
-        curl_evalues = torch.tensor(eigvals[curl_eflow], dtype=DATA_TYPE)
-
-        output_device = self.output_device
-
-        harm_evectors = harm_evectors.to(output_device)
-        grad_evectors = grad_evectors.to(output_device)
-        curl_evectors = curl_evectors.to(output_device)
-        harm_evalues = harm_evalues.to(output_device)
-        grad_evalues = grad_evalues.to(output_device)
-        curl_evalues = curl_evalues.to(output_device)
-
-        eigenpairs = [
-            harm_evectors,
-            grad_evectors,
-            curl_evectors,
-            harm_evalues,
-            grad_evalues,
-            curl_evalues,
-        ]
-
-        return eigenpairs
 
     def train(
         self,

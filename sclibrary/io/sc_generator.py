@@ -31,7 +31,18 @@ def generate_random_simplicial_complex(
     for i, (u, v) in enumerate(G.edges()):
         G[u][v]["distance"] = weights[i]
 
-    sc = SCBuilder(G).to_simplicial_complex(
+    nodes = list(G.nodes())
+    edges = list(G.edges())
+
+    # get edge features
+    edges_features = {}
+    for u, v in G.edges():
+        features = {k: v for k, v in G[u][v].items()}
+        edges_features[(u, v)] = features
+
+    sc = SCBuilder(
+        nodes=nodes, edges=edges, edge_features=edges_features
+    ).to_simplicial_complex(
         condition="distance", dist_threshold=dist_threshold
     )
     coordinates = nx.spring_layout(G)
