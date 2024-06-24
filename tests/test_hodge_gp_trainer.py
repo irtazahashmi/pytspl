@@ -1,0 +1,3 @@
+class TestHodgeGPTrainer:
+
+    pass
