@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from sclibrary import SimplicialComplex, read_csv
-from sclibrary.utils.hodgedecomposition import *
+from sclibrary.decomposition.hodgedecomposition import *
 
 
 @pytest.fixture

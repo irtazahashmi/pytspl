@@ -5,10 +5,10 @@ extraction.
 import numpy as np
 from scipy.sparse import csr_matrix
 
+from sclibrary.decomposition.eigendecomposition import get_eigendecomposition
+from sclibrary.decomposition.frequency_component import FrequencyComponent
 from sclibrary.filters.base_filter import BaseFilter
 from sclibrary.simplicial_complex import SimplicialComplex
-from sclibrary.utils.eigendecomposition import get_eigendecomposition
-from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class GridBasedFilterDesign(BaseFilter):

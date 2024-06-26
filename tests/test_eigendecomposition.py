@@ -1,7 +1,7 @@
 import numpy as np
 
 from sclibrary import SimplicialComplex
-from sclibrary.utils.eigendecomposition import (
+from sclibrary.decomposition.eigendecomposition import (
     get_curl_eigenvectors,
     get_eigendecomposition,
     get_gradient_eigenvectors,

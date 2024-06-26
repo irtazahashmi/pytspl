@@ -2,9 +2,9 @@
 
 import numpy as np
 
+from sclibrary.decomposition.eigendecomposition import get_eigendecomposition
 from sclibrary.filters.base_filter import BaseFilter
 from sclibrary.simplicial_complex import SimplicialComplex
-from sclibrary.utils.eigendecomposition import get_eigendecomposition
 
 
 class EdgeFlowDenoising(BaseFilter):

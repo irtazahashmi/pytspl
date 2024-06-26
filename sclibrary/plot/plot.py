@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
+from sclibrary.decomposition.frequency_component import FrequencyComponent
 from sclibrary.simplicial_complex import SimplicialComplex
-from sclibrary.utils.frequency_component import FrequencyComponent
 
 
 class SCPlot:
