@@ -2,11 +2,11 @@
 [![codecov](https://codecov.io/gh/irtazahashmi/sc-graph-library/graph/badge.svg?token=7KQ0U8FW70)](https://codecov.io/gh/irtazahashmi/sc-graph-library)
 [![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
 
-# SCLibrary - Simplicial Complexes Library
+# PyTSPL - Python Topological Signal Processing and Learning
 
-A Python package for higher-interactions, specifically simplical complexes.
+A Python library for Topological Signal Processing and Learning. The documentation is available on ... and development takes place on ....
 
-## Contributing to the library
+## Installation
 
 ### Install the dependencies
 
@@ -48,6 +48,12 @@ The code documentation is generated using [Sphinx](https://www.sphinx-doc.org/en
 $ make clean html
 $ make html
 ```
+
+## Contributing to the library
+
+See the guidelines for contributing in **`CONTRIBUTUNG.md`**.
+
+## Acknowledgements
 
 ## Contributors
 
