@@ -1,4 +1,4 @@
-from sclibrary.io.transportation_loader import (
+from sclibrary.io.dataset_loader.transportation_loader import (
     get_dataset_summary,
     list_transportation_datasets,
 )

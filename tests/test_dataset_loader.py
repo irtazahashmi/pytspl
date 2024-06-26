@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from sclibrary import SimplicialComplex
-from sclibrary.io.dataset_loader import list_datasets, load
+from sclibrary.io.dataset_loader.dataset_loader import list_datasets, load
 
 
 class TestDatasetLoader:

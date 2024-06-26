@@ -8,7 +8,12 @@ import pprint
 import networkx as nx
 import pandas as pd
 
-from sclibrary.io.network_reader import read_coordinates, read_flow, read_tntp
+from sclibrary.io.network_reader import (
+    read_B1_B2,
+    read_coordinates,
+    read_flow,
+    read_tntp,
+)
 
 DATA_FOLDER = "data/transportation_networks"
 METADATA_ROWS = 8
@@ -131,12 +136,16 @@ def load_transportation_dataset(dataset: str) -> tuple:
             dict: The flow data of the dataset. If the flow data does not
             exist, an empty dictionary is returned.
     """
+    # get the summary of the dataset
+    pprint.pprint(get_dataset_summary(dataset=dataset))
+
+    if dataset == "chicago-sketch":
+        return load_chicago_sketch()
+
     start_index_zero = False
 
     network_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_net.tntp"
     coordinates_data_path = f"{DATA_FOLDER}/{dataset}/{dataset}_node.tntp"
-
-    pprint.pprint(get_dataset_summary(dataset=dataset))
 
     # read the network data
     sc = read_tntp(
@@ -168,4 +177,52 @@ def load_transportation_dataset(dataset: str) -> tuple:
     # read the flow data
     flow_dict = load_flow_transportation(dataset=dataset, edges=sc.edges)
 
+    return sc, coordinates, flow_dict
+
+
+def load_chicago_sketch() -> tuple:
+    """
+    Load the Chicago sketch dataset straight from the files.
+
+    Returns:
+        tuple:
+            SimplicialComplex: The simplicial complex of the dataset.
+            dict: The coordinates of the nodes.
+            dict: The flow data of the dataset.
+    """
+    B1_dataset_path = (
+        "data/transportation_networks/chicago-sketch/B1_chicago_sketch.csv"
+    )
+    B2_dataset_path = (
+        "data/transportation_networks/chicago-sketch/B2t_chicago_sketch.csv"
+    )
+
+    scbuilder, triangles = read_B1_B2(B1_dataset_path, B2_dataset_path)
+    sc = scbuilder.to_simplicial_complex(triangles=triangles)
+
+    # read coordinates
+    coordinates_path = (
+        "data/transportation_networks/chicago-sketch/"
+        + "coordinates_chicago_sketch.csv"
+    )
+    coordinates = read_coordinates(
+        coordinates_path,
+        node_id_col="Id",
+        x_col="X",
+        y_col="Y",
+        delimeter=",",
+        start_index_zero=True,
+    )
+
+    # read flow
+    flow_path = (
+        "data/transportation_networks/chicago-sketch/flow_chicago_sketch.csv"
+    )
+    flow = (
+        pd.read_csv(flow_path, delimiter=",", header=None).to_numpy().flatten()
+    )
+    # convert to dictionary
+    flow_dict = {
+        (edge[0], edge[1]): flow[i] for i, edge in enumerate(sc.edges)
+    }
     return sc, coordinates, flow_dict
