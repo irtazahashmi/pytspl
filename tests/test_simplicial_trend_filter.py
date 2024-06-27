@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sclibrary import load_dataset
-from sclibrary.filters import SimplicialTrendFilter
+from pytspl import load_dataset
+from pytspl.filters import SimplicialTrendFilter
 
 
 @pytest.fixture(autouse=True)

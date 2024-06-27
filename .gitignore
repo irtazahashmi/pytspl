@@ -10,7 +10,6 @@ dist
 docs/_build
 
 # libraries
-toponetx
 chebpy
 
 # venv

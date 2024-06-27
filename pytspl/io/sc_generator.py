@@ -2,7 +2,7 @@
 
 import networkx as nx
 
-from sclibrary.simplicial_complex.scbuilder import SCBuilder
+from pytspl.simplicial_complex.scbuilder import SCBuilder
 
 
 def generate_random_simplicial_complex(

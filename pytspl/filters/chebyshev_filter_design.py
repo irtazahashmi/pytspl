@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from chebpy import chebfun
-from sclibrary.decomposition.eigendecomposition import get_eigendecomposition
-from sclibrary.filters.base_filter import BaseFilter
-from sclibrary.simplicial_complex import SimplicialComplex
+from pytspl.decomposition.eigendecomposition import get_eigendecomposition
+from pytspl.filters.base_filter import BaseFilter
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 class ChebyshevFilterDesign(BaseFilter):

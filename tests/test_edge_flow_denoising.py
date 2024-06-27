@@ -3,8 +3,8 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplex
-from sclibrary.filters import EdgeFlowDenoising
+from pytspl import SimplicialComplex
+from pytspl.filters import EdgeFlowDenoising
 
 
 @pytest.fixture(autouse=True)

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from sclibrary.io.network_reader import read_coordinates, read_csv
+from pytspl.io.network_reader import read_coordinates, read_csv
 
 
 def load_paper_data() -> tuple:

@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 
-from sclibrary.io.network_reader import (
+from pytspl.io.network_reader import (
     read_B1_B2,
     read_coordinates,
     read_csv,
     read_flow,
     read_tntp,
 )
-from sclibrary.simplicial_complex.scbuilder import SCBuilder
+from pytspl.simplicial_complex.scbuilder import SCBuilder
 
 NODES = 7
 EDGES = 10

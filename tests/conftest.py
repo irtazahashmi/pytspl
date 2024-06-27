@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sclibrary import load_dataset
+from pytspl import load_dataset
 
 
 @pytest.fixture(scope="module")

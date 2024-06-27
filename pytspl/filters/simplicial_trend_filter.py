@@ -10,8 +10,8 @@ import cvxpy as cp
 import numpy as np
 from numpy.linalg import norm
 
-from sclibrary.filters.base_filter import BaseFilter
-from sclibrary.simplicial_complex.simplicial_complex import SimplicialComplex
+from pytspl.filters.base_filter import BaseFilter
+from pytspl.simplicial_complex.simplicial_complex import SimplicialComplex
 
 
 class SimplicialTrendFilter(BaseFilter):

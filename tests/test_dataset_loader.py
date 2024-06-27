@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sclibrary import SimplicialComplex
-from sclibrary.io.dataset_loader import list_datasets, load_dataset
+from pytspl import SimplicialComplex
+from pytspl.io.dataset_loader import list_datasets, load_dataset
 
 
 class TestDatasetLoader:

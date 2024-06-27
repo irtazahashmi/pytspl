@@ -3,7 +3,7 @@
 import gpytorch
 import numpy as np
 
-from sclibrary.hogde_gp.kernels import Kernels
+from pytspl.hogde_gp.kernels import Kernels
 
 
 class KernelSerializer:

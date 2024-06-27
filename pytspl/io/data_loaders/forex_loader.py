@@ -1,6 +1,6 @@
 import pandas as pd
 
-from sclibrary.io.network_reader import read_B1_B2
+from pytspl.io.network_reader import read_B1_B2
 
 
 def load_forex_data() -> tuple:

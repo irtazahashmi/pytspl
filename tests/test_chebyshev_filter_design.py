@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplex
-from sclibrary.filters import ChebyshevFilterDesign
+from pytspl import SimplicialComplex
+from pytspl.filters import ChebyshevFilterDesign
 
 
 @pytest.fixture(autouse=True)

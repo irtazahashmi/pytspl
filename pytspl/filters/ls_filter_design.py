@@ -5,10 +5,10 @@ and type II filters.
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from sclibrary.decomposition.eigendecomposition import get_eigendecomposition
-from sclibrary.decomposition.frequency_component import FrequencyComponent
-from sclibrary.filters.base_filter import BaseFilter
-from sclibrary.simplicial_complex import SimplicialComplex
+from pytspl.decomposition.eigendecomposition import get_eigendecomposition
+from pytspl.decomposition.frequency_component import FrequencyComponent
+from pytspl.filters.base_filter import BaseFilter
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 class LSFilterDesign(BaseFilter):

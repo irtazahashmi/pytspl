@@ -6,7 +6,7 @@ import os
 
 import pandas as pd
 
-from sclibrary.io.network_reader import (
+from pytspl.io.network_reader import (
     read_B1_B2,
     read_coordinates,
     read_flow,

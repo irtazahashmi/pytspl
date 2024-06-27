@@ -9,7 +9,7 @@ The 2-simplices can be added in three ways:
 
 import networkx as nx
 
-from sclibrary.simplicial_complex import SimplicialComplex
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 class SCBuilder:

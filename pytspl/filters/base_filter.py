@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from sclibrary.simplicial_complex import SimplicialComplex
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 class BaseFilter:

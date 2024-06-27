@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplex
-from sclibrary.filters import GridBasedFilterDesign
+from pytspl import SimplicialComplex
+from pytspl.filters import GridBasedFilterDesign
 
 
 @pytest.fixture(autouse=True)

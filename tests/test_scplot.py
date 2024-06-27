@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
-from sclibrary import SCPlot
-from sclibrary.simplicial_complex import SimplicialComplex
+from pytspl import SCPlot
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 @pytest.fixture

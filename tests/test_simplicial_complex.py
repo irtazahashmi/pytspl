@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplex
+from pytspl import SimplicialComplex
 
 
 class TestSimplicialComplex:

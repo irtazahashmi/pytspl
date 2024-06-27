@@ -18,7 +18,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from sclibrary.simplicial_complex.scbuilder import SCBuilder
+from pytspl.simplicial_complex.scbuilder import SCBuilder
 
 
 def _extract_nodes_edges(

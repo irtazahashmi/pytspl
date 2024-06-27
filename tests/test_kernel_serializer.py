@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from gpytorch.kernels import Kernel
 
-from sclibrary.hogde_gp.kernel_serializer import KernelSerializer
+from pytspl.hogde_gp.kernel_serializer import KernelSerializer
 
 
 class TestKernelSerializer:

@@ -6,13 +6,13 @@ from typing import Hashable, Iterable
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from sclibrary.decomposition.eigendecomposition import (
+from pytspl.decomposition.eigendecomposition import (
     get_curl_eigenvectors,
     get_gradient_eigenvectors,
     get_harmonic_eigenvectors,
 )
-from sclibrary.decomposition.frequency_component import FrequencyComponent
-from sclibrary.decomposition.hodgedecomposition import (
+from pytspl.decomposition.frequency_component import FrequencyComponent
+from pytspl.decomposition.hodgedecomposition import (
     get_curl_component,
     get_gradient_component,
     get_harmonic_component,

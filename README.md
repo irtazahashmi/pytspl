@@ -37,7 +37,7 @@ $ poetry run coverage run -m pytest && poetry run coverage report -m
 To run the flake8 linter, run the following command:
 
 ```console
-$ poetry run pflake8 sclibrary
+$ poetry run pflake8 pytspl
 ```
 
 ## Documentation

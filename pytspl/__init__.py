@@ -5,7 +5,7 @@ It imports all the necessary modules and classes to be used by the user.
 
 # plotting module
 # data reader module
-from sclibrary.io import (
+from pytspl.io import (
     generate_random_simplicial_complex,
     list_datasets,
     load_dataset,
@@ -13,7 +13,7 @@ from sclibrary.io import (
     read_csv,
     read_tntp,
 )
-from sclibrary.plot import SCPlot
+from pytspl.plot import SCPlot
 
 # simplicial complex module
-from sclibrary.simplicial_complex import SimplicialComplex
+from pytspl.simplicial_complex import SimplicialComplex
