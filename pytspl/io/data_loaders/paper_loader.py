@@ -44,7 +44,6 @@ def load_paper_data() -> tuple:
     # read flow data
     filename = data_folder + "/flow.csv"
     flow = pd.read_csv(filename, header=None).values[:, 0]
-    print(sc.edges, len(sc.edges))
     flow = {edge: flow[i] for i, edge in enumerate(sc.edges)}
 
     return sc, coordinates, flow
