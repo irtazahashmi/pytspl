@@ -52,8 +52,6 @@ class SimplicialComplex:
         self.B1 = self.edges_to_B1(edges, len(nodes))
         self.B2 = self.triangles_to_B2(triangles, edges)
 
-        self.print_summary()
-
     def print_summary(self):
         """
         Print the summary of the simplicial complex.
@@ -115,6 +113,26 @@ class SimplicialComplex:
             B2[index_b, j] = 1
 
         return B2
+
+    def generate_coordinates(self) -> dict:
+        """
+        Generate the coordinates of the nodes using spring layout
+        if the coordinates of the sc don't exist.
+
+        Returns:
+            dict: Coordinates of the nodes.
+        """
+        import networkx as nx
+
+        print("WARNING: No coordinates found.")
+        print("Generating coordinates using spring layout.")
+
+        G = nx.Graph()
+        G.add_nodes_from(self.nodes)
+        G.add_edges_from(self.edges)
+
+        coordinates = nx.spring_layout(G)
+        return coordinates
 
     @property
     def shape(self) -> tuple:

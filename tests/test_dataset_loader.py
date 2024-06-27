@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from sclibrary import SimplicialComplex
-from sclibrary.io.dataset_loader.dataset_loader import list_datasets, load
+from sclibrary.io.dataset_loader import list_datasets, load_dataset
 
 
 class TestDatasetLoader:
@@ -19,7 +19,7 @@ class TestDatasetLoader:
 
         dataset = "paper"
 
-        sc, coordinates = load(dataset=dataset)
+        sc, coordinates, _ = load_dataset(dataset=dataset)
 
         assert isinstance(sc, SimplicialComplex)
         assert isinstance(coordinates, dict)
@@ -36,12 +36,12 @@ class TestDatasetLoader:
     def test_load_unknown_dataset(self):
         dataset = "unknown"
         with pytest.raises(ValueError):
-            load(dataset=dataset)
+            load_dataset(dataset=dataset)
 
     def test_load_dataset_forex(self):
         dataset = "forex"
 
-        sc, coordinates, flow = load(dataset=dataset)
+        sc, coordinates, flow = load_dataset(dataset=dataset)
 
         assert isinstance(sc, SimplicialComplex)
         assert isinstance(coordinates, dict)
@@ -50,7 +50,7 @@ class TestDatasetLoader:
     def test_load_dataset_transportation(self):
         dataset = "siouxfalls"
 
-        sc, coordinates, flow_dict = load(dataset=dataset)
+        sc, coordinates, flow_dict = load_dataset(dataset=dataset)
 
         assert isinstance(sc, SimplicialComplex)
         assert isinstance(coordinates, dict)
@@ -64,7 +64,7 @@ class TestDatasetLoader:
     def test_load_dataset_no_coordinates(self):
         # coordinates are generated from nx.spring_layout
         dataset = "test_dataset"
-        _, coordinates, _ = load(dataset)
+        _, coordinates, _ = load_dataset(dataset)
 
         assert isinstance(coordinates, dict)
         assert len(coordinates) > 0
@@ -80,7 +80,7 @@ class TestDatasetLoader:
 
         for dataset in datasets_with_all_data:
 
-            sc, coordinates, flow_dict = load(dataset=dataset)
+            sc, coordinates, flow_dict = load_dataset(dataset=dataset)
 
             assert isinstance(sc, SimplicialComplex)
             assert isinstance(coordinates, dict)

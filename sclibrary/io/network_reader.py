@@ -268,7 +268,6 @@ def read_coordinates(
         dict: A dictionary of coordinates (node_id : (x, y)).
     """
     if not os.path.exists(filename):
-        print("Coordinates file not found for the dataset.")
         return None
 
     df_coords = pd.read_csv(filename, sep=delimeter)
@@ -301,6 +300,6 @@ def read_flow(filename: str) -> dict:
     if os.path.exists(filename):
         flow = pd.read_csv(filename, sep="\t")
     else:
-        print("Flow data file not found.")
+        print("WARNING: Flow data file not found.")
 
     return flow

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sclibrary import dataset_loader
+from sclibrary import load_dataset
 
 
 @pytest.fixture(scope="module")
@@ -13,7 +13,7 @@ def sc_mock():
     Yields:
         SimplicialComplex: A simplicial complex network object.
     """
-    simplical_complex, _ = dataset_loader.load("paper")
+    simplical_complex, _, _ = load_dataset("paper")
     yield simplical_complex
 
 
@@ -25,7 +25,7 @@ def coordinates_mock():
     Yields:
         dict: Coordinates of the simplicial complex.
     """
-    _, coordinates = dataset_loader.load("paper")
+    _, coordinates, _ = load_dataset("paper")
     yield coordinates
 
 
@@ -38,20 +38,9 @@ def f0_mock():
     Returns:
         np.ndarray: True flow.
     """
-    yield np.array(
-        [
-            2.25,
-            0.13,
-            1.72,
-            -2.12,
-            1.59,
-            1.08,
-            -0.30,
-            -0.21,
-            1.25,
-            1.45,
-        ]
-    )
+    _, _, flow = load_dataset("paper")
+    flow = np.asarray(list(flow.values()))
+    yield flow
 
 
 @pytest.fixture(scope="module")
@@ -76,7 +65,7 @@ def sc_chicago_mock():
     Yields:
         SimplicialComplex: A simplicial complex network object.
     """
-    sc, _, _ = dataset_loader.load("chicago-sketch")
+    sc, _, _ = load_dataset("chicago-sketch")
     yield sc
 
 
@@ -89,6 +78,6 @@ def f0_chicago_mock():
     Returns:
         np.ndarray: True flow.
     """
-    _, _, flow = dataset_loader.load("chicago-sketch")
+    _, _, flow = load_dataset("chicago-sketch")
     flow = np.asarray(list(flow.values()))
     yield flow
