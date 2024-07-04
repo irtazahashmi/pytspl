@@ -193,10 +193,12 @@ class TestEdgeFlowDenoising:
         with patch("matplotlib.pyplot") as mock_plt:
             denoising.plot_desired_frequency_response(p_choice)
             mock_plt.figure.assert_called_once_with(figsize=(10, 6))
-            mock_plt.xlabel.assert_called_once_with("Eigenvalues")
-            mock_plt.ylabel.assert_called_once_with("Frequency Response")
+            mock_plt.xlabel.assert_called_once_with("Frequency", fontsize=12)
+            mock_plt.ylabel.assert_called_once_with(
+                "Frequency Response", fontsize=12
+            )
             mock_plt.title.assert_called_once_with(
-                "Desired Frequency Response"
+                "Desired Frequency Response", fontsize=14
             )
 
     def test_plot_desired_frequency_response_no_history(

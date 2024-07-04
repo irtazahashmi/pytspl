@@ -260,6 +260,9 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
+        if edge_flow:
+            assert isinstance(edge_flow, dict)
+
         if ax is None:
             ax = plt.gca()
 
@@ -372,6 +375,8 @@ class SCPlot:
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
         """
+        assert isinstance(edge_labels, dict)
+
         if ax is None:
             ax = plt.gca()
 

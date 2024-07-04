@@ -89,6 +89,6 @@ class EdgeFlowDenoising(BaseFilter):
 
         plt.figure(figsize=(10, 6))
         plt.plot(eigenvals, frequency_responses[-1])
-        plt.xlabel("Eigenvalues")
-        plt.ylabel("Frequency Response")
-        plt.title("Desired Frequency Response")
+        plt.xlabel("Frequency", fontsize=12)
+        plt.ylabel("Frequency Response", fontsize=12)
+        plt.title("Desired Frequency Response", fontsize=14)
