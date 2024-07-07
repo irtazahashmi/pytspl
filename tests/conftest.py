@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sclibrary import dataset_loader
-from sclibrary.io.network_reader import read_B1_B2, read_B2
+from pytspl import load_dataset
 
 
 @pytest.fixture(scope="module")
@@ -14,7 +13,7 @@ def sc_mock():
     Yields:
         SimplicialComplex: A simplicial complex network object.
     """
-    simplical_complex, _ = dataset_loader.load_paper_data()
+    simplical_complex, _, _ = load_dataset("paper")
     yield simplical_complex
 
 
@@ -26,7 +25,7 @@ def coordinates_mock():
     Yields:
         dict: Coordinates of the simplicial complex.
     """
-    _, coordinates = dataset_loader.load_paper_data()
+    _, coordinates, _ = load_dataset("paper")
     yield coordinates
 
 
@@ -39,20 +38,9 @@ def f0_mock():
     Returns:
         np.ndarray: True flow.
     """
-    yield np.array(
-        [
-            2.25,
-            0.13,
-            1.72,
-            -2.12,
-            1.59,
-            1.08,
-            -0.30,
-            -0.21,
-            1.25,
-            1.45,
-        ]
-    )
+    _, _, flow = load_dataset("paper")
+    flow = np.asarray(list(flow.values()))
+    yield flow
 
 
 @pytest.fixture(scope="module")
@@ -77,13 +65,7 @@ def sc_chicago_mock():
     Yields:
         SimplicialComplex: A simplicial complex network object.
     """
-    B1_filename = "data/test_dataset/B1_chicago_sketch.csv"
-    B2_filename = "data/test_dataset/B2t_chicago_sketch.csv"
-
-    scbuilder, triangles = read_B1_B2(
-        B1_filename=B1_filename, B2_filename=B2_filename
-    )
-    sc = scbuilder.to_simplicial_complex(triangles=triangles)
+    sc, _, _ = load_dataset("chicago-sketch")
     yield sc
 
 
@@ -96,8 +78,6 @@ def f0_chicago_mock():
     Returns:
         np.ndarray: True flow.
     """
-    flow_path = "data/test_dataset/flow_chicago_sketch.csv"
-    flow = (
-        pd.read_csv(flow_path, delimiter=",", header=None).to_numpy().flatten()
-    )
+    _, _, flow = load_dataset("chicago-sketch")
+    flow = np.asarray(list(flow.values()))
     yield flow

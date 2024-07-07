@@ -1,7 +1,7 @@
-sclibrary
+pytspl
 =========
 
 .. toctree::
    :maxdepth: 4
 
-   sclibrary
+   pytspl

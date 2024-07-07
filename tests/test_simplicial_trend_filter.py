@@ -2,31 +2,21 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sclibrary.filters import SimplicialTrendFilter
-from sclibrary.io.network_reader import read_B1_B2
-
-
-@pytest.fixture
-def path():
-    yield "data/lastfm-dataset-1K"
+from pytspl import load_dataset
+from pytspl.filters import SimplicialTrendFilter
 
 
 @pytest.fixture(autouse=True)
-def trend_filter(path: str):
-    scbuilder, triangles = read_B1_B2(
-        f"{path}/B1-artist.csv", f"{path}/B2t-artist.csv"
-    )
-    sc = scbuilder.to_simplicial_complex(triangles=triangles)
+def trend_filter():
+    sc, _, _ = load_dataset("lastfm-1k-artist")
     trend_filter = SimplicialTrendFilter(simplicial_complex=sc)
     yield trend_filter
 
 
 @pytest.fixture(autouse=True)
-def f(path: str):
-    flow_path = f"{path}/flow-artist.csv"
-    flow = (
-        pd.read_csv(flow_path, delimiter=",", header=None).to_numpy().flatten()
-    )
+def f():
+    _, _, flow = load_dataset("lastfm-1k-artist")
+    flow = np.asarray(list(flow.values()))
     yield flow
 
 

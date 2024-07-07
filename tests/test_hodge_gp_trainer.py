@@ -4,14 +4,14 @@ import pytest
 import torch
 from torcheval.metrics.functional import r2_score
 
-from sclibrary import dataset_loader
-from sclibrary.hogde_gp import ExactGPModel, HodgeGPTrainer
-from sclibrary.hogde_gp.kernel_serializer import KernelSerializer
+from pytspl import load_dataset
+from pytspl.hogde_gp import ExactGPModel, HodgeGPTrainer
+from pytspl.hogde_gp.kernel_serializer import KernelSerializer
 
 
 @pytest.fixture
 def hodge_gp_trainer():
-    sc, _, flow = dataset_loader.load("forex")
+    sc, _, flow = load_dataset("forex")
     y = np.fromiter(flow.values(), dtype=float)
 
     B1 = sc.incidence_matrix(rank=1).toarray()

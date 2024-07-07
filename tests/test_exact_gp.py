@@ -1,7 +1,7 @@
 import gpytorch
 import torch
 
-from sclibrary.hogde_gp.exact_gp import ExactGPModel
+from pytspl.hogde_gp.exact_gp import ExactGPModel
 
 
 class TestExactGPModel:

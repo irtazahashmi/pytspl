@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary import SimplicialComplex
-from sclibrary.filters.base_filter import BaseFilter
+from pytspl import SimplicialComplex
+from pytspl.filters.base_filter import BaseFilter
 
 
 @pytest.fixture(autouse=True)

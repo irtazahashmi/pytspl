@@ -25,7 +25,7 @@ jobs:
         run: poetry install
       - name: Lint with flake8
         run: |
-          poetry run pflake8 sclibrary
+          poetry run pflake8 pytspl
       - name: Run tests and generate coverage report
         run: |
           poetry run coverage run -m pytest && poetry run coverage report -m

@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 
-from sclibrary.io.network_reader import (
+from pytspl.io.network_reader import (
     read_B1_B2,
     read_coordinates,
     read_csv,
     read_flow,
     read_tntp,
 )
-from sclibrary.simplicial_complex.scbuilder import SCBuilder
+from pytspl.simplicial_complex.scbuilder import SCBuilder
 
 NODES = 7
 EDGES = 10
@@ -100,8 +100,10 @@ class TestNetworkReader:
 
     def test_B1_B2_chicago_data(self):
         nodes, edges = 546, 1088
-        B1_filename = "data/test_dataset/B1_chicago_sketch.csv"
-        B2_filename = "data/test_dataset/B2t_chicago_sketch.csv"
+        B1_filename = (
+            "data/transportation_networks/chicago-sketch/B1_chicago_sketch.csv"
+        )
+        B2_filename = "data/transportation_networks/chicago-sketch/B2t_chicago_sketch.csv"
 
         B1 = pd.read_csv(B1_filename, header=None).to_numpy()
         B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
@@ -124,7 +126,7 @@ class TestNetworkReader:
 
     def test_read_coordinates(self):
         nodes = 546
-        filename = "data/test_dataset/coordinates_chicago_sketch.csv"
+        filename = "data/transportation_networks/chicago-sketch/coordinates_chicago_sketch.csv"
         coordinates = read_coordinates(
             filename=filename,
             node_id_col="Id",

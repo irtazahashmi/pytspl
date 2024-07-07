@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "sclibrary"
+name = "pytspl"
 version = "0.1.0"
-description = "A Python package for higher-interactions, specifically simplical complexes."
+description = "A Python library for Topological Signal Processing and Learning."
 authors = ["irtazahashmi <irtazahashmi@gmail.com>"]
 readme = "README.md"
 
@@ -20,7 +20,6 @@ scipy = "^1.11.4"
 trimesh = "^4.0.10"
 torcheval = "^0.0.7"
 torchvision = "^0.18.0"
-toponetx = { git = "https://github.com/pyt-team/TopoNetX.git", branch = "main" }
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.3.2"
@@ -33,10 +32,10 @@ pytest = "^7.4.3"
 pythonpath = ["."]
 
 [tool.coverage.run]
-source = ["sclibrary"]
+source = ["pytspl"]
 branch = true
 # the hodge gp module for each dataset is not tested and is not included in the coverage report
-omit = ["sclibrary/hogde_gp/forex/*"]
+omit = ["pytspl/hogde_gp/forex/*"]
 
 [tool.coverage.report]
 show_missing = true

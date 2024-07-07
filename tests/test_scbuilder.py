@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sclibrary import read_csv
-from sclibrary.simplicial_complex.scbuilder import SCBuilder
+from pytspl import read_csv
+from pytspl.simplicial_complex.scbuilder import SCBuilder
 
 
 @pytest.fixture
