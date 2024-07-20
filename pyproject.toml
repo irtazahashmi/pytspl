@@ -18,8 +18,12 @@ networkx = "^2.8.8"
 pandas = "^2.1.1"
 scipy = "^1.11.4"
 trimesh = "^4.0.10"
+torch = "^2.3.1"
 torcheval = "^0.0.7"
 torchvision = "^0.18.0"
+topomodelx = { git = "https://github.com/pyt-team/TopoModelX.git" }
+toponetx = { git = "https://github.com/pyt-team/TopoNetX.git" }
+
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.3.2"

@@ -11,6 +11,8 @@ docs/_build
 
 # libraries
 chebpy
+toponetx
+topomodelx
 
 # venv
 thesis_venv
