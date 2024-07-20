@@ -12,6 +12,16 @@ from .forex import (
 
 
 class Kernels(Enum):
+    """
+    Enum class for the implemented kernels.
+
+    - DIFFUSION: Diffusion kernel.
+    - DIFFUSION_NON_HC: Diffusion kernel without hyperparameters.
+    - MATERN: Matern kernel.
+    - MATERN_NON_HC: Matern kernel without hyperparameters.
+    - LAPLACIAN: Laplacian kernel.
+    - LAPLACIAN_NON_HC: Laplacian kernel without hyperparameters.
+    """
 
     DIFFUSION = "diffusion"
     DIFFUSION_NON_HC = "diffusion_non_hc"

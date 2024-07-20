@@ -46,7 +46,6 @@ The code documentation is generated using [Sphinx](https://www.sphinx-doc.org/en
 
 ```console
 $ make clean html
-$ make html
 ```
 
 ## Contributing to the library
