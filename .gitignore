@@ -7,10 +7,12 @@ __pycache__/
 dist
 
 # generated docs
-docs/_build
+doc/_build
 
 # libraries
 chebpy
+toponetx
+topomodelx
 
 # venv
 thesis_venv

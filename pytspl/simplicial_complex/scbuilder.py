@@ -95,8 +95,8 @@ class SCBuilder:
         features.
 
         Args:
-            condition (str, optional): Condition to filter simplicies.
-            Defaults to "all".
+            condition (str, optional): Condition to build the 2-simplicies
+            (triangles). Defaults to "all".
             Options:
                 - "all": All simplicies.
                 - "distance": Based on distance.

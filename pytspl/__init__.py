@@ -3,7 +3,6 @@
 It imports all the necessary modules and classes to be used by the user.
 """
 
-# plotting module
 # data reader module
 from pytspl.io import (
     generate_random_simplicial_complex,
@@ -13,6 +12,8 @@ from pytspl.io import (
     read_csv,
     read_tntp,
 )
+
+# plotting module
 from pytspl.plot import SCPlot
 
 # simplicial complex module
