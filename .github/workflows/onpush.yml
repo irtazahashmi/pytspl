@@ -34,6 +34,6 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: irtazahashmi/sc-graph-library
+          slug: irtazahashmi/pytspl
           file: coverage.xml
           fail_ci_if_error: false
