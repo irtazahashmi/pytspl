@@ -1,5 +1,5 @@
-[![Build](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml/badge.svg)](https://github.com/irtazahashmi/sc-graph-library/actions/workflows/onpush.yml)
-[![codecov](https://codecov.io/gh/irtazahashmi/sc-graph-library/graph/badge.svg?token=7KQ0U8FW70)](https://codecov.io/gh/irtazahashmi/sc-graph-library)
+[![Build](https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml/badge.svg)](https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml)
+[![codecov](https://codecov.io/gh/irtazahashmi/pytspl/graph/badge.svg?token=7KQ0U8FW70)](https://codecov.io/gh/irtazahashmi/pytspl)
 [![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
 
 # PyTSPL - Python Topological Signal Processing and Learning
