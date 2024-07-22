@@ -181,11 +181,9 @@ class LSFilterDesign(BaseFilter):
                 f"Invalid component {component}. Use 'gradient' or 'curl'."
             )
 
-        # get the eigenvalues
-        U, eigenvals = get_eigendecomposition(
-            lap_mat=lap_matrix.toarray(), tolerance=tolerance
-        )
-        # unique eigenvalues
+        # get the unique eigenvalues
+        U, eigenvals = get_eigendecomposition(lap_mat=lap_matrix.toarray())
+        eigenvals = np.where(np.abs(eigenvals) < tolerance, 0, eigenvals)
         eigenvals = np.unique(eigenvals)
 
         # get the true signal

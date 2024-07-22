@@ -418,9 +418,9 @@ class SimplicialComplex:
         L1L = self.lower_laplacian_matrix(rank=k).toarray()
 
         # eigendeomposition
-        u_h, _ = get_harmonic_eigenvectors(L1)
-        u_c, _ = get_curl_eigenvectors(L1U)
-        u_g, _ = get_gradient_eigenvectors(L1L)
+        u_h, _ = get_harmonic_eigenvectors(L1, tolerance=1e-3)
+        u_c, _ = get_curl_eigenvectors(L1U, 1e-3)
+        u_g, _ = get_gradient_eigenvectors(L1L, 1e-3)
 
         # each entry of an embedding represents the weight the flow has on the
         # corresponding eigenvector

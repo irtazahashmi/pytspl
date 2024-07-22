@@ -11,7 +11,7 @@ from scipy.sparse.linalg import eigsh
 
 
 def get_harmonic_eigenvectors(
-    hodgle_lap_mat: np.ndarray, tolerance: float = 1e-3
+    hodgle_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
     Calculate the harmonic eigenvectors of the Hodge Laplacian - e.g. L1.
@@ -19,23 +19,22 @@ def get_harmonic_eigenvectors(
     Args:
         hodgle_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
         tolerance (float): The tolerance for eigenvalues to be considered
-        zero.
+        zero. Defaults to machine limits for floating point types.
 
     Returns:
         u_h (np.ndarray): The harmonic  eigenvectors U(H).
         eigenvalues (np.ndarray): The eigenvalues of the Hodge Laplacian.
     """
-    eigenvectors, eigenvalues = get_eigendecomposition(
-        hodgle_lap_mat, tolerance
-    )
-    # get columns with zero eigenvalues
-    u_h = eigenvectors[:, np.where(eigenvalues == 0)[0]]
-    eigenvalues = eigenvalues[np.where(eigenvalues == 0)[0]]
+    eigenvectors, eigenvalues = get_eigendecomposition(hodgle_lap_mat)
+    # get columns with zero eigenvalues as anything below tolerance
+    # is considered zero
+    u_h = eigenvectors[:, np.where(eigenvalues <= tolerance)[0]]
+    eigenvalues = eigenvalues[np.where(eigenvalues <= tolerance)[0]]
     return u_h, eigenvalues
 
 
 def get_curl_eigenvectors(
-    upper_lap_mat: np.ndarray, tolerance: float = 1e-3
+    upper_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
     Calculate the curl eigenvectors of the upper Laplacian e.g. L1U.
@@ -43,23 +42,21 @@ def get_curl_eigenvectors(
     Args:
         upper_lap_mat (np.ndarray): The upper Laplacian matrix L(k, u).
         tolerance (float): The tolerance for eigenvalues to be considered
-        zero.
+        zero. Defaults to machine limits for floating point types.
 
     Returns:
         u_c (np.ndarray): The curl eigenvectors U(C)
         lambda_vals (np.ndarray): The eigenvalues of the upper Laplacian
     """
-    eigenvectors, eigenvalues = get_eigendecomposition(
-        upper_lap_mat, tolerance
-    )
+    eigenvectors, eigenvalues = get_eigendecomposition(upper_lap_mat)
     # get columns with non-zero eigenvalues
-    u_c = eigenvectors[:, np.where(eigenvalues > 0)[0]]
-    eigenvalues = eigenvalues[np.where(eigenvalues > 0)[0]]
+    u_c = eigenvectors[:, np.where(eigenvalues >= tolerance)[0]]
+    eigenvalues = eigenvalues[np.where(eigenvalues >= tolerance)[0]]
     return u_c, eigenvalues
 
 
 def get_gradient_eigenvectors(
-    lower_lap_mat: np.ndarray, tolerance: float = 1e-3
+    lower_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
     Calculate the gradient eigenvectors of the lower Laplacian e.g. L1L.
@@ -67,22 +64,22 @@ def get_gradient_eigenvectors(
     Args:
         lower_lap_mat (np.ndarray): The lower Laplacian matrix L(k, l)
         tolerance (float): The tolerance for eigenvalues to be considered
-        zero.
+        zero. Defaults to machine limits for floating point types.
 
     Returns:
         u_g (np.ndarray): The gradient eigenvectors U(G)
         lambda_vals (np.ndarray): The eigenvalues of the lower Laplacian
     """
-    eigenvectors, eigenvalues = get_eigendecomposition(
-        lower_lap_mat, tolerance
-    )
+    eigenvectors, eigenvalues = get_eigendecomposition(lower_lap_mat)
     # get columns with non-zero eigenvalues
-    u_g = eigenvectors[:, np.where(eigenvalues > 0)[0]]
-    eigenvalues = eigenvalues[np.where(eigenvalues > 0)[0]]
+    u_g = eigenvectors[:, np.where(eigenvalues > tolerance)[0]]
+    eigenvalues = eigenvalues[np.where(eigenvalues > tolerance)[0]]
     return u_g, eigenvalues
 
 
-def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-3) -> tuple:
+def get_eigendecomposition(
+    lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
+) -> tuple:
     """
     Calculate the eigenvectors of the Laplacian matrix using
     eigendecomposition.
@@ -94,8 +91,9 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-3) -> tuple:
 
     Args:
         lap_mat (np.ndarray): The Laplacian matrix L(k).
-        tolerance (float): The tolerance for eigenvalues to be considered zero.
-        Defaults to 1e-3.
+        tolerance (float): The tolerance for eigenvalues to be
+        considered zero. Defaults to machine limits for floating point
+        types.
 
     Returns:
         eigenvectors (np.ndarray): The eigenvectors U(k)
@@ -108,9 +106,7 @@ def get_eigendecomposition(lap_mat: np.ndarray, tolerance=1e-3) -> tuple:
     with warnings.catch_warnings(record=True):
         # eigenvalues, eigenvectors = np.linalg.eig(lap_mat)
         eigenvalues, eigenvectors = eigsh(lap_mat, k=lap_mat.shape[0])
-        # set eigenvalues below tolerance to zero
+        # set the values below tolerance to zero
         eigenvalues[np.abs(eigenvalues) < tolerance] = 0
-        # set eigenvectors below tolerance to zero
-        eigenvectors[np.abs(eigenvectors) < tolerance] = 0
 
     return eigenvectors, eigenvalues
