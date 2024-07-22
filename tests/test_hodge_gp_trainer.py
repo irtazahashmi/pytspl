@@ -14,18 +14,8 @@ def hodge_gp_trainer():
     sc, _, flow = load_dataset("forex")
     y = np.fromiter(flow.values(), dtype=float)
 
-    B1 = sc.incidence_matrix(rank=1).toarray()
-    B2 = sc.incidence_matrix(rank=2).toarray()
-    L1 = sc.hodge_laplacian_matrix(rank=1).toarray()
-    L1l = sc.lower_laplacian_matrix(rank=1).toarray()
-    L1u = sc.upper_laplacian_matrix(rank=1).toarray()
-
     hogde_gp = HodgeGPTrainer(
-        B1=B1,
-        B2=B2,
-        L1=L1,
-        L1l=L1l,
-        L1u=L1u,
+        sc=sc,
         y=y,
     )
 

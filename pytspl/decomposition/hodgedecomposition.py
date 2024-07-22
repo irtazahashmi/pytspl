@@ -28,6 +28,21 @@ def get_divergence(B1: csr_matrix, flow: np.ndarray) -> np.ndarray:
     return B1 @ flow
 
 
+def get_curl(B2: csr_matrix, flow: np.ndarray) -> np.ndarray:
+    """
+    Get the curl of a flow on a graph.
+
+    Args:
+        B2 (csr_matrix): The incidence matrix of the graph, edges to
+        triangles (B2).
+        flow (np.ndarray): The flow on the graph.
+
+    Returns:
+        np.ndarray: The curl of the flow.
+    """
+    return B2.T @ flow
+
+
 def get_gradient_component(
     B1: csr_matrix,
     flow: np.ndarray,

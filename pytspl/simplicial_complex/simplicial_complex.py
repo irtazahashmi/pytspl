@@ -431,13 +431,17 @@ class SimplicialComplex:
 
         return f_tilda_h, f_tilda_c, f_tilda_g
 
-    def get_eigendecomposition(self, component: str = "harmonic") -> tuple:
+    def get_eigendecomposition(
+        self, component: str = "harmonic", tolerance: float = 1e-3
+    ) -> tuple:
         """
         Return the eigendecomposition of the simplicial complex.
 
         Args:
             component (str, optional): Component of the eigendecomposition
             to return. Defaults to "harmonic".
+            tolerance (float, optional): Tolerance for eigenvalues to be
+            considered zero. Defaults to 1e-3.
 
         ValueError:
             If the component is not one of 'harmonic', 'curl', or 'gradient'.
@@ -447,15 +451,15 @@ class SimplicialComplex:
         """
         if component == FrequencyComponent.HARMONIC.value:
             L1 = self.hodge_laplacian_matrix(rank=1).toarray()
-            u_h, eig_h = get_harmonic_eigenvectors(L1)
+            u_h, eig_h = get_harmonic_eigenvectors(L1, tolerance)
             return u_h, eig_h
         elif component == FrequencyComponent.CURL.value:
             L1U = self.upper_laplacian_matrix(rank=1).toarray()
-            u_c, eig_c = get_curl_eigenvectors(L1U)
+            u_c, eig_c = get_curl_eigenvectors(L1U, tolerance)
             return u_c, eig_c
         elif component == FrequencyComponent.GRADIENT.value:
             L1L = self.lower_laplacian_matrix(rank=1).toarray()
-            u_g, eig_g = get_gradient_eigenvectors(L1L)
+            u_g, eig_g = get_gradient_eigenvectors(L1L, tolerance)
             return u_g, eig_g
         else:
             raise ValueError(

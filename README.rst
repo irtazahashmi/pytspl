@@ -10,8 +10,17 @@
 
 PyTSPL: Topological Signal Processing and Learning in Python
 ============================================================
-A Python library for Topological Signal Processing and Learning. 
-The documentation is available on ... and development takes place on ...
+The PyTSPL python package is a library for Topological Signal Processing and Learning. It is a 
+free software distributed under the MIT license and available on PyPI. The documentation is available
+on `Read the Docs <https://pytspl.readthedocs.io/en/latest/>`_ and development takes place on
+`GitHub <https://github.com/irtazahashmi/pytspl>`_.
+
+
+Currently, the PyTSPL facilitates the functionalities for simplicial complexes but the aim is to
+extend the library for additional topological learning functionalities.
+
+**Simlicial complexes (SC):**
+
 
 Installation
 ------------
@@ -33,10 +42,6 @@ See the guidelines for contributing in ``CONTRIBUTING.rst``.
 
 Acknowledgements
 ----------------
-To do.
+The PyTSPL was started in 2024 as an academic open-source project for research purpose 
 
-Contributors
-------------
-- Irtaza Hashmi - TU Delft
-- Maosheng Yang - TU Delft
-- Dr. Elvin Isufi - TU Delft
+

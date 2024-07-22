@@ -194,13 +194,13 @@ class ChebyshevFilterDesign(BaseFilter):
             component (str, optional): The component of the flow. Defaults
             to "gradient".
             L (int, optional): The filter size. Defaults to 10.
-            n (int, optional): The number of points. Defaults to 100.
+            n (int, optional): The number of points. Defaults to None.
             cut_off_frequency (float, optional): The cut-off frequency.
             Defaults to 0.01.
             steep (int, optional): The steepness of the logistic function.
             Defaults to 100.
         """
-        if n is None:
+        if not n:
             # if n is not provided, the filter size is the same as the
             # number of points
             n = L
