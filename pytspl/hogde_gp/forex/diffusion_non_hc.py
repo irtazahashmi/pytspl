@@ -13,9 +13,10 @@ class DiffusionNonHCKernelForex(Kernel):
         The diffusion non-HC kernel for forex data.
 
         Args:
-            eigenpairs (list[torch.tensor]): The eigenpairs for harmonic, gradient,
-            and curl operators.
-            kappa_bounds (tuple, optional): _description_. Defaults to (1e-5, 1e5).
+            eigenpairs (list[torch.tensor]): The eigenpairs for harmonic,
+            gradient, and curl operators.
+            kappa_bounds (tuple, optional): _description_. Defaults to
+            (1e-5, 1e5).
         """
         super().__init__()
         (
