@@ -198,7 +198,9 @@ class HodgeGPTrainer:
         )
 
         if data_normalization:
-            y_train, y_test, y = self.normalize_data(y_train, y_test, y)
+            y_train, y_test, y = self.normalize_data(
+                y_train=y_train, y_test=y_test, y=y
+            )
 
         output_device = self.output_device
         x_train, y_train = x_train.to(output_device), y_train.to(output_device)
