@@ -3,6 +3,7 @@
 import gpytorch
 import numpy as np
 import torch
+from sklearn.model_selection import train_test_split
 from torcheval.metrics.functional import r2_score
 
 from pytspl.simplicial_complex import SimplicialComplex
@@ -166,20 +167,16 @@ class HodgeGPTrainer:
             tuple(torch.tensor, torch.tensor, torch.tensor, torch.tensor,
             torch.tensor, torch.tensor): The training and testing data.
         """
-        np.random.seed(seed)
 
         B1 = self.sc.incidence_matrix(rank=1).toarray()
         y = self.y
 
+        # split the data into training and testing sets
         n1 = B1.shape[1]
-        num_train = int(train_ratio * n1)
-
         x = np.arange(n1)
-        random_perm = np.random.permutation(x)
-        train_ids, test_ids = random_perm[:num_train], random_perm[num_train:]
-
-        x_train, x_test = x[train_ids], x[test_ids]
-        y_train, y_test = y[train_ids], y[test_ids]
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, train_size=train_ratio, random_state=seed
+        )
 
         # print shapes
         print(f"x_train: {x_train.shape}")
@@ -187,6 +184,7 @@ class HodgeGPTrainer:
         print(f"y_train: {y_train.shape}")
         print(f"y_test: {y_test.shape}")
 
+        # convert to tensors
         x_train, y_train = torch.tensor(
             x_train, dtype=DATA_TYPE
         ), torch.tensor(y_train, dtype=DATA_TYPE)

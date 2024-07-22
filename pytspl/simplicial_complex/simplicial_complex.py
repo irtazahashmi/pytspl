@@ -8,14 +8,15 @@ from scipy.sparse import csr_matrix
 
 from pytspl.decomposition.eigendecomposition import (
     get_curl_eigenpair,
+    get_eigendecomposition,
     get_gradient_eigenpair,
     get_harmonic_eigenpair,
 )
 from pytspl.decomposition.frequency_component import FrequencyComponent
 from pytspl.decomposition.hodgedecomposition import (
-    get_curl_component,
-    get_gradient_component,
-    get_harmonic_component,
+    get_curl_flow,
+    get_gradient_flow,
+    get_harmonic_flow,
 )
 
 
@@ -387,18 +388,20 @@ class SimplicialComplex:
 
         return flow
 
-    def apply_two_step_shifting(self, flow: np.ndarray) -> np.ndarray:
+    def apply_k_step_shifting(
+        self, flow: np.ndarray, steps: int = 2
+    ) -> np.ndarray:
         """
-        Apply the two-step shifting operator to the simplicial complex.
+        Apply the k-step shifting operator to the simplicial complex.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
 
         Returns:
-            np.ndarray: Two-step shifted simplicial complex.
+            np.ndarray: k-step shifted simplicial complex.
         """
-        two_step_lower_shifting = self.apply_lower_shifting(flow, steps=2)
-        two_step_upper_shifting = self.apply_upper_shifting(flow, steps=2)
+        two_step_lower_shifting = self.apply_lower_shifting(flow, steps=steps)
+        two_step_upper_shifting = self.apply_upper_shifting(flow, steps=steps)
         return two_step_lower_shifting + two_step_upper_shifting
 
     def get_simplicial_embeddings(self, flow: np.ndarray) -> tuple:
@@ -424,7 +427,6 @@ class SimplicialComplex:
 
         # each entry of an embedding represents the weight the flow has on the
         # corresponding eigenvector
-        # coefficients of the flow on the harmonic, curl, and gradient basis
         f_tilda_h = u_h.T @ flow
         f_tilda_c = u_c.T @ flow
         f_tilda_g = u_g.T @ flow
@@ -469,7 +471,43 @@ class SimplicialComplex:
                 + "'curl', or 'gradient'."
             )
 
-    def get_hodgedecomposition(
+    def get_total_variance(self) -> np.ndarray:
+        """
+        Get the total variance of the SC.
+
+        Returns:
+            np.ndarray: The total variance of the SC.
+        """
+        eigenvecs, _ = get_eigendecomposition(self.laplacian_matrix())
+        return np.diag(eigenvecs.T @ self.laplacian_matrix() @ eigenvecs)
+
+    def get_divergence(self, flow: np.ndarray) -> np.ndarray:
+        """
+        Get the divergence of a flow on a graph.
+
+        Args:
+            flow (np.ndarray): The flow on the graph.
+
+        Returns:
+            np.ndarray: The divergence of the flow.
+        """
+        B1 = self.incidence_matrix(rank=1)
+        return B1 @ flow
+
+    def get_curl(self, flow: np.ndarray) -> np.ndarray:
+        """
+        Get the curl of a flow on a graph.
+
+        Args:
+            flow (np.ndarray): The flow on the graph.
+
+        Returns:
+            np.ndarray: The curl of the flow.
+        """
+        B2 = self.incidence_matrix(rank=2)
+        return B2.T @ flow
+
+    def get_component_flow(
         self,
         flow: np.ndarray,
         component: str = FrequencyComponent.GRADIENT.value,
@@ -477,7 +515,8 @@ class SimplicialComplex:
         round_sig_fig: int = 2,
     ) -> np.ndarray:
         """
-        Return the hodgedecompositon of the simplicial complex.
+        Return the component flow of the simplicial complex
+        using the hodgedecomposition.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
@@ -495,7 +534,7 @@ class SimplicialComplex:
         B2 = self.incidence_matrix(rank=2)
 
         if component == FrequencyComponent.HARMONIC.value:
-            f_h = get_harmonic_component(
+            f_h = get_harmonic_flow(
                 B1=B1,
                 B2=B2,
                 flow=flow,
@@ -504,7 +543,7 @@ class SimplicialComplex:
             )
             return f_h
         elif component == FrequencyComponent.CURL.value:
-            f_c = get_curl_component(
+            f_c = get_curl_flow(
                 B2=B2,
                 flow=flow,
                 round_fig=round_fig,
@@ -512,7 +551,7 @@ class SimplicialComplex:
             )
             return f_c
         elif component == FrequencyComponent.GRADIENT.value:
-            f_g = get_gradient_component(
+            f_g = get_gradient_flow(
                 B1=B1,
                 flow=flow,
                 round_fig=round_fig,
@@ -524,98 +563,3 @@ class SimplicialComplex:
                 "Invalid component. Choose from 'harmonic',"
                 + "'curl', or 'gradient'."
             )
-
-    def get_component_coefficients(
-        self,
-        component: str,
-    ) -> np.ndarray:
-        """
-        Calculate the component coefficients of the given component using the
-        order of the eigenvectors.
-
-        Args:
-            component (str): Component of the eigendecomposition to return.
-
-        Raises:
-            ValueError: If the component is not one of 'harmonic', 'curl',
-            or 'gradient'.
-
-        Returns:
-            np.ndarray: The component coefficients of the simplicial complex
-            for the given component.
-        """
-        L1 = self.hodge_laplacian_matrix(rank=1).toarray()
-
-        U_H, e_h = self.get_component_eigenpair(
-            FrequencyComponent.HARMONIC.value
-        )
-        U_C, e_c = self.get_component_eigenpair(
-            component=FrequencyComponent.CURL.value
-        )
-        _, e_g = self.get_component_eigenpair(
-            component=FrequencyComponent.GRADIENT.value
-        )
-
-        # concatenate the eigenvalues
-        eigenvals = np.concatenate((e_h, e_c, e_g))
-
-        # mask the eigenvectors
-        mask = np.zeros(L1.shape[0])
-
-        if component == FrequencyComponent.HARMONIC.value:
-            mask[: U_H.shape[1]] = 1
-        elif component == FrequencyComponent.CURL.value:
-            mask[U_H.shape[1] : U_H.shape[1] + U_C.shape[1]] = 1
-        elif component == FrequencyComponent.GRADIENT.value:
-            mask[U_H.shape[1] + U_C.shape[1] :] = 1
-        else:
-            raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', "
-                + "or 'gradient'."
-            )
-
-        # sort mask according to eigenvalues
-        mask = mask[np.argsort(eigenvals)]
-
-        return mask
-
-    def get_component_coefficients_by_type(self, component: str) -> np.ndarray:
-        """
-        Get the component coefficients of the given component using the order
-        of the eigenvectors.
-
-        Args:
-            component (str): Component of the eigendecomposition to return.
-
-        Raises:
-            ValueError: If the component is not one of 'harmonic', 'curl',
-            or 'gradient'.
-
-        Returns:
-            np.ndarray: The component coefficients of the simplicial complex.
-        """
-        L1 = self.hodge_laplacian_matrix(rank=1).toarray()
-        u_h, _ = self.get_component_eigenpair(
-            FrequencyComponent.HARMONIC.value
-        )
-        u_g, _ = self.get_component_eigenpair(
-            FrequencyComponent.GRADIENT.value
-        )
-
-        # mask the eigenvectors
-        mask = np.zeros(L1.shape[0])
-
-        if component == FrequencyComponent.HARMONIC.value:
-            mask[: u_h.shape[1]] = 1
-        elif component == FrequencyComponent.GRADIENT.value:
-            mask[u_h.shape[1] : u_h.shape[1] + u_g.shape[1]] = 1
-        elif component == FrequencyComponent.CURL.value:
-            mask[u_h.shape[1] + u_g.shape[1] :] = 1
-
-        else:
-            raise ValueError(
-                "Invalid component. Choose from 'harmonic', 'curl', "
-                + "or 'gradient'."
-            )
-
-        return mask

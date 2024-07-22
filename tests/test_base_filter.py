@@ -34,7 +34,7 @@ class TestBaseFilter:
         assert np.isclose(error, excepted_error, atol=1e-2)
 
     def test_power_iteration_algorithm(
-        selfl, filter: BaseFilter, sc_mock: SimplicialComplex
+        self, filter: BaseFilter, sc_mock: SimplicialComplex
     ):
         P = sc_mock.hodge_laplacian_matrix(rank=1).toarray()
         v = filter.power_iteration(P=P, iterations=50)
@@ -49,3 +49,22 @@ class TestBaseFilter:
 
         expected_lambda_max = 5.48798
         assert np.isclose(lambda_max, expected_lambda_max, atol=1e-6)
+
+    def test_get_component_coefficients(self, filter: BaseFilter):
+        alpha_g = filter.get_component_coefficients(component="gradient")
+        alpha_c = filter.get_component_coefficients(component="curl")
+        alpha_h = filter.get_component_coefficients(component="harmonic")
+
+        expected_g = np.array([0, 1, 0, 1, 0, 1, 1, 0, 1, 1])
+        expected_c = np.array([0, 0, 1, 0, 1, 0, 0, 1, 0, 0])
+        expected_h = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        assert np.array_equal(alpha_g, expected_g)
+        assert np.array_equal(alpha_c, expected_c)
+        assert np.array_equal(alpha_h, expected_h)
+
+    def test_get_component_coefficients_error(self, filter: BaseFilter):
+        component = "unknown"
+
+        with pytest.raises(ValueError):
+            filter.get_component_coefficients(component=component)

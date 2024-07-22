@@ -233,7 +233,7 @@ class GridBasedFilterDesign(BaseFilter):
 
         if component is not None:
             # type one extraction
-            alpha = self.sc.get_component_coefficients(component=component)
+            alpha = self.get_component_coefficients(component=component)
         else:
             # type two extraction
             alpha = [0] + [1] * (len(eigenvals) - 1)
@@ -262,7 +262,7 @@ class GridBasedFilterDesign(BaseFilter):
         f_true: np.ndarray,
         L1: int,
         L2: int,
-    ) -> np.ndarray:
+    ) -> tuple:
         """
         Apply a general filter H1 with L1 != L2 = L and α != β.
 

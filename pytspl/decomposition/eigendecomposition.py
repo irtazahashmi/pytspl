@@ -1,7 +1,8 @@
 """Module to extract eigendecomposition into eigenvalues and eigenvectors.
 
-Once the eigendecomposition is calculated, the components are extracted
-into harmonic, curl and gradient eigenvalues and eigenvectors.
+After eigendecomposition, the components are extracted
+into harmonic, curl and gradient eigenvalues and eigenvectors
+(eigenpairs).
 """
 
 import warnings

@@ -13,7 +13,8 @@ from pytspl.simplicial_complex import SimplicialComplex
 
 
 class SCBuilder:
-    """SC builder class to build simplicial complex networks."""
+    """SCBuilder is used to build a simplicial complex by defining the
+    2-simplices using different ways."""
 
     def __init__(
         self,
@@ -119,6 +120,7 @@ class SCBuilder:
                     dist_col_name=dist_col_name, epsilon=dist_threshold
                 )
 
+        # create the simplicial complex
         sc = SimplicialComplex(
             nodes=self.nodes,
             edges=self.edges,

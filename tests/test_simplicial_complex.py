@@ -172,12 +172,28 @@ class TestSimplicialComplex:
         expected_flow = np.array([0, 0, 0, 0, 0, 0, 0, 3, -3, 3])
         assert np.array_equal(L_shifted, expected_flow)
 
-    def test_apply_two_step_shifting(self, sc_mock: SimplicialComplex):
+    def test_apply_k_step_shifting(self, sc_mock: SimplicialComplex):
+        steps = 2
         flow = np.array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0])
-        L_shifted = sc_mock.apply_two_step_shifting(flow=flow)
+        L_shifted = sc_mock.apply_k_step_shifting(flow=flow, steps=steps)
         assert L_shifted.shape == (10,)
         expected_flow = np.array([0, -1, 1, -1, 2, 5, -5, 11, 1, -1])
         assert np.array_equal(L_shifted, expected_flow)
+
+    def test_divergence(self, sc_mock: SimplicialComplex):
+        flow = [0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09]
+        # B1@f_d = 0
+        B1 = sc_mock.incidence_matrix(rank=1)
+        f_d = sc_mock.get_divergence(flow)
+        assert np.allclose(f_d, B1 @ flow)
+
+    def test_get_curl(self, sc_mock: SimplicialComplex):
+        flow = np.array(
+            [0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09]
+        )
+        curl = sc_mock.get_curl(flow)
+        expected_curl = np.array([0.41, -2.41, 1.73])
+        assert np.allclose(curl, expected_curl)
 
     def test_get_simplicial_embeddings(self, sc_mock: SimplicialComplex):
         flow = [0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09]
@@ -200,29 +216,8 @@ class TestSimplicialComplex:
         assert np.allclose(np.abs(f_tilda_c), exptected_c, atol=1e-3)
         assert np.allclose(np.abs(f_tilda_g), exptected_g, atol=1e-3)
 
-    def test_eigedecomposition_error(self, sc_mock: SimplicialComplex):
+    def test_eigenpair_error(self, sc_mock: SimplicialComplex):
         component = "unknown"
 
         with pytest.raises(ValueError):
             sc_mock.get_component_eigenpair(component=component)
-
-    def test_get_component_coefficients(self, sc_mock: SimplicialComplex):
-        alpha_g = sc_mock.get_component_coefficients(component="gradient")
-        alpha_c = sc_mock.get_component_coefficients(component="curl")
-        alpha_h = sc_mock.get_component_coefficients(component="harmonic")
-
-        expected_g = np.array([0, 1, 0, 1, 0, 1, 1, 0, 1, 1])
-        expected_c = np.array([0, 0, 1, 0, 1, 0, 0, 1, 0, 0])
-        expected_h = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-        assert np.array_equal(alpha_g, expected_g)
-        assert np.array_equal(alpha_c, expected_c)
-        assert np.array_equal(alpha_h, expected_h)
-
-    def test_get_component_coefficients_error(
-        self, sc_mock: SimplicialComplex
-    ):
-        component = "unknown"
-
-        with pytest.raises(ValueError):
-            sc_mock.get_component_coefficients(component=component)

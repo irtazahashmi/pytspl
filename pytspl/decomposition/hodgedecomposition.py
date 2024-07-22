@@ -1,65 +1,19 @@
 """Module for calculating the Hodge decomposition of a flow on a graph.
 
 The following components can be extracted:
+- Total variance
 - Divergence
-- Gradient
 - Curl
-- Harmonic
+- Gradient component
+- Curl component
+- Harmonic component
 """
 
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from .eigendecomposition import get_eigendecomposition
 
-
-def get_divergence(B1: csr_matrix, flow: np.ndarray) -> np.ndarray:
-    """
-    Get the divergence of a flow on a graph.
-
-    Args:
-        B1 (csr_matrix): The incidence matrix of the graph, nodes to
-        edges (B1).
-        flow (np.ndarray): The flow on the graph.
-        round_sig_fig (int, optional): Round to significant figure.
-        Defaults to 2.
-
-    Returns:
-        np.ndarray: The divergence of the flow.
-    """
-    return B1 @ flow
-
-
-def get_curl(B2: csr_matrix, flow: np.ndarray) -> np.ndarray:
-    """
-    Get the curl of a flow on a graph.
-
-    Args:
-        B2 (csr_matrix): The incidence matrix of the graph, edges to
-        triangles (B2).
-        flow (np.ndarray): The flow on the graph.
-
-    Returns:
-        np.ndarray: The curl of the flow.
-    """
-    return B2.T @ flow
-
-
-def get_total_variance(L1: csr_matrix):
-    """
-    Get the total variance of the SC.
-
-    Args:
-        L1 (csr_matrix): The Laplacian matrix of the SC.
-
-    Returns:
-        np.ndarray: The total variance of the SC.
-    """
-    eigenvecs, _ = get_eigendecomposition(L1)
-    return np.diag(eigenvecs.T @ L1 @ eigenvecs)
-
-
-def get_gradient_component(
+def get_gradient_flow(
     B1: csr_matrix,
     flow: np.ndarray,
     round_fig: bool = True,
@@ -87,7 +41,7 @@ def get_gradient_component(
     return gradient_flow
 
 
-def get_curl_component(
+def get_curl_flow(
     B2: csr_matrix,
     flow: np.ndarray,
     round_fig: bool = True,
@@ -115,7 +69,7 @@ def get_curl_component(
     return curl_flow
 
 
-def get_harmonic_component(
+def get_harmonic_flow(
     B1: csr_matrix,
     B2: csr_matrix,
     flow: np.ndarray,
@@ -136,9 +90,9 @@ def get_harmonic_component(
     Returns:
         np.ndarray: The harmonic flow.
     """
-    gradient_flow = get_gradient_component(B1=B1, flow=flow, round_fig=False)
+    gradient_flow = get_gradient_flow(B1=B1, flow=flow, round_fig=False)
 
-    curl_flow = get_curl_component(B2=B2, flow=flow, round_fig=False)
+    curl_flow = get_curl_flow(B2=B2, flow=flow, round_fig=False)
 
     harmonic_flow = flow - gradient_flow - curl_flow
 
