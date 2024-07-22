@@ -7,9 +7,9 @@ import numpy as np
 from scipy.sparse import csr_matrix
 
 from pytspl.decomposition.eigendecomposition import (
-    get_curl_eigenvectors,
-    get_gradient_eigenvectors,
-    get_harmonic_eigenvectors,
+    get_curl_eigenpair,
+    get_gradient_eigenpair,
+    get_harmonic_eigenpair,
 )
 from pytspl.decomposition.frequency_component import FrequencyComponent
 from pytspl.decomposition.hodgedecomposition import (
@@ -418,9 +418,9 @@ class SimplicialComplex:
         L1L = self.lower_laplacian_matrix(rank=k).toarray()
 
         # eigendeomposition
-        u_h, _ = get_harmonic_eigenvectors(L1, tolerance=1e-3)
-        u_c, _ = get_curl_eigenvectors(L1U, 1e-3)
-        u_g, _ = get_gradient_eigenvectors(L1L, 1e-3)
+        u_h, _ = get_harmonic_eigenpair(L1, tolerance=1e-3)
+        u_c, _ = get_curl_eigenpair(L1U, 1e-3)
+        u_g, _ = get_gradient_eigenpair(L1L, 1e-3)
 
         # each entry of an embedding represents the weight the flow has on the
         # corresponding eigenvector
@@ -431,8 +431,10 @@ class SimplicialComplex:
 
         return f_tilda_h, f_tilda_c, f_tilda_g
 
-    def get_eigendecomposition(
-        self, component: str = "harmonic", tolerance: float = 1e-3
+    def get_component_eigenpair(
+        self,
+        component: str = FrequencyComponent.HARMONIC.value,
+        tolerance: float = 1e-3,
     ) -> tuple:
         """
         Return the eigendecomposition of the simplicial complex.
@@ -451,15 +453,15 @@ class SimplicialComplex:
         """
         if component == FrequencyComponent.HARMONIC.value:
             L1 = self.hodge_laplacian_matrix(rank=1).toarray()
-            u_h, eig_h = get_harmonic_eigenvectors(L1, tolerance)
+            u_h, eig_h = get_harmonic_eigenpair(L1, tolerance)
             return u_h, eig_h
         elif component == FrequencyComponent.CURL.value:
             L1U = self.upper_laplacian_matrix(rank=1).toarray()
-            u_c, eig_c = get_curl_eigenvectors(L1U, tolerance)
+            u_c, eig_c = get_curl_eigenpair(L1U, tolerance)
             return u_c, eig_c
         elif component == FrequencyComponent.GRADIENT.value:
             L1L = self.lower_laplacian_matrix(rank=1).toarray()
-            u_g, eig_g = get_gradient_eigenvectors(L1L, tolerance)
+            u_g, eig_g = get_gradient_eigenpair(L1L, tolerance)
             return u_g, eig_g
         else:
             raise ValueError(
@@ -544,13 +546,13 @@ class SimplicialComplex:
         """
         L1 = self.hodge_laplacian_matrix(rank=1).toarray()
 
-        U_H, e_h = self.get_eigendecomposition(
+        U_H, e_h = self.get_component_eigenpair(
             FrequencyComponent.HARMONIC.value
         )
-        U_C, e_c = self.get_eigendecomposition(
+        U_C, e_c = self.get_component_eigenpair(
             component=FrequencyComponent.CURL.value
         )
-        _, e_g = self.get_eigendecomposition(
+        _, e_g = self.get_component_eigenpair(
             component=FrequencyComponent.GRADIENT.value
         )
 
@@ -593,8 +595,12 @@ class SimplicialComplex:
             np.ndarray: The component coefficients of the simplicial complex.
         """
         L1 = self.hodge_laplacian_matrix(rank=1).toarray()
-        u_h, _ = self.get_eigendecomposition(FrequencyComponent.HARMONIC.value)
-        u_g, _ = self.get_eigendecomposition(FrequencyComponent.GRADIENT.value)
+        u_h, _ = self.get_component_eigenpair(
+            FrequencyComponent.HARMONIC.value
+        )
+        u_g, _ = self.get_component_eigenpair(
+            FrequencyComponent.GRADIENT.value
+        )
 
         # mask the eigenvectors
         mask = np.zeros(L1.shape[0])

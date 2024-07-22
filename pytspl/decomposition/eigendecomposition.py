@@ -10,11 +10,12 @@ import numpy as np
 from scipy.sparse.linalg import eigsh
 
 
-def get_harmonic_eigenvectors(
+def get_harmonic_eigenpair(
     hodgle_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
-    Calculate the harmonic eigenvectors of the Hodge Laplacian - e.g. L1.
+    Calculate the harmonic eigenvectors of the Hodge Laplacian - e.g. L1
+    with corresponding eigenvalues.
 
     Args:
         hodgle_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
@@ -33,11 +34,12 @@ def get_harmonic_eigenvectors(
     return u_h, eigenvalues
 
 
-def get_curl_eigenvectors(
+def get_curl_eigenpair(
     upper_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
-    Calculate the curl eigenvectors of the upper Laplacian e.g. L1U.
+    Calculate the curl eigenvectors of the upper Laplacian e.g. L1U
+    with corresponding eigenvalues.
 
     Args:
         upper_lap_mat (np.ndarray): The upper Laplacian matrix L(k, u).
@@ -55,11 +57,12 @@ def get_curl_eigenvectors(
     return u_c, eigenvalues
 
 
-def get_gradient_eigenvectors(
+def get_gradient_eigenpair(
     lower_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
-    Calculate the gradient eigenvectors of the lower Laplacian e.g. L1L.
+    Calculate the gradient eigenvectors of the lower Laplacian e.g. L1L
+    with corresponding eigenvalues.
 
     Args:
         lower_lap_mat (np.ndarray): The lower Laplacian matrix L(k, l)

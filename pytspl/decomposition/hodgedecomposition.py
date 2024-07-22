@@ -10,6 +10,8 @@ The following components can be extracted:
 import numpy as np
 from scipy.sparse import csr_matrix
 
+from .eigendecomposition import get_eigendecomposition
+
 
 def get_divergence(B1: csr_matrix, flow: np.ndarray) -> np.ndarray:
     """
@@ -41,6 +43,20 @@ def get_curl(B2: csr_matrix, flow: np.ndarray) -> np.ndarray:
         np.ndarray: The curl of the flow.
     """
     return B2.T @ flow
+
+
+def get_total_variance(L1: csr_matrix):
+    """
+    Get the total variance of the SC.
+
+    Args:
+        L1 (csr_matrix): The Laplacian matrix of the SC.
+
+    Returns:
+        np.ndarray: The total variance of the SC.
+    """
+    eigenvecs, _ = get_eigendecomposition(L1)
+    return np.diag(eigenvecs.T @ L1 @ eigenvecs)
 
 
 def get_gradient_component(

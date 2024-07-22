@@ -573,7 +573,7 @@ class SCPlot:
         """
         viz_per_row = 3
 
-        U, eigenvals = self.sc.get_eigendecomposition(component=component)
+        U, eigenvals = self.sc.get_component_eigenpair(component=component)
 
         # if no eigenvector indices are provided, draw all eigenvectors
         if len(eigenvector_indices) == 0:

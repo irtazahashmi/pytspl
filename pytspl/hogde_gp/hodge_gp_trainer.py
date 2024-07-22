@@ -80,24 +80,24 @@ class HodgeGPTrainer:
 
         return incidence_matrices
 
-    def get_eigenpairs(self, tolerance: float = 1e-4) -> list:
+    def get_eigenpairs(self, tolerance: float = 1e-3) -> list:
         """
         Return the eigenpairs of the Laplacian matrices.
 
         Args:
             tolerance (float, optional): The tolerance for eigenvalues
-            to be considered zero. Defaults to 1e-4.
+            to be considered zero. Defaults to 1e-3.
 
         Returns:
             list(torch.tensor): The eigenpairs of the Laplacian matrices.
         """
-        h_eigenvecs, h_eigenvals = self.sc.get_eigendecomposition(
+        h_eigenvecs, h_eigenvals = self.sc.get_component_eigenpair(
             component="harmonic", tolerance=tolerance
         )
-        g_eigenvecs, g_eigenvals = self.sc.get_eigendecomposition(
+        g_eigenvecs, g_eigenvals = self.sc.get_component_eigenpair(
             component="gradient", tolerance=tolerance
         )
-        c_eigenvecs, c_eigenvals = self.sc.get_eigendecomposition(
+        c_eigenvecs, c_eigenvals = self.sc.get_component_eigenpair(
             component="curl", tolerance=tolerance
         )
 

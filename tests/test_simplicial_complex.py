@@ -204,7 +204,7 @@ class TestSimplicialComplex:
         component = "unknown"
 
         with pytest.raises(ValueError):
-            sc_mock.get_eigendecomposition(component=component)
+            sc_mock.get_component_eigenpair(component=component)
 
     def test_get_component_coefficients(self, sc_mock: SimplicialComplex):
         alpha_g = sc_mock.get_component_coefficients(component="gradient")
