@@ -8,11 +8,13 @@ from .data_loaders.transportation_loader import (
     list_transportation_datasets,
     load_transportation_dataset,
 )
+from .data_loaders.wsn_loader import load_wsn_data
 
 DATASETS = {
     "paper": load_paper_data,
     "forex": load_forex_data,
     "lastfm-1k-artist": load_lastfm_1k_artist,
+    "wsn": load_wsn_data,
 }
 
 

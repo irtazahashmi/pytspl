@@ -3,7 +3,10 @@
 import gpytorch
 import numpy as np
 import torch
+from sklearn.model_selection import train_test_split
 from torcheval.metrics.functional import r2_score
+
+from pytspl.simplicial_complex import SimplicialComplex
 
 DATA_TYPE = torch.float32
 
@@ -11,11 +14,7 @@ DATA_TYPE = torch.float32
 class HodgeGPTrainer:
     def __init__(
         self,
-        B1: np.ndarray,
-        B2: np.ndarray,
-        L1: np.ndarray,
-        L1l: np.ndarray,
-        L1u: np.ndarray,
+        sc: SimplicialComplex,
         y: np.ndarray,
         output_device: str = "cpu",
     ):
@@ -23,21 +22,12 @@ class HodgeGPTrainer:
         Initialize the HodgeGPTrainer class.
 
         Args:
-            B1 (np.ndarray): The incidence matrix B1.
-            B2 (np.ndarray): The incidence matrix B2.
-            L1 (np.ndarray): The Laplacian matrix L1.
-            L1l (np.ndarray): The lower Laplacian matrix L1l.
-            L1u (np.ndarray): The upper Laplacian matrix L1u.
+            sc (SimplicialComplex): The simplicial complex.
             y (np.ndarray): The target values.
             output_device (str, optional): The output device for
             the tensors. Defaults to "cpu".
         """
-
-        self.B1 = B1
-        self.B2 = B2
-        self.L1 = L1
-        self.L1l = L1l
-        self.L1u = L1u
+        self.sc = sc
         self.y = y
 
         self.output_device = torch.device(output_device)
@@ -49,13 +39,17 @@ class HodgeGPTrainer:
         Returns:
             list(torch.tensor): The Laplacian matrices.
         """
-        print("L1: ", self.L1.shape)
-        print("L1l: ", self.L1l.shape)
-        print("L1u: ", self.L1u.shape)
+        L1 = self.sc.hodge_laplacian_matrix(rank=1).toarray()
+        L1l = self.sc.lower_laplacian_matrix(rank=1).toarray()
+        L1u = self.sc.upper_laplacian_matrix(rank=1).toarray()
 
-        L1 = torch.tensor(self.L1, dtype=DATA_TYPE)
-        L1_down = torch.tensor(self.L1l, dtype=DATA_TYPE)
-        L1_up = torch.tensor(self.L1u, dtype=DATA_TYPE)
+        print("L1: ", L1.shape)
+        print("L1l: ", L1l.shape)
+        print("L1u: ", L1u.shape)
+
+        L1 = torch.tensor(L1, dtype=DATA_TYPE)
+        L1_down = torch.tensor(L1l, dtype=DATA_TYPE)
+        L1_up = torch.tensor(L1u, dtype=DATA_TYPE)
 
         laplacians = [L1, L1_down, L1_up]
         laplacians = [
@@ -71,57 +65,61 @@ class HodgeGPTrainer:
         Returns:
             list(torch.tensor): The incidence matrices.
         """
-        print("B1: ", self.B1.shape)
-        print("B2: ", self.B2.shape)
+        B1 = self.sc.incidence_matrix(rank=1).toarray()
+        B2 = self.sc.incidence_matrix(rank=2).toarray()
 
-        B1 = torch.tensor(self.B1, dtype=DATA_TYPE)
-        B2 = torch.tensor(self.B2, dtype=DATA_TYPE)
+        print("B1: ", B1.shape)
+        print("B2: ", B2.shape)
 
-        output_device = self.output_device
-        incidence_matrices = [B1.to(output_device), B2.to(output_device)]
+        B1 = torch.tensor(B1, dtype=DATA_TYPE)
+        B2 = torch.tensor(B2, dtype=DATA_TYPE)
+
+        incidence_matrices = [
+            B1.to(self.output_device),
+            B2.to(self.output_device),
+        ]
 
         return incidence_matrices
 
-    def get_eigenpairs(self) -> list:
+    def get_eigenpairs(self, tolerance: float = 1e-3) -> list:
         """
         Return the eigenpairs of the Laplacian matrices.
+
+        Args:
+            tolerance (float, optional): The tolerance for eigenvalues
+            to be considered zero. Defaults to 1e-3.
 
         Returns:
             list(torch.tensor): The eigenpairs of the Laplacian matrices.
         """
-        eigvals, eigvecs = np.linalg.eigh(self.L1)
+        h_eigenvecs, h_eigenvals = self.sc.get_component_eigenpair(
+            component="harmonic", tolerance=tolerance
+        )
+        g_eigenvecs, g_eigenvals = self.sc.get_component_eigenpair(
+            component="gradient", tolerance=tolerance
+        )
+        c_eigenvecs, c_eigenvals = self.sc.get_component_eigenpair(
+            component="curl", tolerance=tolerance
+        )
 
-        total_var = np.diag(eigvecs.T @ self.L1 @ eigvecs)
-        total_div = np.diag(eigvecs.T @ self.L1l @ eigvecs)
-        total_curl = np.diag(eigvecs.T @ self.L1u @ eigvecs)
-
-        harm_eflow = np.where(np.array(total_var) <= 1e-4)[0]
-        grad_eflow = np.where(np.array(total_div) > 1e-4)[0]
-        curl_eflow = np.where(np.array(total_curl) >= 1e-3)[0]
-
-        harm_evectors = torch.tensor(eigvecs[:, harm_eflow], dtype=DATA_TYPE)
-        grad_evectors = torch.tensor(eigvecs[:, grad_eflow], dtype=DATA_TYPE)
-        curl_evectors = torch.tensor(eigvecs[:, curl_eflow], dtype=DATA_TYPE)
-        harm_evalues = torch.tensor(eigvals[harm_eflow], dtype=DATA_TYPE)
-        grad_evalues = torch.tensor(eigvals[grad_eflow], dtype=DATA_TYPE)
-        curl_evalues = torch.tensor(eigvals[curl_eflow], dtype=DATA_TYPE)
-
-        output_device = self.output_device
-
-        harm_evectors = harm_evectors.to(output_device)
-        grad_evectors = grad_evectors.to(output_device)
-        curl_evectors = curl_evectors.to(output_device)
-        harm_evalues = harm_evalues.to(output_device)
-        grad_evalues = grad_evalues.to(output_device)
-        curl_evalues = curl_evalues.to(output_device)
+        h_eigenvecs = torch.tensor(h_eigenvecs, dtype=DATA_TYPE)
+        g_eigenvecs = torch.tensor(g_eigenvecs, dtype=DATA_TYPE)
+        c_eigenvecs = torch.tensor(c_eigenvecs, dtype=DATA_TYPE)
+        h_eigenvals = torch.tensor(h_eigenvals, dtype=DATA_TYPE)
+        g_eigenvals = torch.tensor(g_eigenvals, dtype=DATA_TYPE)
+        c_eigenvals = torch.tensor(c_eigenvals, dtype=DATA_TYPE)
 
         eigenpairs = [
-            harm_evectors,
-            grad_evectors,
-            curl_evectors,
-            harm_evalues,
-            grad_evalues,
-            curl_evalues,
+            h_eigenvecs,
+            g_eigenvecs,
+            c_eigenvecs,
+            h_eigenvals,
+            g_eigenvals,
+            c_eigenvals,
+        ]
+
+        eigenpairs = [
+            eigenpair.to(self.output_device) for eigenpair in eigenpairs
         ]
 
         return eigenpairs
@@ -169,19 +167,16 @@ class HodgeGPTrainer:
             tuple(torch.tensor, torch.tensor, torch.tensor, torch.tensor,
             torch.tensor, torch.tensor): The training and testing data.
         """
-        np.random.seed(seed)
 
+        B1 = self.sc.incidence_matrix(rank=1).toarray()
         y = self.y
 
-        n1 = self.B1.shape[1]
-        num_train = int(train_ratio * n1)
-
+        # split the data into training and testing sets
+        n1 = B1.shape[1]
         x = np.arange(n1)
-        random_perm = np.random.permutation(x)
-        train_ids, test_ids = random_perm[:num_train], random_perm[num_train:]
-
-        x_train, x_test = x[train_ids], x[test_ids]
-        y_train, y_test = y[train_ids], y[test_ids]
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, train_size=train_ratio, random_state=seed
+        )
 
         # print shapes
         print(f"x_train: {x_train.shape}")
@@ -189,6 +184,7 @@ class HodgeGPTrainer:
         print(f"y_train: {y_train.shape}")
         print(f"y_test: {y_test.shape}")
 
+        # convert to tensors
         x_train, y_train = torch.tensor(
             x_train, dtype=DATA_TYPE
         ), torch.tensor(y_train, dtype=DATA_TYPE)
@@ -200,7 +196,9 @@ class HodgeGPTrainer:
         )
 
         if data_normalization:
-            y_train, y_test, y = self.normalize_data(y_train, y_test, y)
+            y_train, y_test, y = self.normalize_data(
+                y_train=y_train, y_test=y_test, y=y
+            )
 
         output_device = self.output_device
         x_train, y_train = x_train.to(output_device), y_train.to(output_device)
@@ -255,7 +253,7 @@ class HodgeGPTrainer:
             loss = -mll(output, y_train)
             loss.backward()
             print(
-                "Iter %d/%d - Loss: %.3f "
+                "Iteration %d/%d - Loss: %.3f "
                 % (i + 1, training_iters, loss.item())
             )
             optimizer.step()

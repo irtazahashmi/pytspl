@@ -69,6 +69,13 @@ class TestDatasetLoader:
         assert isinstance(coordinates, dict)
         assert len(coordinates) > 0
 
+    def test_load_wsn_datasets(self):
+        dataset = "wsn"
+        sc, coordinates, _ = load_dataset(dataset)
+
+        assert isinstance(sc, SimplicialComplex)
+        assert isinstance(coordinates, dict)
+
     def test_load_transportation_datasets(self):
 
         datasets_with_all_data = [

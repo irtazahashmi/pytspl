@@ -493,7 +493,7 @@ class SCPlot:
         fig = plt.figure(figsize=figsize)
 
         if component is not None:
-            component_flow = self.sc.get_hodgedecomposition(
+            component_flow = self.sc.get_component_flow(
                 flow=flow,
                 component=component,
                 round_fig=round_fig,
@@ -507,21 +507,21 @@ class SCPlot:
         # if no component is specified, draw all three components
         else:
 
-            f_g = self.sc.get_hodgedecomposition(
+            f_g = self.sc.get_component_flow(
                 flow=flow,
                 component=FrequencyComponent.GRADIENT.value,
                 round_fig=round_fig,
                 round_sig_fig=round_sig_fig,
             )
 
-            f_c = self.sc.get_hodgedecomposition(
+            f_c = self.sc.get_component_flow(
                 flow=flow,
                 component=FrequencyComponent.CURL.value,
                 round_fig=round_fig,
                 round_sig_fig=round_sig_fig,
             )
 
-            f_h = self.sc.get_hodgedecomposition(
+            f_h = self.sc.get_component_flow(
                 flow=flow,
                 component=FrequencyComponent.HARMONIC.value,
                 round_fig=round_fig,
@@ -573,7 +573,7 @@ class SCPlot:
         """
         viz_per_row = 3
 
-        U, eigenvals = self.sc.get_eigendecomposition(component=component)
+        U, eigenvals = self.sc.get_component_eigenpair(component=component)
 
         # if no eigenvector indices are provided, draw all eigenvectors
         if len(eigenvector_indices) == 0:

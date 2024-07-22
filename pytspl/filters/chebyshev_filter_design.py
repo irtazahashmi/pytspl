@@ -1,4 +1,4 @@
-"""Module for chebyshev filter."""
+"""Module for Chebyshev filter design."""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,7 +10,7 @@ from pytspl.simplicial_complex import SimplicialComplex
 
 
 class ChebyshevFilterDesign(BaseFilter):
-    """Chebyshev filter class."""
+    """Chebyshev filter design inheriting from the BaseFilter class."""
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the Chebyshev filter using the simplicial complex."""
@@ -194,15 +194,15 @@ class ChebyshevFilterDesign(BaseFilter):
             component (str, optional): The component of the flow. Defaults
             to "gradient".
             L (int, optional): The filter size. Defaults to 10.
-            n (int, optional): The number of points. Defaults to 100.
+            n (int, optional): The number of points. Defaults to None.
             cut_off_frequency (float, optional): The cut-off frequency.
             Defaults to 0.01.
             steep (int, optional): The steepness of the logistic function.
             Defaults to 100.
         """
-        if n is None:
-            # if n is not provided, the filter size is the same as the
-            # number of points
+        # if n is not provided, the filter size is the same as the
+        # number of points
+        if not n:
             n = L
 
         L1 = self.sc.hodge_laplacian_matrix().toarray()
@@ -212,7 +212,7 @@ class ChebyshevFilterDesign(BaseFilter):
         U_l, _ = get_eigendecomposition(lap_mat=P)
 
         f_true = self.get_true_signal(f=f, component=component)
-        h_ideal = self.sc.get_component_coefficients(component=component)
+        h_ideal = self.get_component_coefficients(component=component)
 
         # calculate alpha
         alpha, lambda_max = self.get_alpha(p_choice=p_choice)
@@ -306,7 +306,7 @@ class ChebyshevFilterDesign(BaseFilter):
         P = self.get_p_matrix(p_choice).toarray()
         _, eigenvals = get_eigendecomposition(lap_mat=P)
 
-        if n is None:
+        if not n:
             n = len(P)
 
         g = self._logistic_function()

@@ -15,6 +15,10 @@ from pytspl.simplicial_complex.simplicial_complex import SimplicialComplex
 
 
 class SimplicialTrendFilter(BaseFilter):
+    """
+    Simiplicial trend filter class for denoising and interpolation.
+    Inherits from the filter base class.
+    """
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """
@@ -29,6 +33,11 @@ class SimplicialTrendFilter(BaseFilter):
             "component_flow": None,
             "errors": None,
             "correlations": None,
+        }
+
+        self.components = {
+            "divergence": self.sc.get_divergence,
+            "curl": self.sc.get_curl,
         }
 
     @staticmethod
@@ -78,35 +87,6 @@ class SimplicialTrendFilter(BaseFilter):
         self.history["errors"] = errors.astype(float)
         self.history["correlations"] = correlations.astype(float)
 
-    def get_divergence_flow(self, f: np.ndarray) -> np.ndarray:
-        """
-        Get the divergence flow.
-
-        Args:
-            f (np.ndarray): The flow to compute the divergence.
-
-        Returns:
-            np.ndarray: The normalized divergence flow.
-        """
-        B1 = self.sc.incidence_matrix(rank=1)
-        return norm(B1 @ f)
-
-    def get_curl_flow(self, f: np.ndarray) -> np.ndarray:
-        """
-        Get the curl flow.
-
-        Args:
-            f (np.ndarray): The flow to compute the curl.
-
-        ValueError:
-            If the component is not 'divergence' or 'curl'.
-
-        Returns:
-            np.ndarray: The normalized curl flow.
-        """
-        B2 = self.sc.incidence_matrix(rank=2)
-        return norm(B2.T @ f)
-
     def get_power_noise(
         self, flow: np.ndarray, component: str, snr_db: np.ndarray
     ) -> tuple:
@@ -119,17 +99,9 @@ class SimplicialTrendFilter(BaseFilter):
             'divergence' and 'curl'.
             snr_db (np.ndarray): The signal to noise ratio in dB.
 
-        Raises:
-            ValueError: If the component is not 'divergence' or 'curl'.
-
         Returns:
             tuple: The power noise and the signal to noise ratio.
         """
-        if component not in ["divergence", "curl"]:
-            raise ValueError(
-                "Invalid component. Choose between 'divergence' and 'curl'."
-            )
-
         num_edges = len(self.sc.edges)
         # signal to noise ratio
         snr = 10 ** (snr_db / 10)
@@ -162,15 +134,15 @@ class SimplicialTrendFilter(BaseFilter):
         Raises:
             ValueError: If the component is not 'divergence' or 'curl'.
         """
+        if component not in self.components.keys():
+            raise ValueError(
+                "Invalid component. Choose between 'divergence' and 'curl'."
+            )
+
         num_edges = len(self.sc.edges)
         power_noise, snr = self.get_power_noise(
             flow=flow, component=component, snr_db=snr_db
         )
-
-        components = {
-            "divergence": self.get_divergence_flow,
-            "curl": self.get_curl_flow,
-        }
 
         L1l = self.sc.lower_laplacian_matrix(rank=1)
         # identity matrix
@@ -203,10 +175,14 @@ class SimplicialTrendFilter(BaseFilter):
                 errors[i, j] = self.calculate_error_NRMSE(
                     frequency_responses[:, i, j], flow
                 )
+
                 # compute the divergence or curl
-                component_flow[i, j] = components[component](
-                    f=frequency_responses[:, i, j]
+                component_flow[i, j] = norm(
+                    self.components[component](
+                        flow=frequency_responses[:, i, j]
+                    )
                 )
+
                 # compute the correlation
                 corrs[i, j] = self._corr(flow, frequency_responses[:, i, j])
 
@@ -253,15 +229,15 @@ class SimplicialTrendFilter(BaseFilter):
         Raises:
             ValueError: If the component is not 'divergence' or 'curl'.
         """
+        if component not in self.components.keys():
+            raise ValueError(
+                "Invalid component. Choose between 'divergence' and 'curl'."
+            )
+
         num_edges = len(self.sc.edges)
         power_noise, snr = self.get_power_noise(
             flow=flow, component=component, snr_db=snr_db
         )
-
-        components = {
-            "divergence": self.get_divergence_flow,
-            "curl": self.get_curl_flow,
-        }
 
         num_edges = len(self.sc.edges)
         # signal to noise ratio
@@ -294,10 +270,14 @@ class SimplicialTrendFilter(BaseFilter):
                 errors[i, j] = self.calculate_error_NRMSE(
                     frequency_responses[:, i, j], flow
                 )
+
                 # compute the divergence or curl
-                component_flow[i, j] = components[component](
-                    f=frequency_responses[:, i, j]
+                component_flow[i, j] = norm(
+                    self.components[component](
+                        flow=frequency_responses[:, i, j]
+                    )
                 )
+
                 # compute the correlation
                 correlations[i, j] = self._corr(
                     flow, frequency_responses[:, i, j]
@@ -345,16 +325,10 @@ class SimplicialTrendFilter(BaseFilter):
         Raises:
             ValueError: If the component is not 'divergence' or 'curl'.
         """
-
-        if component not in ["divergence", "curl"]:
+        if component not in self.components.keys():
             raise ValueError(
                 "Invalid component. Choose between 'divergence' and 'curl'."
             )
-
-        components = {
-            "divergence": self.get_divergence_flow,
-            "curl": self.get_curl_flow,
-        }
 
         num_edges = len(self.sc.edges)
 
@@ -402,10 +376,14 @@ class SimplicialTrendFilter(BaseFilter):
                 errors[i, j] = self.calculate_error_NRMSE(
                     frequency_responses[:, i, j], flow
                 )
-                # store the results
-                component_flow[i, j] = components[component](
-                    f=frequency_responses[:, i, j]
+
+                # compute the divergence or curl
+                component_flow[i, j] = norm(
+                    self.components[component](
+                        flow=frequency_responses[:, i, j]
+                    )
                 )
+
                 # compute the correlation
                 correlations[i, j] = self._corr(
                     flow, frequency_responses[:, i, j]

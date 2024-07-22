@@ -3,14 +3,18 @@
 import numpy as np
 from scipy.sparse import csr_matrix
 
+from pytspl.decomposition.frequency_component import FrequencyComponent
 from pytspl.simplicial_complex import SimplicialComplex
 
 
 class BaseFilter:
-    """Filter design base class."""
+    """Base filter class for desining linear filters."""
 
     def __init__(self, simplicial_complex: SimplicialComplex):
-        """Initialize the filter design using a simplicial complex."""
+        """Initialize the filter design using a simplicial complex.
+
+        The history of the filter design is stored in the history attribute.
+        """
         self.sc = simplicial_complex
 
         self.history = {
@@ -83,14 +87,16 @@ class BaseFilter:
         Returns:
             np.ndarray: The true signal.
         """
-        f_true = self.sc.get_hodgedecomposition(
+        f_true = self.sc.get_component_flow(
             flow=f, component=component, round_fig=False
         )
         return f_true
 
     def get_p_matrix(self, p_choice: str = "L1") -> csr_matrix:
         """
-        Get the matrix P for the filter design.
+        Get the matrix P for the filter design. The matrix P can be
+        the Laplacian matrix, the lower Laplacian matrix, or the upper
+        Laplacian matrix.
 
         Args:
             p_choice (str, optional): The choice of matrix P. Defaults
@@ -116,3 +122,57 @@ class BaseFilter:
             )
 
         return P
+
+    def get_component_coefficients(
+        self,
+        component: str,
+    ) -> np.ndarray:
+        """
+        Calculate the component coefficients of the given component using the
+        order of the eigenvectors.
+
+        Args:
+            component (str): Component of the eigendecomposition to return.
+
+        Raises:
+            ValueError: If the component is not one of 'harmonic', 'curl',
+            or 'gradient'.
+
+        Returns:
+            np.ndarray: The component coefficients of the simplicial complex
+            for the given component.
+        """
+        L1 = self.sc.hodge_laplacian_matrix(rank=1).toarray()
+
+        U_H, e_h = self.sc.get_component_eigenpair(
+            FrequencyComponent.HARMONIC.value
+        )
+        U_C, e_c = self.sc.get_component_eigenpair(
+            component=FrequencyComponent.CURL.value
+        )
+        _, e_g = self.sc.get_component_eigenpair(
+            component=FrequencyComponent.GRADIENT.value
+        )
+
+        # concatenate the eigenvalues
+        eigenvals = np.concatenate((e_h, e_c, e_g))
+
+        # mask the eigenvectors
+        mask = np.zeros(L1.shape[0])
+
+        if component == FrequencyComponent.HARMONIC.value:
+            mask[: U_H.shape[1]] = 1
+        elif component == FrequencyComponent.CURL.value:
+            mask[U_H.shape[1] : U_H.shape[1] + U_C.shape[1]] = 1
+        elif component == FrequencyComponent.GRADIENT.value:
+            mask[U_H.shape[1] + U_C.shape[1] :] = 1
+        else:
+            raise ValueError(
+                "Invalid component. Choose from 'harmonic', 'curl', "
+                + "or 'gradient'."
+            )
+
+        # sort mask according to eigenvalues
+        mask = mask[np.argsort(eigenvals)]
+
+        return mask

@@ -254,7 +254,7 @@ class TestChebyshevFilterDesign:
         # Check if the plot is displayed
         assert plt.gcf().number == 1
 
-    def test_plot_chebyshev_series_approx(
+    def test_plot_frequency_response_approx(
         self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
     ):
         import matplotlib.pyplot as plt
@@ -275,9 +275,9 @@ class TestChebyshevFilterDesign:
             flow=f, component=component
         )
         # Check if the plot is displayed
-        assert plt.gcf().number == 1
+        assert plt.gcf().number == 2
 
-    def test_plot_chebyshev_series_approx_without_running_filter(
+    def test_plot_plot_frequency_response_approx_without_running_filter(
         self, chebyshev_filter: ChebyshevFilterDesign, f: np.ndarray
     ):
         # catch ValueError when the filter is not applied

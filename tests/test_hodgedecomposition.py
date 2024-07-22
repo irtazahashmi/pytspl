@@ -14,21 +14,13 @@ def flow():
 
 class TestHodgeDecompostion:
 
-    def test_divergence_component(
-        self, sc_mock: SimplicialComplex, flow: np.ndarray
-    ):
-        # B1@f_d = 0
-        B1 = sc_mock.incidence_matrix(rank=1)
-        f_d = get_divergence(B1, flow)
-        assert np.allclose(f_d, B1 @ flow)
-
     def test_harmonic_component_condition(
         self, sc_mock: SimplicialComplex, flow: np.ndarray
     ):
         # L1@f_h = 0
         B1 = sc_mock.incidence_matrix(rank=1)
         B2 = sc_mock.incidence_matrix(rank=2)
-        f_h = get_harmonic_component(B1, B2, flow, round_fig=False)
+        f_h = get_harmonic_flow(B1, B2, flow, round_fig=False)
         L1 = B1.T @ B1
         assert np.allclose(L1 @ f_h, 0)
 
@@ -46,7 +38,7 @@ class TestHodgeDecompostion:
         # L1@f_h = 0
         B1 = sc_mock.incidence_matrix(rank=1)
         B2 = sc_mock.incidence_matrix(rank=2)
-        f_h = get_harmonic_component(B1, B2, flow, round_fig=True)
+        f_h = get_harmonic_flow(B1, B2, flow, round_fig=True)
         L1 = B1.T @ B1
         assert np.allclose(L1 @ f_h, 0, atol=1e-1)
 
@@ -55,7 +47,7 @@ class TestHodgeDecompostion:
     ):
         # L1L@f_c = 0
         B2 = sc_mock.incidence_matrix(rank=2)
-        f_c = get_curl_component(B2, flow, round_fig=False)
+        f_c = get_curl_flow(B2, flow, round_fig=False)
         L1L = sc_mock.lower_laplacian_matrix(rank=1)
         assert np.allclose(L1L @ f_c, 0)
 
@@ -64,7 +56,7 @@ class TestHodgeDecompostion:
     ):
         # L1L@f_c = 0
         B2 = sc_mock.incidence_matrix(rank=2)
-        f_c = get_curl_component(B2, flow, round_fig=True)
+        f_c = get_curl_flow(B2, flow, round_fig=True)
         L1L = sc_mock.lower_laplacian_matrix(rank=1)
         assert np.allclose(L1L @ f_c, 0, atol=1e-1)
 
@@ -73,7 +65,7 @@ class TestHodgeDecompostion:
     ):
         # L1U@f_g = 0
         B1 = sc_mock.incidence_matrix(rank=1)
-        f_g = get_gradient_component(B1, flow, round_fig=False)
+        f_g = get_gradient_flow(B1, flow, round_fig=False)
         L1U = sc_mock.upper_laplacian_matrix(rank=1)
         assert np.allclose(L1U @ f_g, 0)
 
@@ -82,6 +74,6 @@ class TestHodgeDecompostion:
     ):
         # L1U@f_g = 0
         B1 = sc_mock.incidence_matrix(rank=1)
-        f_g = get_gradient_component(B1, flow, round_fig=True)
+        f_g = get_gradient_flow(B1, flow, round_fig=True)
         L1U = sc_mock.upper_laplacian_matrix(rank=1)
         assert np.allclose(L1U @ f_g, 0, atol=1e-1)

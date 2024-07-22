@@ -22,8 +22,10 @@ class KernelSerializer:
         Returns:
             gpytorch.kernels.Kernel: The serialized kernel.
         """
-        kernel_serializer = self._get_serializer(kernel_type, data_name)
-        return kernel_serializer(eigenpairs)
+        kernel_serializer = self._get_serializer(
+            kernel_type=kernel_type, data_name=data_name
+        )
+        return kernel_serializer(eigenpairs=eigenpairs)
 
     def _get_serializer(self, kernel_type: str, data_name: str):
         kernel_names = Kernels.get_names()

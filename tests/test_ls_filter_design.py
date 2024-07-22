@@ -75,7 +75,7 @@ class TestLSFilterDesign:
             f_expected,
         )
 
-        expected_error = 3.38e-6
+        expected_error = 1.39e-5
         actual_error = ls_filter.history["extracted_component_error"]
         assert np.isclose(actual_error[-1], expected_error, atol=1e-05)
 

@@ -12,9 +12,7 @@ from pytspl.simplicial_complex import SimplicialComplex
 
 
 class LSFilterDesign(BaseFilter):
-    """Module for e LS filter design that inherits from the
-    Filter base class.
-    """
+    """Module for LS filter design inheriting from the BaseFilter class."""
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the LS filter design using a simplicial complex."""
@@ -116,7 +114,7 @@ class LSFilterDesign(BaseFilter):
         f_true = self.get_true_signal(component=component, f=f)
 
         # get the component coefficients
-        alpha = self.sc.get_component_coefficients(component=component)
+        alpha = self.get_component_coefficients(component=component)
 
         H, f_estimated, frequency_responses, errors = self._apply_filter(
             L=L,
@@ -165,27 +163,19 @@ class LSFilterDesign(BaseFilter):
         """
         self._reset_history()
 
-        # get the Laplacian matrix according to the component
-        componenet_mapping = {
-            FrequencyComponent.GRADIENT.value: self.sc.lower_laplacian_matrix(
-                rank=1
-            ),
-            FrequencyComponent.CURL.value: self.sc.upper_laplacian_matrix(
-                rank=1
-            ),
-        }
-        try:
-            lap_matrix = componenet_mapping[component]
-        except KeyError:
+        # get the Laplacian matrix
+        if component == FrequencyComponent.GRADIENT.value:
+            lap_matrix = self.sc.lower_laplacian_matrix(rank=1)
+        elif component == FrequencyComponent.CURL.value:
+            lap_matrix = self.sc.upper_laplacian_matrix(rank=1)
+        else:
             raise ValueError(
                 f"Invalid component {component}. Use 'gradient' or 'curl'."
             )
 
-        # get the eigenvalues
-        U, eigenvals = get_eigendecomposition(
-            lap_mat=lap_matrix.toarray(), tolerance=tolerance
-        )
-        # unique eigenvalues
+        # get the unique eigenvalues
+        U, eigenvals = get_eigendecomposition(lap_mat=lap_matrix.toarray())
+        eigenvals = np.where(np.abs(eigenvals) < tolerance, 0, eigenvals)
         eigenvals = np.unique(eigenvals)
 
         # get the true signal
@@ -219,7 +209,7 @@ class LSFilterDesign(BaseFilter):
         f: np.ndarray,
         L1: int,
         L2: int,
-        tolerance: float = 1e-6,
+        tolerance: float = 1e-3,
     ) -> np.ndarray:
         """
         Denoising by a general filter H1 with L1 != L2 = L and α != β.
@@ -229,7 +219,7 @@ class LSFilterDesign(BaseFilter):
             L1 (int): The size of the filter for the gradient extraction.
             L2 (int): The size of the filter for the curl extraction.
             tolerance (float, optional): The tolerance to consider the
-            eigenvalues as unique. Defaults to 1e-6.
+            eigenvalues as unique. Defaults to 1e-3.
 
         Returns:
             np.ndarray: The estimated harmonic, curl and gradient components.

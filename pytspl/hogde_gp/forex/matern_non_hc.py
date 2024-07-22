@@ -49,6 +49,7 @@ class MaternNonHCKernelForex(Kernel):
         self.register_parameter(
             name="raw_h_up", parameter=torch.nn.Parameter(torch.zeros(1, 1))
         )
+
         # set the kappa constraints
         self.register_constraint("raw_kappa_down", Positive())
         self.register_constraint("raw_kappa_up", Positive())
@@ -61,7 +62,6 @@ class MaternNonHCKernelForex(Kernel):
         self.register_constraint("raw_h_down", Positive())
         self.register_constraint("raw_h_up", Positive())
 
-    # set up the actual parameters
     @property
     def kappa_down(self):
         return self.raw_kappa_down_constraint.transform(self.raw_kappa_down)
@@ -79,7 +79,6 @@ class MaternNonHCKernelForex(Kernel):
             )
         )
 
-    # set up the actual parameters
     @property
     def mu(self):
         return self.raw_mu_constraint.transform(self.raw_mu)
