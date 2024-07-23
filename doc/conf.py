@@ -53,7 +53,7 @@ extensions.append("matplotlib.sphinxext.plot_directive")
 plot_include_source = True
 plot_html_show_source_link = False
 plot_html_show_formats = False
-plot_working_directory = ".."
+plot_working_directory = "."
 plot_rcparams = {"figure.figsize": (5, 5)}
 plot_pre_code = """
 import numpy as np
