@@ -14,10 +14,17 @@ build:
       # Install poetry
       # https://python-poetry.org/docs/#installing-manually
       - pip install poetry
-      # Tell poetry to not use a virtual environment
-      - poetry config virtualenvs.create false
-      # Install project's dependencies
-      - poetry install
-  commands: 
-    - poetry run sphinx-build -b html -d doc/_build/doctrees doc doc/_build/html
-  
+    post_install:
+      # Install dependencies with 'doc' dependency group
+      # https://python-poetry.org/docs/managing-dependencies/#dependency-groups
+      # VIRTUAL_ENV needs to be set manually for now.
+      # See https://github.com/readthedocs/readthedocs.org/pull/11152/
+      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry install --with doc
+    
+formats:
+  - htmlzip
+
+# Build documentation in the "doc/" directory with Sphinx
+sphinx:
+  builder: html
+  configuration: doc/conf.py
