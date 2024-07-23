@@ -115,24 +115,6 @@ class SimplicialComplex:
 
         return B2
 
-    def get_edge_feautres(self) -> list[dict]:
-        """
-        Return the list of edge features of the simplicial complex.
-
-        Returns:
-            list[dict]: List of edge features.
-        """
-        return self.edge_features
-
-    def get_node_features(self) -> list[dict]:
-        """
-        Return the list of node features of the simplicial complex.
-
-        Returns:
-            list[dict]: List of node features.
-        """
-        return self.node_features
-
     def generate_coordinates(self) -> dict:
         """
         Generate the coordinates of the nodes using spring layout
@@ -176,7 +158,6 @@ class SimplicialComplex:
         nodes = [(node,) for node in self.nodes]
         return nodes + self.edges + self.triangles
 
-    @property
     def edge_feature_names(self) -> list[str]:
         """Return the list of edge feature names."""
         if len(self.get_edge_features()) == 0:
@@ -191,7 +172,7 @@ class SimplicialComplex:
     def get_edge_features(self, name: str = None) -> list[dict]:
         """Return the list of edge features."""
         edge_features = self.edge_features
-        if name is not None:
+        if name:
 
             try:
                 return {
