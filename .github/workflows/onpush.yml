@@ -19,8 +19,12 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.11"
-      - name: Install poetry
-        uses: abatilo/actions-poetry@v2
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "${{ runner.tool_cache }}/python" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: poetry install
 
   lint:
     runs-on: ubuntu-latest
@@ -28,11 +32,19 @@ jobs:
     needs: build
 
     steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "${{ runner.tool_cache }}/python" >> $GITHUB_PATH
       - name: Install project dependencies
         run: poetry install
       - name: Lint with flake8
-        run: |
-          poetry run pflake8 pytspl
+        run: poetry run pflake8 pytspl
 
   test:
     runs-on: ubuntu-latest
@@ -40,6 +52,17 @@ jobs:
     needs: build
 
     steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "${{ runner.tool_cache }}/python" >> $GITHUB_PATH
+      - name: Install project dependencies
+        run: poetry install
       - name: Run tests and generate coverage report
         run: |
           poetry run coverage run -m pytest && poetry run coverage report -m
