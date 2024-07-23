@@ -6,11 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath("../pytspl"))
-
 project = "PyTSPL"
 copyright = "2024, Irtaza Hashmi"
 author = "Irtaza Hashmi"
@@ -37,12 +32,13 @@ extensions.append("sphinx.ext.autodoc")
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
-    "member-order": "groupwise",  # alphabetical, groupwise, bysource
+    # alphabetical, groupwise, bysource
+    "member-order": "groupwise",
 }
+
 autoapi_type = "python"
 autoapi_dirs = ["../pytspl"]
 autoapi_template_dir = "_templates/autosummary"
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

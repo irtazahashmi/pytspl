@@ -85,9 +85,11 @@ Let's go ahead and plot the SC using the coordinates:
    >>> fig, ax = plt.subplots(1, 1, figsize=(80, 40))
    >>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
 
-.. image:: pytspl/chicago-sketch-example.png
-   :alt: Chicago Sketch Example
-   :align: center
+
+.. image:: ../doc/tutorials/figures/chicago-sketch-example.png
+  :alt:
+.. image:: doc/tutorials/figures/chicago-sketch-example.png
+  :alt:
 
 
 
