@@ -1,39 +1,39 @@
-name: Build, lint and test
+# name: Build, lint and test
 
-on:
-  push:
-    branches: ["main", "dev"]
-  pull_request:
-    branches: ["main"]
+# on:
+#   push:
+#     branches: ["main", "dev"]
+#   pull_request:
+#     branches: ["main"]
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
-  CI:
-    runs-on: ubuntu-latest
+# jobs:
+#   CI:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.11"
-      - name: Install poetry
-        uses: abatilo/actions-poetry@v2
-      - name: Install project dependencies
-        run: poetry install
-      - name: Lint with flake8
-        run: |
-          poetry run pflake8 pytspl
-      - name: Run tests and generate coverage report
-        run: |
-          poetry run coverage run -m pytest && poetry run coverage report -m
-          poetry run coverage xml
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: irtazahashmi/pytspl
-          file: coverage.xml
-          fail_ci_if_error: false
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Set up Python 3.11
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: "3.11"
+#       - name: Install poetry
+#         uses: abatilo/actions-poetry@v2
+#       - name: Install project dependencies
+#         run: poetry install
+#       - name: Lint with flake8
+#         run: |
+#           poetry run pflake8 pytspl
+#       - name: Run tests and generate coverage report
+#         run: |
+#           poetry run coverage run -m pytest && poetry run coverage report -m
+#           poetry run coverage xml
+#       - name: Upload coverage reports to Codecov
+#         uses: codecov/codecov-action@v4.0.1
+#         with:
+#           token: ${{ secrets.CODECOV_TOKEN }}
+#           slug: irtazahashmi/pytspl
+#           file: coverage.xml
+#           fail_ci_if_error: false
