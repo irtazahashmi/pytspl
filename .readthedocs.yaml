@@ -18,11 +18,6 @@ build:
       - poetry config virtualenvs.create false
       # Install project's dependencies
       - poetry install
+  commands: 
+    - poetry run sphinx-build -b html -d doc/_build/doctrees doc doc/_build/html
   
-formats:
-  - htmlzip
-
-# Build documentation in the "doc/" directory with Sphinx
-sphinx:
-  builder: html
-  configuration: doc/conf.py
