@@ -35,7 +35,6 @@ currently available.
 
 Now, let's load a dataset and get a summary of the simplicial complex.
 
-
 >>> from pytspl import load_dataset
 >>> sc, coordinates, flow = load_dataset("paper")
 Num. of nodes: 7
@@ -50,9 +49,9 @@ Flow: 10
 We can plot the network using the SCPlot module.
 
 .. plot::
-    :context: reset
+    :context: close-figs
 
-    >>> from pytspl import SCPlot
+    >>> from pytspl import load_dataset, SCPlot
     >>> import matplotlib.pyplot as plt
     >>>
     >>> fig, ax = plt.subplots(figsize=(4, 5))
@@ -65,12 +64,10 @@ We can plot the network using the SCPlot module.
 We can also plot the SC with its edge flow.
 
 .. plot::
-    :context: reset
+    :context: close-figs
 
     >>> fig, ax = plt.subplots(figsize=(5, 5))
     >>>
-    >>> sc, coordinates, flow = load_dataset("paper")    
-    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
     >>> scplot.draw_network(edge_flow=flow, ax=ax)
 
 To retrive the properties of the SC, we can use the SimplicialComplex object. 
