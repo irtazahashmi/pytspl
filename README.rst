@@ -47,7 +47,7 @@ extend the library for additional topological learning functionalities.
   are drawn using the provided network coordinates. If the coordinates are not provided or don’t exist, the 
   module automatically generates coordinates using NetworkX’s `spring_layout`.
 
-- ``decomposition**``: Offers functionality to decompose signals using eigendecomposition and Hodge decomposition. 
+- ``decomposition``: Offers functionality to decompose signals using eigendecomposition and Hodge decomposition. 
   The eigendecomposition functionality allows users to extract the gradient, harmonic, and curl eigenpairs, 
   whereas the Hodge decomposition allows users to obtain the divergence, curl, total variance of the SC. The 
   gradient, harmonic, and curl flow can also be calculated.
@@ -68,26 +68,57 @@ Quick Start
 ------------
 The following demonstrates how to list available datasets and instantiate a SC using a built-in dataset:
 
-.. code-block:: python
+.. plot::
+  :context: close-figs
 
-   >>> from pytspl import list_datasets, load_dataset
-   >>> print(list_datasets()) # print available datasets 
-   >>> sc, coordinates, flow = load_dataset("chicago-sketch")
-
+  >>> from pytspl import list_datasets, load_dataset
+  >>> print(list_datasets()) # print available datasets 
+  >>> sc, coordinates, flow = load_dataset("paper")
+  Num. of nodes: 7
+  Num. of edges: 10
+  Num. of triangles: 3
+  Shape: (7, 10, 3)
+  Max Dimension: 2
+  Coordinates: 7
+  Flow: 10
 
 Let's go ahead and plot the SC using the coordinates:
 
+
+.. plot::
+  :context: close-figs
+
+    >>> from pytspl import SCPlot
+    >>> import matplotlib.pyplot as plt
+    >>>
+    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+    >>>
+    >>> fig, ax = plt.subplots(figsize=(4, 5))
+    >>> scplot.draw_network(ax=ax)
+
+We can also plot the edge flow of the SC using:
+
+.. plot::
+  :context: close-figs
+
+  >>> fig, ax = plt.subplots(figsize=(5, 5))
+  >>> scplot.draw_network(edge_flow=flow, ax=ax)
+  
+
+Let's go ahead and load a larger dataset and plot it:
+
 .. code-block:: python
 
-   >>> from pytspl import SCPlot
-   >>> import matplotlib.pyplot as plt
+   >>> sc, coordinates, flow = load_dataset("chicago-sketch")
    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
-   >>> fig, ax = plt.subplots(1, 1, figsize=(80, 40))
+   >>> fig, ax = fig, ax = plt.subplots(figsize=(80, 40))
    >>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
 
+
 .. image:: ../doc/tutorials/figures/chicago-sketch-example.png
-   :alt: Chicago Sketch Example
-   :align: center
+  :alt:
+.. image:: doc/tutorials/figures/chicago-sketch-example.png
+  :alt:
 
 
 

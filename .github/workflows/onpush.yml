@@ -1,4 +1,4 @@
-name: Build, test and linting
+name: Build, lint and test
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  CI:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,3 +37,6 @@ jobs:
           slug: irtazahashmi/pytspl
           file: coverage.xml
           fail_ci_if_error: false
+      - name: Build documentation docs
+        run: |
+          poetry run sphinx-build -b html -d doc/_build/doctrees doc doc/_build/html

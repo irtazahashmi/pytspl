@@ -3,6 +3,8 @@
 It imports all the necessary modules and classes to be used by the user.
 """
 
+__version__ = "0.1.0"
+
 # data reader module
 from pytspl.io import (
     generate_random_simplicial_complex,

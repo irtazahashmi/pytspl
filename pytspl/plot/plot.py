@@ -529,19 +529,19 @@ class SCPlot:
             )
 
             # gradient flow
-            ax = fig.add_subplot(1, 3, 1)
-            ax.set_title("f_g")
-            self.draw_network(edge_flow=f_g, ax=ax)
+            ax1 = fig.add_subplot(1, 3, 1)
+            ax1.set_title("f_g")
+            self.draw_network(edge_flow=f_g, ax=ax1)
 
             # curl flow
-            ax = fig.add_subplot(1, 3, 2)
-            ax.set_title("f_c")
-            self.draw_network(edge_flow=f_c, ax=ax)
+            ax2 = fig.add_subplot(1, 3, 2)
+            ax2.set_title("f_c")
+            self.draw_network(edge_flow=f_c, ax=ax2)
 
             # harmonic flow
-            ax = fig.add_subplot(1, 3, 3)
-            ax.set_title("f_h")
-            self.draw_network(edge_flow=f_h, ax=ax)
+            ax3 = fig.add_subplot(1, 3, 3)
+            ax3.set_title("f_h")
+            self.draw_network(edge_flow=f_h, ax=ax3)
 
         plt.show()
 
