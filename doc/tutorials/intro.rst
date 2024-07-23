@@ -94,17 +94,19 @@ Generate a random SC
 
 We can also generate a random SC in the following way.
 
-.. plot::
-    :context: reset
 
-    >>> from pytspl import generate_random_simplicial_complex, SCPlot
-    >>>
-    >>> sc, coordinates = generate_random_simplicial_complex(
-    >>>        num_of_nodes=7,
-    >>>        p=0.25,
-    >>>        seed=42,
-    >>>        dist_threshold=0.8
-    >>> )
-    >>> scplot = SCPlot(sc, coordinates)
-    >>> scplot.draw_network()
+>>> from pytspl import generate_random_simplicial_complex, SCPlot
+>>>
+>>> sc, coordinates = generate_random_simplicial_complex(
+>>>        num_of_nodes=7,
+>>>        p=0.25,
+>>>        seed=42,
+>>>        dist_threshold=0.8
+>>> )
+>>> scplot = SCPlot(sc, coordinates)
+>>> scplot.draw_network()
 
+
+.. image:: figures/random-sc-example.png
+  :alt:
+  :width: 40%

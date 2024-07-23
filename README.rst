@@ -95,11 +95,6 @@ Let's go ahead and plot the SC using the coordinates:
 .. image:: ../doc/tutorials/figures/paper-sc-example.png
   :alt:
   :width: 40%
-  :align: center
-.. image:: doc/tutorials/figures/paper-sc-example.png
-  :alt:
-  :width: 40%
-  :align: center
 
 
 We can also plot the edge flow of the SC using:
@@ -110,11 +105,6 @@ We can also plot the edge flow of the SC using:
 .. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
   :alt:
   :width: 40%
-  :align: center
-.. image:: doc/tutorials/figures/paper-sc-flow-example.png
-  :alt:
-  :width: 40%
-  :align: center
   
 
 Let's go ahead and load a larger dataset and plot it:
@@ -128,8 +118,6 @@ Let's go ahead and load a larger dataset and plot it:
 
 
 .. image:: ../doc/tutorials/figures/chicago-sketch-example.png
-  :alt:
-.. image:: doc/tutorials/figures/chicago-sketch-example.png
   :alt:
 
 
