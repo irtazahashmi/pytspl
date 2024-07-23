@@ -37,6 +37,3 @@ jobs:
           slug: irtazahashmi/pytspl
           file: coverage.xml
           fail_ci_if_error: false
-      - name: Build documentation docs
-        run: |
-          poetry run sphinx-build -b html -d doc/_build/doctrees doc doc/_build/html
