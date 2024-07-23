@@ -8,7 +8,7 @@ readme = "README.rst"
 # Dependencies
 [tool.poetry.dependencies]
 python = "^3.11"
-chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
+#chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
 cvxpy = "^1.5.1"
 gpytorch = "^1.11"
 gudhi = "^3.9.0"
@@ -31,6 +31,7 @@ pyproject-flake8 = "^7.0.0"
 ipykernel = "^6.29.4"
 pytest = "^7.4.3"
 sphinx = "^7.2.6"
+sphinx-autoapi = "^3.2.1"
 sphinx-rtd-theme = "^2.0.0"
 
 # Testing
