@@ -52,7 +52,7 @@ plot_rcparams = {"figure.figsize": (5, 5)}
 plot_pre_code = """
 import numpy as np
 import matplotlib.pyplot as plt
-from pytspl import load_dataset
+from pytspl import load_dataset, SCPlot
 """
 
 
