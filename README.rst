@@ -14,8 +14,6 @@ PyTSPL: Topological Signal Processing and Learning in Python
    :target: https://www.python.org/
 
 
-
-
 The PyTSPL python package is a library for Topological Signal Processing and Learning. It is a 
 free software distributed under the MIT license and available on PyPI. The documentation is available
 on `Read the Docs <https://pytspl.readthedocs.io/en/latest/>`_ and development takes place on

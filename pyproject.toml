@@ -2,7 +2,7 @@
 name = "pytspl"
 version = "0.1.0"
 description = "A Python library for Topological Signal Processing and Learning."
-authors = ["irtazahashmi <irtazahashmi@gmail.com>"]
+authors = ["Irtaza Hashmi <irtazahashmi@gmail.com>"]
 readme = "README.rst"
 license = "MIT"
 
@@ -12,6 +12,8 @@ python = "^3.11"
 sphinx = "^7.2.6"
 sphinx-autoapi = "^3.2.1"
 sphinx-rtd-theme = "^2.0.0"
+
+[tool.poetry.group.dev.dependencies]
 chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
 coverage = "^7.3.2"
 cvxpy = "^1.5.1"
@@ -32,8 +34,6 @@ torchvision = "^0.18.0"
 topomodelx = { git = "https://github.com/pyt-team/TopoModelX.git" }
 toponetx = { git = "https://github.com/pyt-team/TopoNetX.git" }
 
-[tool.poetry.group.dev.dependencies]
-
 
 # Testing
 [tool.pytest.ini_options]
@@ -42,7 +42,6 @@ pythonpath = ["."]
 [tool.coverage.run]
 source = ["pytspl"]
 branch = true
-# the hodge gp module for each dataset is not tested and is not included in the coverage report
 omit = ["pytspl/hogde_gp/forex/*"]
 
 [tool.coverage.report]
