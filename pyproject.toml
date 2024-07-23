@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "A Python library for Topological Signal Processing and Learning."
 authors = ["irtazahashmi <irtazahashmi@gmail.com>"]
 readme = "README.rst"
+license = "MIT"
 
 # Dependencies
 [tool.poetry.dependencies]
