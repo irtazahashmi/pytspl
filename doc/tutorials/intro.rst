@@ -49,9 +49,9 @@ Flow: 10
 We can plot the network using the SCPlot module.
 
 .. plot::
-    :context: close-figs
+    :context: reset
 
-    >>> from pytspl import load_dataset, SCPlot
+    >>> from pytspl import SCPlot
     >>> import matplotlib.pyplot as plt
     >>>
     >>> fig, ax = plt.subplots(figsize=(4, 5))
