@@ -8,7 +8,6 @@
 
    Home <self>
    tutorials/index
-   quickstart/index
    changelog
    contributing
 

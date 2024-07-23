@@ -158,7 +158,6 @@ class SimplicialComplex:
         nodes = [(node,) for node in self.nodes]
         return nodes + self.edges + self.triangles
 
-    @property
     def edge_feature_names(self) -> list[str]:
         """Return the list of edge feature names."""
         if len(self.get_edge_features()) == 0:
@@ -173,7 +172,7 @@ class SimplicialComplex:
     def get_edge_features(self, name: str = None) -> list[dict]:
         """Return the list of edge features."""
         edge_features = self.edge_features
-        if name is not None:
+        if name:
 
             try:
                 return {
