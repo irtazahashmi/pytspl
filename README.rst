@@ -47,7 +47,7 @@ extend the library for additional topological learning functionalities.
   are drawn using the provided network coordinates. If the coordinates are not provided or don’t exist, the 
   module automatically generates coordinates using NetworkX’s `spring_layout`.
 
-- ``decomposition**``: Offers functionality to decompose signals using eigendecomposition and Hodge decomposition. 
+- ``decomposition``: Offers functionality to decompose signals using eigendecomposition and Hodge decomposition. 
   The eigendecomposition functionality allows users to extract the gradient, harmonic, and curl eigenpairs, 
   whereas the Hodge decomposition allows users to obtain the divergence, curl, total variance of the SC. The 
   gradient, harmonic, and curl flow can also be calculated.

@@ -9,3 +9,4 @@ found in the `notebooks` directory.
     :maxdepth: 1
 
     intro
+    decomposition

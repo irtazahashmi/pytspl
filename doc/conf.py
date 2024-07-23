@@ -6,11 +6,20 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath(".."))
+
+
+import pytspl
+
 project = "PyTSPL"
 copyright = "2024, Irtaza Hashmi"
 author = "Irtaza Hashmi"
-version = "0.1.0"
-release = "0.1.0"
+version = pytspl.__version__
+release = pytspl.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,13 +41,26 @@ extensions.append("sphinx.ext.autodoc")
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
-    # alphabetical, groupwise, bysource
     "member-order": "groupwise",
 }
 
 autoapi_type = "python"
 autoapi_dirs = ["../pytspl"]
 autoapi_template_dir = "_templates/autosummary"
+
+# plotting
+extensions.append("matplotlib.sphinxext.plot_directive")
+plot_include_source = True
+plot_html_show_source_link = False
+plot_html_show_formats = False
+plot_working_directory = ".."
+plot_rcparams = {"figure.figsize": (5, 5)}
+plot_pre_code = """
+import numpy as np
+import matplotlib.pyplot as plt
+from pytspl import load_dataset
+"""
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
