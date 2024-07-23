@@ -95,6 +95,9 @@ Let's go ahead and plot the SC using the coordinates:
 .. image:: ../doc/tutorials/figures/paper-sc-example.png
   :alt:
   :width: 40%
+.. image:: doc/tutorials/figures/paper-sc-example.png
+  :alt:
+  :width: 40%
 
 
 We can also plot the edge flow of the SC using:
@@ -103,6 +106,9 @@ We can also plot the edge flow of the SC using:
 >>> scplot.draw_network(edge_flow=flow, ax=ax)
 
 .. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
+  :alt:
+  :width: 40%
+.. image:: doc/tutorials/figures/paper-sc-flow-example.png
   :alt:
   :width: 40%
   
@@ -118,6 +124,8 @@ Let's go ahead and load a larger dataset and plot it:
 
 
 .. image:: ../doc/tutorials/figures/chicago-sketch-example.png
+  :alt:
+.. image:: doc/tutorials/figures/chicago-sketch-example.png
   :alt:
 
 

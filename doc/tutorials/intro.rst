@@ -35,15 +35,18 @@ currently available.
 
 Now, let's load a dataset and get a summary of the simplicial complex.
 
->>> from pytspl import load_dataset
->>> sc, coordinates, flow = load_dataset("paper")
-Num. of nodes: 7
-Num. of edges: 10
-Num. of triangles: 3
-Shape: (7, 10, 3)
-Max Dimension: 2
-Coordinates: 7
-Flow: 10
+.. plot::
+    :context: close-figs
+    
+    >>> from pytspl import load_dataset
+    >>> sc, coordinates, flow = load_dataset("paper")
+    Num. of nodes: 7
+    Num. of edges: 10
+    Num. of triangles: 3
+    Shape: (7, 10, 3)
+    Max Dimension: 2
+    Coordinates: 7
+    Flow: 10
 
 
 We can plot the network using the SCPlot module.
