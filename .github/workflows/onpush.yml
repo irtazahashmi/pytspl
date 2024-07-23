@@ -23,6 +23,20 @@ jobs:
         uses: abatilo/actions-poetry@v2
       - name: Install project dependencies
         run: poetry install
+      - name: Lint with flake8
+        run: |
+          poetry run pflake8 pytspl
+      - name: Run tests and generate coverage report
+        run: |
+          poetry run coverage run -m pytest && poetry run coverage report -m
+          poetry run coverage xml
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: irtazahashmi/pytspl
+          file: coverage.xml
+          fail_ci_if_error: false
       - name: Build documentation docs
         run: |
           poetry run sphinx-build -b html -d doc/_build/doctrees doc doc/_build/html

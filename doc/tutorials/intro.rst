@@ -54,8 +54,7 @@ We can plot the network using the SCPlot module.
     >>> from pytspl import SCPlot
     >>> import matplotlib.pyplot as plt
     >>>
-    >>> fig = plt.figure(figsize = (5, 5))
-    >>> ax = fig.add_subplot(1, 1, 1)
+    >>> fig, ax = plt.subplots(figsize=(4, 5))
     >>>
     >>> sc, coordinates, flow = load_dataset("paper")    
     >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
@@ -67,8 +66,7 @@ We can also plot the SC with its edge flow.
 .. plot::
     :context: close-figs
 
-    >>> fig = plt.figure(figsize = (6 ,5))
-    >>> ax = fig.add_subplot(1, 1, 1)
+    >>> fig, ax = plt.subplots(figsize=(5, 5))
     >>>
     >>> scplot.draw_network(edge_flow=flow, ax=ax)
 

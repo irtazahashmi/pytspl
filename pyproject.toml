@@ -8,7 +8,7 @@ readme = "README.rst"
 # Dependencies
 [tool.poetry.dependencies]
 python = "^3.11"
-#chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
+chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
 cvxpy = "^1.5.1"
 gpytorch = "^1.11"
 gudhi = "^3.9.0"

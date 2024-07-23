@@ -382,6 +382,29 @@ files = [
 ]
 
 [[package]]
+name = "chebpy"
+version = "0.4.3.3"
+description = "Numerical computing with Chebyshev series approximations in Python"
+optional = false
+python-versions = ">=3.7"
+files = []
+develop = false
+
+[package.dependencies]
+numpy = ">=1.16"
+pyfftw = ">=0.11"
+
+[package.extras]
+plot = ["matplotlib"]
+test = ["coverage-lcov", "coverage[toml]", "nose"]
+
+[package.source]
+type = "git"
+url = "https://github.com/chebpy/chebpy.git"
+reference = "master"
+resolved_reference = "c1a2e62d71e50bf6b59f92def324a27caa818498"
+
+[[package]]
 name = "clarabel"
 version = "0.9.0"
 description = "Clarabel Conic Interior Point Solver for Rust / Python"
@@ -2379,6 +2402,52 @@ files = [
 ]
 
 [[package]]
+name = "pyfftw"
+version = "0.14.0"
+description = "A pythonic wrapper around FFTW, the FFT library, presenting a unified interface for all the supported transforms."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "pyFFTW-0.14.0-cp310-cp310-macosx_12_0_x86_64.whl", hash = "sha256:0875da4116c5b85a9df9533d4d4b35c4f408c57b0103ad26fb5e5cc845b40923"},
+    {file = "pyFFTW-0.14.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:d94cd827c8716f3c75b8f2947d2289fbd551e039f2bba970633357e9905ddbb7"},
+    {file = "pyFFTW-0.14.0-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:ebecbbb38e2e13654782e344d9490e5bee9e9e83e45539192aa086f9600afce3"},
+    {file = "pyFFTW-0.14.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:78e25340a9d36a78d657d5d758f658e8a29563760c19d25eb075399d03dad8ea"},
+    {file = "pyFFTW-0.14.0-cp310-cp310-win32.whl", hash = "sha256:7cd13afbc2e8afdcca5775de2e1d5a56175869899eff1a141aef8897144565f8"},
+    {file = "pyFFTW-0.14.0-cp310-cp310-win_amd64.whl", hash = "sha256:65aecb2e96316e405dc994affc7228b8ab3d387645257b741e69d48df51a975a"},
+    {file = "pyFFTW-0.14.0-cp311-cp311-macosx_12_0_x86_64.whl", hash = "sha256:72ca73b50a9015e4e5370b4fbab36e48db23129ba2728936fc4420d4cf94af60"},
+    {file = "pyFFTW-0.14.0-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:9b4113a8810a3375adc30d9e94c257530efd715f633faffddab51723406a311f"},
+    {file = "pyFFTW-0.14.0-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:e8eb372a3f8f6786239e6ee253c16898ff76be339be40d2192ec5802e02d59e5"},
+    {file = "pyFFTW-0.14.0-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:ffbcdb49d4d961ff703b889208838ded0b47f3df36ff205358a737e525815962"},
+    {file = "pyFFTW-0.14.0-cp311-cp311-win32.whl", hash = "sha256:fa3425d216bc83e51d81526f232ad9027e9cbc7247b7017f44b59f5889ea50e8"},
+    {file = "pyFFTW-0.14.0-cp311-cp311-win_amd64.whl", hash = "sha256:1ac9768f2a9fdbe18bbb63185c71d78097ee7df7f7e321b22c1faf540f7176e1"},
+    {file = "pyFFTW-0.14.0-cp312-cp312-macosx_12_0_x86_64.whl", hash = "sha256:fd1eb00d286d5d6e852b472b661e99151bea1444c55c6a40fca9f9b97d437484"},
+    {file = "pyFFTW-0.14.0-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:533819b1145c92fa33b16ecdd7f234c3ea62d2cc0c1da35cd3beee4695286435"},
+    {file = "pyFFTW-0.14.0-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:69ca338d5c2e519c1ed9c5ecbafa8508d0c35fe38d0aa08ca665c4fb7206b28e"},
+    {file = "pyFFTW-0.14.0-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:2ca9aa7f76c9dd7f4813c8975359f2a655a4132b93f08176ff70376a3d7edc59"},
+    {file = "pyFFTW-0.14.0-cp312-cp312-win32.whl", hash = "sha256:66d000b6bd7d6de5f1e53cc590481789293812ef9283493211fe677b7fd0aabf"},
+    {file = "pyFFTW-0.14.0-cp312-cp312-win_amd64.whl", hash = "sha256:c961044f12282a7267db40b279cee86ace97e1d05a4bbec9e01a646ccdd400fb"},
+    {file = "pyFFTW-0.14.0-cp39-cp39-macosx_12_0_x86_64.whl", hash = "sha256:c3be6188ba0441d963333df7db29e661b324d870156d8f81efe9003ad447ed9b"},
+    {file = "pyFFTW-0.14.0-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:72aa2bf213e68e69755dcd3ef76cb05ac9fc82960c51fff902af8f01240564a4"},
+    {file = "pyFFTW-0.14.0-cp39-cp39-manylinux_2_28_aarch64.whl", hash = "sha256:76a82f3502a3c3d0f9d3919f488afe5e948eb0e614b097dc9f3a347e3eeaf967"},
+    {file = "pyFFTW-0.14.0-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:0889c3fa9acbf5f9b9b5dac7d8352ee11f9aaba91e3bfa3cd5d4c236e49ca940"},
+    {file = "pyFFTW-0.14.0-cp39-cp39-win32.whl", hash = "sha256:6d4f70fbf5ed298cf946614770206ff16abefc34df1e92ba21bed5d3df5b1c80"},
+    {file = "pyFFTW-0.14.0-cp39-cp39-win_amd64.whl", hash = "sha256:14c3547eeb22a897aedc0e4c4654dde52d8564ecee9f8b5664900974e4e8c006"},
+    {file = "pyFFTW-0.14.0-pp39-pypy39_pp73-macosx_12_0_x86_64.whl", hash = "sha256:5631d8a5b74437d3dd8b39eb019b4bf269193726f9a5da33e64bb1d2856040d5"},
+    {file = "pyFFTW-0.14.0-pp39-pypy39_pp73-macosx_14_0_arm64.whl", hash = "sha256:348eef83dadc46bf3132a6fd39b3bf3794b417fb7e4938027d988e94f85ef026"},
+    {file = "pyFFTW-0.14.0-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:7a317ce8059d35fb5076dc7575d67eca664f9fcd834320ea05982c463bd4e9fc"},
+    {file = "pyFFTW-0.14.0-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:4ab9f5cd4103683d9631f149c7df0c9be5841b1bd157cb1c94618269283a8f46"},
+    {file = "pyfftw-0.14.0.tar.gz", hash = "sha256:a55f94d3da9b5c04de1bc96932a93f922910f3984557931356173a515277b65b"},
+]
+
+[package.dependencies]
+numpy = ">=1.20"
+setuptools = ">=70.1.1"
+
+[package.extras]
+dask = ["dask[array] (>=1.0)", "numpy (>=1.20)"]
+scipy = ["scipy (>=1.8.0)"]
+
+[[package]]
 name = "pyflakes"
 version = "3.2.0"
 description = "passive checker of Python programs"
@@ -2898,6 +2967,22 @@ files = [
 [package.dependencies]
 numpy = "*"
 scipy = "*"
+
+[[package]]
+name = "setuptools"
+version = "71.1.0"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "setuptools-71.1.0-py3-none-any.whl", hash = "sha256:33874fdc59b3188304b2e7c80d9029097ea31627180896fb549c578ceb8a0855"},
+    {file = "setuptools-71.1.0.tar.gz", hash = "sha256:032d42ee9fb536e33087fb66cac5f840eb9391ed05637b3f2a76a7c8fb477936"},
+]
+
+[package.extras]
+core = ["importlib-metadata (>=6)", "importlib-resources (>=5.10.2)", "jaraco.text (>=3.7)", "more-itertools (>=8.8)", "ordered-set (>=3.1.1)", "packaging (>=24)", "platformdirs (>=2.6.2)", "tomli (>=2.0.1)", "wheel (>=0.43.0)"]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "pyproject-hooks (!=1.1)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
+test = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.14)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "jaraco.test", "mypy (==1.11.*)", "packaging (>=23.2)", "pip (>=19.1)", "pyproject-hooks (!=1.1)", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (<0.4)", "pytest-ruff (>=0.2.1)", "pytest-ruff (>=0.3.2)", "pytest-subprocess", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
 name = "six"
@@ -3635,4 +3720,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "40d9c940d1fa45653b81c43832bb76ace41695b508f6b7257321bc103505e055"
+content-hash = "8823b4ba5e27a7887d33bc62c68d3fe60a1995f5b25b7f52dec8e8c172fd5e11"

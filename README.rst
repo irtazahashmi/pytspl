@@ -68,48 +68,42 @@ Quick Start
 ------------
 The following demonstrates how to list available datasets and instantiate a SC using a built-in dataset:
 
-.. code-block:: python
+.. plot::
+  :context: close-figs
 
-   >>> from pytspl import list_datasets, load_dataset
-   >>> print(list_datasets()) # print available datasets 
-   >>> sc, coordinates, flow = load_dataset("paper")
+  >>> from pytspl import list_datasets, load_dataset
+  >>> print(list_datasets()) # print available datasets 
+  >>> sc, coordinates, flow = load_dataset("paper")
+  Num. of nodes: 7
+  Num. of edges: 10
+  Num. of triangles: 3
+  Shape: (7, 10, 3)
+  Max Dimension: 2
+  Coordinates: 7
+  Flow: 10
 
 Let's go ahead and plot the SC using the coordinates:
 
-.. code-block:: python
-  
-   >>> from pytspl import SCPlot
-   >>> import matplotlib.pyplot as plt
-   >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
-   >>> fig = plt.figure(figsize = (5, 5))
-   >>> ax = fig.add_subplot(1, 1, 1)
-   >>> scplot.draw_network(ax=ax)
 
-.. image:: ../doc/tutorials/figures/paper-sc-example.png
-  :alt:
-  :width: 40%
-  :align: center
-.. image:: doc/tutorials/figures/paper-sc-example.png
-  :alt:
-  :width: 40%
-  :align: center
+.. plot::
+  :context: close-figs
+
+    >>> from pytspl import SCPlot
+    >>> import matplotlib.pyplot as plt
+    >>>
+    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+    >>>
+    >>> fig, ax = plt.subplots(figsize=(4, 5))
+    >>> scplot.draw_network(ax=ax)
 
 We can also plot the edge flow of the SC using:
 
-.. code-block:: python
+.. plot::
+  :context: close-figs
 
-   >>> scplot.draw_network(edge_flow=flow, ax=ax)
-
-
-.. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
-  :alt:
-  :width: 40%
-  :align: center
-.. image:: doc/tutorials/figures/paper-sc-flow-example.png
-  :alt:
-  :width: 40%
-  :align: center
-
+  >>> fig, ax = plt.subplots(figsize=(5, 5))
+  >>> scplot.draw_network(edge_flow=flow, ax=ax)
+  
 
 Let's go ahead and load a larger dataset and plot it:
 
@@ -117,7 +111,7 @@ Let's go ahead and load a larger dataset and plot it:
 
    >>> sc, coordinates, flow = load_dataset("chicago-sketch")
    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
-   >>> fig, ax = plt.subplots(1, 1, figsize=(80, 40))
+   >>> fig, ax = fig, ax = plt.subplots(figsize=(80, 40))
    >>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
 
 
