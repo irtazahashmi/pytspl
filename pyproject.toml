@@ -8,14 +8,21 @@ readme = "README.rst"
 # Dependencies
 [tool.poetry.dependencies]
 python = "^3.11"
+sphinx = "^7.2.6"
+sphinx-autoapi = "^3.2.1"
+sphinx-rtd-theme = "^2.0.0"
 chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
+coverage = "^7.3.2"
 cvxpy = "^1.5.1"
 gpytorch = "^1.11"
 gudhi = "^3.9.0"
 hypernetx = "^1.2.5"
+ipykernel = "^6.29.4"
 matplotlib = "^3.8.2"
 networkx = "^2.8.8"
 pandas = "^2.1.1"
+pyproject-flake8 = "^7.0.0"
+pytest = "^7.4.3"
 scipy = "^1.11.4"
 trimesh = "^4.0.10"
 torch = "^2.3.1"
@@ -24,15 +31,8 @@ torchvision = "^0.18.0"
 topomodelx = { git = "https://github.com/pyt-team/TopoModelX.git" }
 toponetx = { git = "https://github.com/pyt-team/TopoNetX.git" }
 
-
 [tool.poetry.group.dev.dependencies]
-coverage = "^7.3.2"
-pyproject-flake8 = "^7.0.0"
-ipykernel = "^6.29.4"
-pytest = "^7.4.3"
-sphinx = "^7.2.6"
-sphinx-autoapi = "^3.2.1"
-sphinx-rtd-theme = "^2.0.0"
+
 
 # Testing
 [tool.pytest.ini_options]
