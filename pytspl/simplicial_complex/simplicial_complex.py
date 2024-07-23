@@ -115,6 +115,24 @@ class SimplicialComplex:
 
         return B2
 
+    def get_edge_feautres(self) -> list[dict]:
+        """
+        Return the list of edge features of the simplicial complex.
+
+        Returns:
+            list[dict]: List of edge features.
+        """
+        return self.edge_features
+
+    def get_node_features(self) -> list[dict]:
+        """
+        Return the list of node features of the simplicial complex.
+
+        Returns:
+            list[dict]: List of node features.
+        """
+        return self.node_features
+
     def generate_coordinates(self) -> dict:
         """
         Generate the coordinates of the nodes using spring layout

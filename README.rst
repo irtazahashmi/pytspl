@@ -42,6 +42,7 @@ See the guidelines for contributing in ``CONTRIBUTING.rst``.
 
 Acknowledgements
 ----------------
-The PyTSPL was started in 2024 as an academic open-source project for research purpose 
+The PyTSPL was started in 2024 as an academic open-source project for research purposes at 
+Delft University of Technology. 
 
 
