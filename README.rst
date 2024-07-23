@@ -72,15 +72,50 @@ The following demonstrates how to list available datasets and instantiate a SC u
 
    >>> from pytspl import list_datasets, load_dataset
    >>> print(list_datasets()) # print available datasets 
-   >>> sc, coordinates, flow = load_dataset("chicago-sketch")
-
+   >>> sc, coordinates, flow = load_dataset("paper")
 
 Let's go ahead and plot the SC using the coordinates:
 
 .. code-block:: python
-
+  
    >>> from pytspl import SCPlot
    >>> import matplotlib.pyplot as plt
+   >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+   >>> fig = plt.figure(figsize = (5, 5))
+   >>> ax = fig.add_subplot(1, 1, 1)
+   >>> scplot.draw_network(ax=ax)
+
+.. image:: ../doc/tutorials/figures/paper-sc-example.png
+  :alt:
+  :width: 40%
+  :align: center
+.. image:: doc/tutorials/figures/paper-sc-example.png
+  :alt:
+  :width: 40%
+  :align: center
+
+We can also plot the edge flow of the SC using:
+
+.. code-block:: python
+
+   >>> scplot.draw_network(edge_flow=flow, ax=ax)
+
+
+.. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
+  :alt:
+  :width: 40%
+  :align: center
+.. image:: doc/tutorials/figures/paper-sc-flow-example.png
+  :alt:
+  :width: 40%
+  :align: center
+
+
+Let's go ahead and load a larger dataset and plot it:
+
+.. code-block:: python
+
+   >>> sc, coordinates, flow = load_dataset("chicago-sketch")
    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
    >>> fig, ax = plt.subplots(1, 1, figsize=(80, 40))
    >>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
