@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytspl"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python library for Topological Signal Processing and Learning."
 authors = ["Irtaza Hashmi <irtazahashmi@gmail.com>"]
 readme = "README.rst"
