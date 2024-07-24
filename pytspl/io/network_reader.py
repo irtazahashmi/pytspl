@@ -286,19 +286,21 @@ def read_coordinates(
     )
 
 
-def read_flow(filename: str) -> dict:
+def read_flow(filename: str, sep: str = "\t", header="infer") -> dict:
     """
     Read the flow.
 
     Args:
         filename (str): The name of the flow file.
+        sep (str): The delimeter used in the flow file. Defaults to tab.
+        header: The header of the flow file. Defaults to infer.
 
     Returns:
         pd.DataFrame: The flow data.
     """
     flow = pd.DataFrame()
     if os.path.exists(filename):
-        flow = pd.read_csv(filename, sep="\t")
+        flow = pd.read_csv(filename, sep=sep, header=header)
     else:
         print("WARNING: Flow data file not found.")
 

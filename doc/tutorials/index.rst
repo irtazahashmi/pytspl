@@ -11,6 +11,11 @@ More tutorials will be added in the future.
     :maxdepth: 1
 
     intro
+    reading_custom_datasets
+    ops_with_sc
     decomposition
+    intro_to_filters
+    hodge_gp
+
 
     

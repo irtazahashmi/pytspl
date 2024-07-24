@@ -107,9 +107,11 @@ Let's go ahead and plot the SC using the coordinates:
 .. image:: ../doc/tutorials/figures/paper-sc-example.png
   :alt:
   :width: 40%
+  :align: center
 .. image:: doc/tutorials/figures/paper-sc-example.png
   :alt:
   :width: 40%
+  :align: center
 
 
 We can also plot the edge flow of the SC using:
@@ -119,10 +121,12 @@ We can also plot the edge flow of the SC using:
 
 .. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
   :alt:
-  :width: 40%
+  :width: 45%
+  :align: center
 .. image:: doc/tutorials/figures/paper-sc-flow-example.png
   :alt:
-  :width: 40%
+  :width: 45%
+  :align: center
   
 
 Let's go ahead and load a larger dataset and plot it:
@@ -149,7 +153,7 @@ The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
 
 .. code-block:: bash
 
-    pip install pytspl
+  pip install pytspl
 
 
 Note that you will need a recent version of ``Python (>=3.10)``.
@@ -157,11 +161,11 @@ Note that you will need a recent version of ``Python (>=3.10)``.
 To run the library, you will need to install the following dependencies seperately due to the fact that
 PyPI does not allow for the installation of packages from git repositories:
 
- .. code-block:: bash
+.. code-block:: bash
 
-    python3 -m pip install 'git+https://github.com/chebpy/chebpy'
-    python3 -m pip install 'git+https://github.com/pyt-team/TopoNetX'
-    python3 -m pip install 'git+https://github.com/pyt-team/TopoModelX'
+  python3 -m pip install 'git+https://github.com/chebpy/chebpy'
+  python3 -m pip install 'git+https://github.com/pyt-team/TopoNetX'
+  python3 -m pip install 'git+https://github.com/pyt-team/TopoModelX'
 
 Contributing
 ------------

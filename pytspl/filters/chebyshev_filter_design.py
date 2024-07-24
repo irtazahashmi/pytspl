@@ -321,8 +321,6 @@ class ChebyshevFilterDesign(BaseFilter):
             steep=steep,
         )
 
-        print(g_chebysev(eigenvals))
-
         plt.figure(figsize=(15, 5))
         # eigenvalues
         plt.scatter(eigenvals, g(eigenvals))

@@ -4,7 +4,7 @@ Introduction to PyTSPL
 
 This tutorial will show you the basic functionality of the toolbox. 
 After installing the package with pip, start by opening a python shell, 
-e.g. a Jupyter notebook, and import the PyTSPL.
+e.g. a Jupyter notebook, and import the ``PyTSPL``.
 
 Let's start by building a simplicial complex by using the built-in dataset 
 loader. Once we load the dataset, we will get a summary of the simplcial 
@@ -46,7 +46,7 @@ Coordinates: 7
 Flow: 10
 
 
-We can plot the network using the SCPlot module.
+We can plot the network using the ``SCPlot`` module.
 
 .. plot::
     :context: close-figs
@@ -70,7 +70,7 @@ We can also plot the SC with its edge flow.
     >>>
     >>> scplot.draw_network(edge_flow=flow, ax=ax)
 
-To retrive the properties of the SC, we can use the SimplicialComplex object. 
+To retrive the properties of the SC, we can use the ``SimplicialComplex`` object. 
 We can retrieve, for example, adjacency matrix, incidence matrices and the Hodge 
 Laplacian matrices using the rank.
 
@@ -109,4 +109,4 @@ We can also generate a random SC in the following way.
 
 .. image:: figures/random-sc-example.png
   :alt:
-  :width: 40%
+  :width: 60%
