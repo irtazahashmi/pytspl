@@ -1,8 +1,11 @@
 import pickle
 
 import numpy as np
+import pkg_resources
 
 from pytspl.simplicial_complex.scbuilder import SCBuilder
+
+WSN_DATA_FOLDER = pkg_resources.resource_filename("pytspl", "data/wsn")
 
 
 def load_wsn_data() -> tuple:
@@ -19,7 +22,7 @@ def load_wsn_data() -> tuple:
             np.ndarray: The flow data of the water supply
     """
 
-    with open("data/wsn/water_network.pkl", "rb") as f:
+    with open(f"{WSN_DATA_FOLDER}/water_network.pkl", "rb") as f:
         B1, flow_rate, _, head, hr = pickle.load(f)
 
     num_edges = B1.shape[1]

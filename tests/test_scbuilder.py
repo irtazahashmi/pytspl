@@ -7,7 +7,7 @@ from pytspl.simplicial_complex.scbuilder import SCBuilder
 
 @pytest.fixture
 def graph():
-    data_folder = "data/paper_data"
+    data_folder = "pytspl/data/paper_data"
     filename = data_folder + "/edges.csv"
     delimeter = " "
     src_col = "Source"

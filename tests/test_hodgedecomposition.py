@@ -1,8 +1,9 @@
 import numpy as np
 import pytest
 
-from pytspl import SimplicialComplex, read_csv
 from pytspl.decomposition.hodgedecomposition import *
+from pytspl.io import read_csv
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 @pytest.fixture

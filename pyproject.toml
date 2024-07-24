@@ -9,6 +9,9 @@ license = "MIT"
 # Dependencies
 [tool.poetry.dependencies]
 python = "^3.11"
+matplotlib = "^3.8.2"
+networkx = "^2.8.8"
+pandas = "^2.1.1"
 sphinx = "^7.2.6"
 sphinx-autoapi = "^3.2.1"
 numpydoc = "^1.7.0"
@@ -22,9 +25,6 @@ gpytorch = "^1.11"
 gudhi = "^3.9.0"
 hypernetx = "^1.2.5"
 ipykernel = "^6.29.4"
-matplotlib = "^3.8.2"
-networkx = "^2.8.8"
-pandas = "^2.1.1"
 pyproject-flake8 = "^7.0.0"
 pytest = "^7.4.3"
 scipy = "^1.11.4"
@@ -34,7 +34,6 @@ torcheval = "^0.0.7"
 torchvision = "^0.18.0"
 topomodelx = { git = "https://github.com/pyt-team/TopoModelX.git" }
 toponetx = { git = "https://github.com/pyt-team/TopoNetX.git" }
-
 
 # Testing
 [tool.pytest.ini_options]
@@ -53,6 +52,7 @@ show_missing = true
 extend-ignore = ["E203", "E741"]
 per-file-ignores = ['__init__.py:F401']
 
+# Build
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

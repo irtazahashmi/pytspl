@@ -7,10 +7,12 @@ import numpy as np
 from scipy.sparse import csr_matrix
 
 from pytspl.decomposition.eigendecomposition import (
+    get_curl,
     get_curl_eigenpair,
-    get_eigendecomposition,
+    get_divergence,
     get_gradient_eigenpair,
     get_harmonic_eigenpair,
+    get_total_variance,
 )
 from pytspl.decomposition.frequency_component import FrequencyComponent
 from pytspl.decomposition.hodgedecomposition import (
@@ -477,8 +479,8 @@ class SimplicialComplex:
         Returns:
             np.ndarray: The total variance of the SC.
         """
-        eigenvecs, _ = get_eigendecomposition(self.laplacian_matrix())
-        return np.diag(eigenvecs.T @ self.laplacian_matrix() @ eigenvecs)
+        laplacian_matrix = self.laplacian_matrix()
+        return get_total_variance(laplacian_matrix)
 
     def get_divergence(self, flow: np.ndarray) -> np.ndarray:
         """
@@ -491,7 +493,7 @@ class SimplicialComplex:
             np.ndarray: The divergence of the flow.
         """
         B1 = self.incidence_matrix(rank=1)
-        return B1 @ flow
+        return get_divergence(B1, flow)
 
     def get_curl(self, flow: np.ndarray) -> np.ndarray:
         """
@@ -504,7 +506,7 @@ class SimplicialComplex:
             np.ndarray: The curl of the flow.
         """
         B2 = self.incidence_matrix(rank=2)
-        return B2.T @ flow
+        return get_curl(B2, flow)
 
     def get_component_flow(
         self,

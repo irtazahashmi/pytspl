@@ -11,6 +11,48 @@ import numpy as np
 from scipy.sparse.linalg import eigsh
 
 
+def get_total_variance(laplacian_matrix: np.ndarray) -> float:
+    """
+    Calculate the total variance.
+
+    Args:
+        laplacian_matrix (np.ndarray): The Laplacian matrix L(k).
+
+    Returns:
+        float: The total variance.
+    """
+    eigenvecs, _ = get_eigendecomposition(laplacian_matrix)
+    return np.diag(eigenvecs.T @ laplacian_matrix @ eigenvecs)
+
+
+def get_divergence(B1: np.ndarray, flow: np.ndarray) -> np.ndarray:
+    """
+    Calculate the divergence.
+
+    Args:
+        B1 (np.ndarray): The incidence matrix B1.
+        flow (np.ndarray): The edge flow.
+
+    Returns:
+        np.ndarray: The divergence of the flow.
+    """
+    return B1 @ flow
+
+
+def get_curl(B2: np.ndarray, flow: np.ndarray) -> np.ndarray:
+    """
+    Calculate the curl.
+
+    Args:
+        B2 (np.ndarray): The incidence matrix B2.
+        flow (np.ndarray): The edge flow.
+
+    Returns:
+        np.ndarray: The curl of the flow.
+    """
+    return B2.T @ flow
+
+
 def get_harmonic_eigenpair(
     hodgle_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:

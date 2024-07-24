@@ -3,15 +3,27 @@ PyTSPL: Topological Signal Processing and Learning in Python
 
 .. image:: https://readthedocs.org/projects/pytspl/badge/?version=latest
     :target: https://pytspl.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://img.shields.io/pypi/v/pytspl.svg
+   :target: https://pypi.org/project/pytspl
+    :alt: PyPI
 
 .. image:: https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml/badge.svg
    :target: https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml
+    :alt: Build Status
 
 .. image:: https://codecov.io/gh/irtazahashmi/pytspl/graph/badge.svg?token=7KQ0U8FW70
    :target: https://codecov.io/gh/irtazahashmi/pytspl
+    :alt: Code Coverage
+
+.. image:: https://img.shields.io/pypi/l/pytspl.svg
+   :target: https://github.com/irtazahashmi/pytspl/blob/dev/LICENSE
+   :alt: License
 
 .. image:: https://img.shields.io/badge/python-3.11+-blue?logo=python
    :target: https://www.python.org/
+    :alt: Python Version
 
 
 The PyTSPL python package is a library for Topological Signal Processing and Learning. It is a 
