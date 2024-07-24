@@ -38,6 +38,10 @@ autodoc_default_options = {
     "member-order": "groupwise",
 }
 
+extensions.append("numpydoc")
+numpydoc_show_class_members = False
+numpydoc_use_plots = True  # Add the plot directive whenever mpl is imported.
+
 autoapi_type = "python"
 autoapi_dirs = ["../pytspl"]
 autoapi_template_dir = "_templates/autosummary"
@@ -63,6 +67,8 @@ templates_path = ["_templates"]
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+source_suffix = ".rst"
+master_doc = "index"
 
 
 # -- Options for HTML output -------------------------------------------------

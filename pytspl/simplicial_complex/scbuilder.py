@@ -99,8 +99,8 @@ class SCBuilder:
             condition (str, optional): Condition to build the 2-simplicies
             (triangles). Defaults to "all".
             Options:
-                - "all": All simplicies.
-                - "distance": Based on distance.
+            - "all": All simplicies.
+            - "distance": Based on distance.
 
             dist_col_name (str, optional): Name of the column that contains
             the distance.

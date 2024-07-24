@@ -11,6 +11,7 @@ license = "MIT"
 python = "^3.11"
 sphinx = "^7.2.6"
 sphinx-autoapi = "^3.2.1"
+numpydoc = "^1.7.0"
 sphinx-rtd-theme = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]

@@ -1828,6 +1828,26 @@ files = [
 ]
 
 [[package]]
+name = "numpydoc"
+version = "1.7.0"
+description = "Sphinx extension to support docstrings in Numpy format"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "numpydoc-1.7.0-py3-none-any.whl", hash = "sha256:5a56419d931310d79a06cfc2a126d1558700feeb9b4f3d8dcae1a8134be829c9"},
+    {file = "numpydoc-1.7.0.tar.gz", hash = "sha256:866e5ae5b6509dcf873fc6381120f5c31acf13b135636c1a81d68c166a95f921"},
+]
+
+[package.dependencies]
+sphinx = ">=6"
+tabulate = ">=0.8.10"
+
+[package.extras]
+developer = ["pre-commit (>=3.3)", "tomli"]
+doc = ["matplotlib (>=3.5)", "numpy (>=1.22)", "pydata-sphinx-theme (>=0.13.3)", "sphinx (>=7)"]
+test = ["matplotlib", "pytest", "pytest-cov"]
+
+[[package]]
 name = "nvidia-cublas-cu12"
 version = "12.1.3.1"
 description = "CUBLAS native runtime libraries"
@@ -3237,6 +3257,20 @@ mpmath = ">=1.1.0,<1.4"
 dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 
 [[package]]
+name = "tabulate"
+version = "0.9.0"
+description = "Pretty-print tabular data"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f"},
+    {file = "tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c"},
+]
+
+[package.extras]
+widechars = ["wcwidth"]
+
+[[package]]
 name = "tbb"
 version = "2021.13.0"
 description = "Intel® oneAPI Threading Building Blocks (oneTBB)"
@@ -3720,4 +3754,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "82fe6fdb105366d076fb310e10184fbbca88b49bc113b64f4ba78747250edc14"
+content-hash = "1162cd5d428da93d162037a590f5a0a3dbefe127bb9e6beb8303c71127066328"
