@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file. The format 
 `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`_ and this project adheres to 
 `Semantic Versioning <https://semver.org/>`_.
 
+0.1.3 (2024-07-24)
+-------------------
+
+- Fixed dependency issues in the `pyproject.toml` file to ensure that the package can be 
+  installed correctly.
+
+
 0.1.2 (2024-07-24)
 -------------------
 

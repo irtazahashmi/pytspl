@@ -154,6 +154,14 @@ The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
 
 Note that you will need a recent version of ``Python (>=3.10)``.
 
+To run the library, you will need to install the following dependencies seperately due to the fact that
+PyPI does not allow for the installation of packages from git repositories:
+
+ .. code-block:: bash
+
+    python3 -m pip install 'git+https://github.com/chebpy/chebpy'
+    python3 -m pip install 'git+https://github.com/pyt-team/TopoNetX'
+    python3 -m pip install 'git+https://github.com/pyt-team/TopoModelX'
 
 Contributing
 ------------
