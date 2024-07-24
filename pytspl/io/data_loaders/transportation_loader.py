@@ -5,6 +5,7 @@ datasets for analysis.
 import os
 
 import pandas as pd
+import pkg_resources
 
 from pytspl.io.network_reader import (
     read_B1_B2,
@@ -13,7 +14,15 @@ from pytspl.io.network_reader import (
     read_tntp,
 )
 
-DATA_FOLDER = "data/transportation_networks"
+DATA_FOLDER = pkg_resources.resource_filename(
+    "pytspl", "data/transportation_networks"
+)
+
+CHICAGO_SKETCH_DATA_FOLDER = pkg_resources.resource_filename(
+    "pytspl", "data/transportation_networks/chicago-sketch"
+)
+
+
 METADATA_ROWS = 8
 
 
@@ -148,20 +157,15 @@ def load_chicago_sketch() -> tuple:
             dict: The coordinates of the nodes.
             dict: The flow data of the dataset.
     """
-    B1_dataset_path = (
-        "data/transportation_networks/chicago-sketch/B1_chicago_sketch.csv"
-    )
-    B2_dataset_path = (
-        "data/transportation_networks/chicago-sketch/B2t_chicago_sketch.csv"
-    )
+    B1_dataset_path = f"{CHICAGO_SKETCH_DATA_FOLDER}/B1_chicago_sketch.csv"
+    B2_dataset_path = f"{CHICAGO_SKETCH_DATA_FOLDER}/B2t_chicago_sketch.csv"
 
     scbuilder, triangles = read_B1_B2(B1_dataset_path, B2_dataset_path)
     sc = scbuilder.to_simplicial_complex(triangles=triangles)
 
     # read coordinates
     coordinates_path = (
-        "data/transportation_networks/chicago-sketch/"
-        + "coordinates_chicago_sketch.csv"
+        f"{CHICAGO_SKETCH_DATA_FOLDER}/coordinates_chicago_sketch.csv"
     )
     coordinates = read_coordinates(
         coordinates_path,
@@ -173,9 +177,7 @@ def load_chicago_sketch() -> tuple:
     )
 
     # read flow
-    flow_path = (
-        "data/transportation_networks/chicago-sketch/flow_chicago_sketch.csv"
-    )
+    flow_path = f"{CHICAGO_SKETCH_DATA_FOLDER}/flow_chicago_sketch.csv"
     flow = (
         pd.read_csv(flow_path, delimiter=",", header=None).to_numpy().flatten()
     )

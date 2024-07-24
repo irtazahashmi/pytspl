@@ -10,6 +10,10 @@ from pytspl.io.network_reader import (
 )
 from pytspl.simplicial_complex.scbuilder import SCBuilder
 
+PAPER_DATA_FOLDER = "pytspl/data/paper_data"
+TRANS_DATA_FOLDER = "pytspl/data/transportation_networks"
+
+
 NODES = 7
 EDGES = 10
 
@@ -45,7 +49,7 @@ INC_MAT_B2 = np.asarray(
 class TestNetworkReader:
 
     def test_read_tntp(self):
-        filename = "data/paper_data/network.tntp"
+        filename = f"{PAPER_DATA_FOLDER}/network.tntp"
         scbuilder = read_tntp(
             filename=filename,
             delimeter="\t",
@@ -65,7 +69,7 @@ class TestNetworkReader:
         assert np.array_equal(incidence_mat, INC_MAT_B1)
 
     def test_read_csv(self):
-        filename = "data/paper_data/edges.csv"
+        filename = f"{PAPER_DATA_FOLDER}/edges.csv"
         delimeter = " "
         src_col = "Source"
         dest_col = "Target"
@@ -80,8 +84,8 @@ class TestNetworkReader:
         assert np.array_equal(incidence_mat, INC_MAT_B1)
 
     def test_B1_B2_test_data(self):
-        B1_filename = "data/paper_data/B1.csv"
-        B2_filename = "data/paper_data/B2t.csv"
+        B1_filename = f"{PAPER_DATA_FOLDER}/B1.csv"
+        B2_filename = f"{PAPER_DATA_FOLDER}/B2t.csv"
         B1 = pd.read_csv(B1_filename, header=None).to_numpy()
 
         scbuilder, triangles = read_B1_B2(
@@ -99,11 +103,11 @@ class TestNetworkReader:
         assert np.array_equal(inc_mat_B2, INC_MAT_B2)
 
     def test_B1_B2_chicago_data(self):
+        data_folder = f"{TRANS_DATA_FOLDER}/chicago-sketch"
+
         nodes, edges = 546, 1088
-        B1_filename = (
-            "data/transportation_networks/chicago-sketch/B1_chicago_sketch.csv"
-        )
-        B2_filename = "data/transportation_networks/chicago-sketch/B2t_chicago_sketch.csv"
+        B1_filename = f"{data_folder}/B1_chicago_sketch.csv"
+        B2_filename = f"{data_folder}/B2t_chicago_sketch.csv"
 
         B1 = pd.read_csv(B1_filename, header=None).to_numpy()
         B2 = pd.read_csv(B2_filename, header=None).to_numpy().T
@@ -125,8 +129,10 @@ class TestNetworkReader:
         assert np.array_equal(B2, B2_calculated)
 
     def test_read_coordinates(self):
+        data_folder = f"{TRANS_DATA_FOLDER}/chicago-sketch"
+
         nodes = 546
-        filename = "data/transportation_networks/chicago-sketch/coordinates_chicago_sketch.csv"
+        filename = f"{data_folder}/coordinates_chicago_sketch.csv"
         coordinates = read_coordinates(
             filename=filename,
             node_id_col="Id",
@@ -137,9 +143,9 @@ class TestNetworkReader:
         assert len(coordinates) == nodes
 
     def test_read_flow_dataset(self):
-        dataset = (
-            "data/transportation_networks/siouxfalls/siouxfalls_flow.tntp"
-        )
+        data_folder = f"{TRANS_DATA_FOLDER}/siouxfalls"
+
+        dataset = f"{data_folder}/siouxfalls_flow.tntp"
         flow = read_flow(filename=dataset)
 
         assert isinstance(flow, pd.DataFrame)

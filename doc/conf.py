@@ -6,12 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath("."))
-sys.path.insert(0, os.path.abspath(".."))
-
 
 import pytspl
 
@@ -44,6 +38,10 @@ autodoc_default_options = {
     "member-order": "groupwise",
 }
 
+extensions.append("numpydoc")
+numpydoc_show_class_members = False
+numpydoc_use_plots = True  # Add the plot directive whenever mpl is imported.
+
 autoapi_type = "python"
 autoapi_dirs = ["../pytspl"]
 autoapi_template_dir = "_templates/autosummary"
@@ -53,12 +51,12 @@ extensions.append("matplotlib.sphinxext.plot_directive")
 plot_include_source = True
 plot_html_show_source_link = False
 plot_html_show_formats = False
-plot_working_directory = "."
+plot_working_directory = ".."
 plot_rcparams = {"figure.figsize": (5, 5)}
 plot_pre_code = """
 import numpy as np
 import matplotlib.pyplot as plt
-from pytspl import load_dataset
+from pytspl import load_dataset, SCPlot
 """
 
 
@@ -69,6 +67,8 @@ templates_path = ["_templates"]
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+source_suffix = ".rst"
+master_doc = "index"
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -1,38 +1,43 @@
 [tool.poetry]
 name = "pytspl"
-version = "0.1.0"
+version = "0.1.3"
 description = "A Python library for Topological Signal Processing and Learning."
-authors = ["irtazahashmi <irtazahashmi@gmail.com>"]
+authors = ["Irtaza Hashmi <irtazahashmi@gmail.com>"]
 readme = "README.rst"
+license = "MIT"
+repository = "https://github.com/irtazahashmi/pytspl"
+documentation = "https://pytspl.readthedocs.io/en/latest/"
 
 # Dependencies
 [tool.poetry.dependencies]
 python = "^3.11"
-chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
+coverage = "^7.3.2"
 cvxpy = "^1.5.1"
 gpytorch = "^1.11"
 gudhi = "^3.9.0"
 hypernetx = "^1.2.5"
+ipykernel = "^6.29.4"
 matplotlib = "^3.8.2"
 networkx = "^2.8.8"
 pandas = "^2.1.1"
+pyproject-flake8 = "^7.0.0"
+pytest = "^7.4.3"
+setuptools = "^71.1.0"
 scipy = "^1.11.4"
 trimesh = "^4.0.10"
 torch = "^2.3.1"
 torcheval = "^0.0.7"
 torchvision = "^0.18.0"
-topomodelx = { git = "https://github.com/pyt-team/TopoModelX.git" }
-toponetx = { git = "https://github.com/pyt-team/TopoNetX.git" }
-
-
-[tool.poetry.group.dev.dependencies]
-coverage = "^7.3.2"
-pyproject-flake8 = "^7.0.0"
-ipykernel = "^6.29.4"
-pytest = "^7.4.3"
+# documentation dependencies
 sphinx = "^7.2.6"
 sphinx-autoapi = "^3.2.1"
+numpydoc = "^1.7.0"
 sphinx-rtd-theme = "^2.0.0"
+
+[tool.poetry.group.dev.dependencies]
+chebpy = { git = "https://github.com/chebpy/chebpy.git", branch = "master" }
+topomodelx = { git = "https://github.com/pyt-team/TopoModelX.git" }
+toponetx = { git = "https://github.com/pyt-team/TopoNetX.git" }
 
 # Testing
 [tool.pytest.ini_options]
@@ -41,7 +46,6 @@ pythonpath = ["."]
 [tool.coverage.run]
 source = ["pytspl"]
 branch = true
-# the hodge gp module for each dataset is not tested and is not included in the coverage report
 omit = ["pytspl/hogde_gp/forex/*"]
 
 [tool.coverage.report]
@@ -52,6 +56,7 @@ show_missing = true
 extend-ignore = ["E203", "E741"]
 per-file-ignores = ['__init__.py:F401']
 
+# Build
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -1,12 +1,12 @@
 import numpy as np
 
-from pytspl import SimplicialComplex
 from pytspl.decomposition.eigendecomposition import (
     get_curl_eigenpair,
     get_eigendecomposition,
     get_gradient_eigenpair,
     get_harmonic_eigenpair,
 )
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 class TestEigendecomoposition:

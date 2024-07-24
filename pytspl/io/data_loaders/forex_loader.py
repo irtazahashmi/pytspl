@@ -1,6 +1,11 @@
 import pandas as pd
+import pkg_resources
 
 from pytspl.io.network_reader import read_B1_B2
+
+FOREX_DATA_FOLDER = pkg_resources.resource_filename(
+    "pytspl", "data/foreign_exchange"
+)
 
 
 def load_forex_data() -> tuple:
@@ -14,10 +19,9 @@ def load_forex_data() -> tuple:
             exist, the coordinates are generated using spring layout.
             dict: The flow data of the forex data.
     """
-    data_folder = "data/foreign_exchange"
-    B1_filename = f"{data_folder}/B1.csv"
-    B2_filename = f"{data_folder}/B2t.csv"
-    y_filename = f"{data_folder}/flow_FX_1538755200.csv"
+    B1_filename = f"{FOREX_DATA_FOLDER}/B1.csv"
+    B2_filename = f"{FOREX_DATA_FOLDER}/B2t.csv"
+    y_filename = f"{FOREX_DATA_FOLDER}/flow_FX_1538755200.csv"
 
     scbuilder, triangles = read_B1_B2(
         B1_filename=B1_filename, B2_filename=B2_filename

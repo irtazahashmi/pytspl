@@ -1,0 +1,4 @@
+# requirements to build the documentation
+sphinx==7.2.6
+sphinx-autoapi==3.2.1
+sphinx-rtd-theme==2.0.0

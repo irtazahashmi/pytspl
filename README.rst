@@ -1,14 +1,29 @@
 PyTSPL: Topological Signal Processing and Learning in Python
 ============================================================
 
+.. image:: https://readthedocs.org/projects/pytspl/badge/?version=latest
+    :target: https://pytspl.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://img.shields.io/pypi/v/pytspl.svg
+   :target: https://pypi.org/project/pytspl
+    :alt: PyPI
+
 .. image:: https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml/badge.svg
    :target: https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml
+    :alt: Build Status
 
 .. image:: https://codecov.io/gh/irtazahashmi/pytspl/graph/badge.svg?token=7KQ0U8FW70
    :target: https://codecov.io/gh/irtazahashmi/pytspl
+    :alt: Code Coverage
+
+.. image:: https://img.shields.io/pypi/l/pytspl.svg
+   :target: https://github.com/irtazahashmi/pytspl/blob/dev/LICENSE
+   :alt: License
 
 .. image:: https://img.shields.io/badge/python-3.11+-blue?logo=python
    :target: https://www.python.org/
+    :alt: Python Version
 
 
 The PyTSPL python package is a library for Topological Signal Processing and Learning. It is a 
@@ -106,11 +121,11 @@ We can also plot the edge flow of the SC using:
 
 .. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
   :alt:
-  :width: 40%
+  :width: 45%
   :align: center
 .. image:: doc/tutorials/figures/paper-sc-flow-example.png
   :alt:
-  :width: 40%
+  :width: 45%
   :align: center
   
 
@@ -134,15 +149,23 @@ Let's go ahead and load a larger dataset and plot it:
 Installation
 ------------
 
-The PyTSPL is available on PyPI:
+The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
 
 .. code-block:: bash
 
-    pip install pytspl
+  pip install pytspl
 
 
 Note that you will need a recent version of ``Python (>=3.10)``.
 
+To run the library, you will need to install the following dependencies seperately due to the fact that
+PyPI does not allow for the installation of packages from git repositories:
+
+.. code-block:: bash
+
+  python3 -m pip install 'git+https://github.com/chebpy/chebpy'
+  python3 -m pip install 'git+https://github.com/pyt-team/TopoNetX'
+  python3 -m pip install 'git+https://github.com/pyt-team/TopoModelX'
 
 Contributing
 ------------

@@ -1,10 +1,11 @@
+=======================
 Introduction to PyTSPL
 =======================
 
 
 This tutorial will show you the basic functionality of the toolbox. 
 After installing the package with pip, start by opening a python shell, 
-e.g. a Jupyter notebook, and import the PyTSPL.
+e.g. a Jupyter notebook, and import the ``PyTSPL``.
 
 Let's start by building a simplicial complex by using the built-in dataset 
 loader. Once we load the dataset, we will get a summary of the simplcial 
@@ -46,7 +47,7 @@ Coordinates: 7
 Flow: 10
 
 
-We can plot the network using the SCPlot module.
+We can plot the network using the ``SCPlot`` module.
 
 .. plot::
     :context: close-figs
@@ -70,7 +71,7 @@ We can also plot the SC with its edge flow.
     >>>
     >>> scplot.draw_network(edge_flow=flow, ax=ax)
 
-To retrive the properties of the SC, we can use the SimplicialComplex object. 
+To retrive the properties of the SC, we can use the ``SimplicialComplex`` object. 
 We can retrieve, for example, adjacency matrix, incidence matrices and the Hodge 
 Laplacian matrices using the rank.
 
@@ -94,17 +95,19 @@ Generate a random SC
 
 We can also generate a random SC in the following way.
 
-.. plot::
-    :context: reset
 
-    >>> from pytspl import generate_random_simplicial_complex, SCPlot
-    >>>
-    >>> sc, coordinates = generate_random_simplicial_complex(
-    >>>        num_of_nodes=7,
-    >>>        p=0.25,
-    >>>        seed=42,
-    >>>        dist_threshold=0.8
-    >>> )
-    >>> scplot = SCPlot(sc, coordinates)
-    >>> scplot.draw_network()
+>>> from pytspl import generate_random_simplicial_complex, SCPlot
+>>>
+>>> sc, coordinates = generate_random_simplicial_complex(
+>>>        num_of_nodes=7,
+>>>        p=0.25,
+>>>        seed=42,
+>>>        dist_threshold=0.8
+>>> )
+>>> scplot = SCPlot(sc, coordinates)
+>>> scplot.draw_network()
 
+
+.. image:: figures/random-sc-example.png
+  :alt:
+  :width: 60%

@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pytspl import SimplicialComplex
 from pytspl.io.dataset_loader import list_datasets, load_dataset
+from pytspl.simplicial_complex import SimplicialComplex
 
 
 class TestDatasetLoader:
@@ -14,11 +14,12 @@ class TestDatasetLoader:
         assert len(datasets) > 0
 
     def test_load_dataset_paper(self):
-        B1 = pd.read_csv("data/paper_data/B1.csv", header=None).to_numpy()
-        B2 = pd.read_csv("data/paper_data/B2t.csv", header=None).to_numpy().T
+        data_folder = "pytspl/data/paper_data"
+
+        B1 = pd.read_csv(f"{data_folder}/B1.csv", header=None).to_numpy()
+        B2 = pd.read_csv(f"{data_folder}/B2t.csv", header=None).to_numpy().T
 
         dataset = "paper"
-
         sc, coordinates, _ = load_dataset(dataset=dataset)
 
         assert isinstance(sc, SimplicialComplex)

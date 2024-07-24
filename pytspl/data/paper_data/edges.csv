@@ -1,0 +1,14 @@
+Source Target Type Distance Capacity
+0 1 Undirected 1 10
+1 2 Undirected 1 10
+0 2 Undirected 1 10
+2 3 Undirected 1 10
+2 5 Undirected 10 10
+0 3 Undirected 10 10
+3 4 Undirected 10 10
+4 5 Undirected 1 10
+5 6 Undirected 1 10
+4 6 Undirected 1 10
+
+
+
