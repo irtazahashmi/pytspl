@@ -145,7 +145,7 @@ Let's go ahead and load a larger dataset and plot it:
 Installation
 ------------
 
-The PyTSPL is available on `PyPI </>`_.
+The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
 
 .. code-block:: bash
 
