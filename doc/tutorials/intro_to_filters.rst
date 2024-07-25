@@ -10,12 +10,12 @@ The Simplicial Convolutional Filters include the following filters:
 - Grid-based Filter Design
 - Chebyshev Filter Design
 
-This tutorial will introduce Chebyshev Filter Design. The tutorials to the other filters 
-can be found under `notebooks/filters`. All the filters are under the ``pytspl.filters`` 
+This tutorial will introduce Chebyshev Filter Design. Tutorials for other filters 
+can be found under `notebooks/filters`. All the filters are included in the ``pytspl.filters`` 
 module.
 
 
-First, we load the chicago-sketch dataset as a simplicial complex.
+Load the chicago-sketch dataset as a simplicial complex.
 
 >>> from pytspl import load_dataset
 >>> sc, coordinates, flow = load_dataset("chicago-sketch")
@@ -28,7 +28,7 @@ Coordinates: 546
 Flow: 1088
 
 
-We can plot the simplicial complex using the :func:`draw_network` function.
+Plot the simplicial complex using the :func:`draw_network` function.
 
 >>> from pytspl import SCPlot
 >>>
@@ -52,7 +52,7 @@ Here, we can plot the Chebyshev Series approximation for a matrix :math:`\textbf
 .. image:: figures/filters/cheb_series_approx.png
 
 
-Now, we apply the filter. Since the flow is a dictionary, we need to convert it to 
+Aply the filter. Since the flow is a dictionary, we need to convert it to 
 a numpy array.
 
 >>> # convert the flow to an numpy array

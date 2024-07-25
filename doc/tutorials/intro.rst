@@ -2,21 +2,22 @@
 Introduction to PyTSPL
 =======================
 
+This tutorial will demonstrate the basic functionality of the toolbox. After installing 
+the package with pip, start by opening a Python shell, such as a Jupyter notebook, and 
+importing ``PyTSPL``.
 
-This tutorial will show you the basic functionality of the toolbox. 
-After installing the package with pip, start by opening a python shell, 
-e.g. a Jupyter notebook, and import the ``PyTSPL``.
 
-Let's start by building a simplicial complex by using the built-in dataset 
-loader. Once we load the dataset, we will get a summary of the simplcial 
-complex (SC). Additionally, we will get the coordinates and the flow of the SC.
+Let's begin by building a simplicial complex using the built-in dataset loader. 
+Once we load the dataset, we will receive a summary of the simplicial complex (SC). 
+Additionally, we will obtain the coordinates and the flow of the SC.
+
 
 
 Loading a SC from a dataset
 ---------------------------
 
-Before loading a dataset, we can list the available datasets that are 
-currently available.
+Before loading a dataset, we can list the datasets that are currently available.
+
 
 >>> from pytspl import list_datasets
 >>> list_datasets()
@@ -34,7 +35,7 @@ currently available.
  'wsn']
 
 
-Now, let's load a dataset and get a summary of the simplicial complex.
+Now, let's load a dataset and get a summary of the SC.
 
 >>> from pytspl import load_dataset
 >>> sc, coordinates, flow = load_dataset("paper")
@@ -71,9 +72,11 @@ We can also plot the SC with its corresponding edge flow.
     >>>
     >>> scplot.draw_network(edge_flow=flow, ax=ax)
 
-To retrive the properties of the SC, we can use the ``SimplicialComplex`` object. 
-We can retrieve, for example, adjacency matrix, incidence matrices and the Hodge 
-Laplacian matrices by passing in the rank as a parameter.
+
+To retrieve the properties of the SC, we can use the ``SimplicialComplex`` object. 
+For example, we can obtain the adjacency matrix, incidence matrices, and the Hodge 
+Laplacian matrices by specifying the rank as a parameter.
+
 
 >>> sc.adjacency_matrix()
 >>> sc.incidence_matrix(rank=1)
@@ -93,8 +96,9 @@ array([[ 3.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
 Generate a random SC
 ------------------------------------
 
-We can also generate a random SC in the following way.
-
+We can also generate a random SC using the :func:`generate_random_simplicial_complex`
+function. The function takes the number of nodes, the probability of an edge between
+two nodes, the seed, and the distance threshold as parameters. 
 
 >>> from pytspl import generate_random_simplicial_complex, SCPlot
 >>>

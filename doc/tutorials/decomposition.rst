@@ -36,6 +36,7 @@ harmonic, curl and gradient components:
     [-0.18372608]
     [ 0.18372608]]
 
+
 To plot the eigenpairs for a component, we can use the following code:
 
 .. plot::
@@ -45,6 +46,7 @@ To plot the eigenpairs for a component, we can use the following code:
     >>>
     >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
     >>> scplot.draw_eigenvectors(component="gradient")
+
 
 We can also plot the selected indices of the eigenvectors:
 
@@ -88,12 +90,14 @@ To get the harmonic, curl and gradient flows, we can do the following:
 >>> f_c = sc.get_component_flow(flow=synthetic_flow, component="curl")
 [-0.15 -0.7   0.85 -0.15 -0.85  0.    0.    0.58 -0.58  0.58]
 
-We can plot the harmonic, curl and gradient flows using the following code:
+
+Plot the harmonic, curl and gradient flows using the following code:
 
 .. plot::
     :context: close-figs
 
     >>> scplot.draw_hodge_decomposition(flow=synthetic_flow, figsize=(18, 5))
+
 
 
 To plot the harmonic flow only, we can do the following:

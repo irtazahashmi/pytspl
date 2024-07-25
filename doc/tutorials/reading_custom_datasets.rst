@@ -5,14 +5,15 @@ Loading Custom Datasets and Building a Simplicial Complex
 In this tutorial, we provide examples to read data and build a simplicial 
 complex using different formats of data.
 
-CSV and TNTP format
+CSV and TNTP Format
 -------------------
 
-Here, we load CSV file containing edges of a graph, process the data to 
+Here, we load a CSV file containing edges of a graph, process the data to 
 identify source and target nodes, extract a specific feature (distance), and 
 convert this data into a simplicial complex. The summary provides a quick 
 overview of the structure and properties of the generated simplicial complex, 
 including the number of nodes, edges, and higher-dimensional simplices.
+
 
 >>> from pytspl import read_csv
 >>>
@@ -84,7 +85,7 @@ threshold :math:`\epsilon`. This method is distance-based. By default, when
 we load a dataset using the :func:`load_dataset` function, the SC is built 
 using the triangle-based method.
 
-In this first example, we build the simplicial complex by finding all the 
+In this first example, we build the SC by finding all the 
 triangles considering them as 2-simplices.
 
 >>> sc = read_csv(
@@ -102,7 +103,7 @@ Num. of triangles: 3
 Shape: (7, 10, 3)
 Max Dimension: 2
 
-In the second example, we build a simplicial complex using the distance-based method
+In the second example, we build a SC using the distance-based method
 and define :math:`\epsilon`. In this case, we get one less triangle (2-simplex).
 
 >>> sc = read_csv(
