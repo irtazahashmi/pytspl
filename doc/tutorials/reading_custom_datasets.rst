@@ -1,18 +1,19 @@
 =========================================================
-Reading Custom Datasets and Building a Simplicial Complex
+Loading Custom Datasets and Building a Simplicial Complex
 =========================================================
 
 In this tutorial, we provide examples to read data and build a simplicial 
 complex using different formats of data.
 
-CSV and TNTP format
+CSV and TNTP Format
 -------------------
 
-Here, we read CSV file containing edges of a graph, process the data to 
+Here, we load a CSV file containing edges of a graph, process the data to 
 identify source and target nodes, extract a specific feature (distance), and 
 convert this data into a simplicial complex. The summary provides a quick 
 overview of the structure and properties of the generated simplicial complex, 
 including the number of nodes, edges, and higher-dimensional simplices.
+
 
 >>> from pytspl import read_csv
 >>>
@@ -40,13 +41,13 @@ Num. of triangles: 3
 Shape: (7, 10, 3)
 Max Dimension: 2
 
-Similarly, the data can be read from a TNTP format using the :func:`read_tntp` 
+Similarly, the data can be loaded from a TNTP format using the :func:`read_tntp` 
 function.
 
 
 Incidence matrices 
 ------------------
-The data can be directly read from incidence matrices :math:`\textbf{B}_1` 
+The data can be directly loaded from incidence matrices :math:`\textbf{B}_1` 
 and :math:`\textbf{B}_2`. The triangles (2-simplices) are extracted from 
 the :math:`\textbf{B}_2` matrix.
 
@@ -84,7 +85,7 @@ threshold :math:`\epsilon`. This method is distance-based. By default, when
 we load a dataset using the :func:`load_dataset` function, the SC is built 
 using the triangle-based method.
 
-In this first example, we build the simplicial complex by finding all the 
+In this first example, we build the SC by finding all the 
 triangles considering them as 2-simplices.
 
 >>> sc = read_csv(
@@ -102,9 +103,8 @@ Num. of triangles: 3
 Shape: (7, 10, 3)
 Max Dimension: 2
 
-In this second example, we build a simplicial complex using the distance-method 
-and define distance :math:`\epsilon`. When building a SC with the distance-based method, 
-we get one less triangle (2-simplex).
+In the second example, we build a SC using the distance-based method
+and define :math:`\epsilon`. In this case, we get one less triangle (2-simplex).
 
 >>> sc = read_csv(
 >>>        filename=filename,
@@ -126,10 +126,10 @@ Shape: (7, 10, 2)
 Max Dimension: 2
 
 
-Reading coordinates and edge flow from data
+Loading coordinates and edge flow from data
 -------------------------------------------
 
-We can also read coordinates and edge flow from custom datasets.
+We can also load coordinates and edge flow from custom datasets.
 
 >>> from pytspl.io.network_reader import read_coordinates, read_flow
 >>>

@@ -2,19 +2,20 @@
 Introduction to Filters
 =======================
 
-The library has functionalities for various filters, namely Simplicial Convolutional Filters and Simplicial Trend Filters.
+
+``PyTSPL `` has functional for various filters, namely Simplicial Convolutional Filters and Simplicial Trend Filters.
 The Simplicial Convolutional Filters include the following filters:
 
 - Least Squares Filter Design
 - Grid-based Filter Design
 - Chebyshev Filter Design
 
-This tutorial will introduce Chebyshev Filter Design. The tutorials to the other filters 
-can be found under `notebooks/filters`. All the filters are under the ``pytspl.filters`` 
+This tutorial will introduce Chebyshev Filter Design. Tutorials for other filters 
+can be found under `notebooks/filters`. All the filters are included in the ``pytspl.filters`` 
 module.
 
 
-First, we load the chicago-sketch dataset as a simplicial complex.
+Load the chicago-sketch dataset as a simplicial complex.
 
 >>> from pytspl import load_dataset
 >>> sc, coordinates, flow = load_dataset("chicago-sketch")
@@ -27,7 +28,7 @@ Coordinates: 546
 Flow: 1088
 
 
-We can plot the simplicial complex using the :func:`draw_network` function.
+Plot the simplicial complex using the :func:`draw_network` function.
 
 >>> from pytspl import SCPlot
 >>>
@@ -51,7 +52,7 @@ Here, we can plot the Chebyshev Series approximation for a matrix :math:`\textbf
 .. image:: figures/filters/cheb_series_approx.png
 
 
-Now, we can apply the filter. Since the flow is a dictionary, we need to convert it to 
+Aply the filter. Since the flow is a dictionary, we need to convert it to 
 a numpy array.
 
 >>> # convert the flow to an numpy array
@@ -81,7 +82,7 @@ Filter size: 48 - Error: 0.15123464345417265 - Filter error: 0.362192362318501 -
 Filter size: 49 - Error: 0.15123464345417265 - Filter error: 0.362192362318501 - Error response: 0.5854072247946369
 
 
-We can plot the extracted component and filter error.
+Plot the extracted component and filter error.
 
 >>> fig, ax = plt.subplots(1, 1, figsize=(10, 5))
 >>> 
@@ -92,7 +93,7 @@ We can plot the extracted component and filter error.
 .. image:: figures/filters/chebyshev_error.png
 
 
-Finally, we can plot the frequency response approximation of the filter.
+Finally, plot the frequency response approximation of the filter.
 
 >>> cheb_filter.plot_frequency_response_approx(flow=flow, component="gradient")
 

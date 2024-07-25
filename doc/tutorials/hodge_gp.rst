@@ -1,16 +1,16 @@
 =========================================
-Hodge-Compostional Edge Gaussian Process
+Hodge-Compositional Edge Gaussian Process
 =========================================
 
 
-Hodge-compositional Gaussian processes (Hodge-GP) are for modeling 
-functions defined over the edge set of a simplical complexes. The goal of this 
-tutorial is to demonstrate how to use the Hodge-GP to model functions over edge 
-flows to learn flow-type data on networks where the edge flows can be charcterized
-by discrete divergence and curl. They enable learning on different Hodge components
-seperately allowing us to capture the behaviour of edge flows.
+Hodge-compositional Gaussian processes (Hodge-GP) are used for modeling 
+functions defined over the edge set of a simplicial complex. The goal of this 
+tutorial is to demonstrate how to use Hodge-GP to model functions over edge 
+flows to learn flow-type data on networks where the edge flows can be characterized
+by discrete divergence and curl. Hodge-GP enables learning on different Hodge components
+separately, allowing us to capture the behavior of edge flows.
 
-We will demonstrate an edge-based learning taks in foreign exchage market data.
+We will demonstrate an edge-based learning task using foreign exchange market data.
 
 >>> from pytspl import load_dataset
 >>>
@@ -29,13 +29,16 @@ Max Dimension: 2
 Coordinates: 25
 Flow: 210
 
-Next, we create a Hodge-GP model and fit it to the data. We pass in the simplicial complex 
+
+Create a Hodge-GP model and fit it to the data. We pass the SC
 and the flow data as input to the model.
+
 
 >>> from pytspl.hodge_gp import HodgeGPTrainer
 >>>
 >>> # create the trainer object
 >>> hogde_gp = HodgeGPTrainer(sc=sc, y=y)
+
 
 Set the model parameters and split the data into training and testing sets.
 
@@ -54,9 +57,10 @@ x_test: (168,)
 y_train: (42,)
 y_test: (168,)
 
+
 Now, we serialize a kernel type using the eigenpairs. The kernels encode prior knowledge 
 about the unknown function and can be often difficult to choose. The available kernel types
-can be found in the `pytspl.hodge_gp.kernels` module.
+can be found under the `pytspl.hodge_gp.kernels` module.
 
 >>> from pytspl.hogde_gp.kernel_serializer import KernelSerializer
 >>>
@@ -81,7 +85,7 @@ Specify the likelihood and the mean function for the model.
 >>> model = ExactGPModel(x_train, y_train, likelihood, kernel, mean_function=None)
 
 
-We can specify the output device for the model and likelihood.
+Specify the output device for the model and likelihood.
 
 >>> import torch
 >>> output_device = "cpu"
@@ -97,7 +101,7 @@ Next, we can print the model parameters and their values.
 >>>    print(f'Parameter name: {param_name:50} value = {param.item()}')
 
 
-Now, we can train the model using the training data.
+Train the model using the training data.
 
 >>> # train the model
 >>> model.train()
@@ -114,7 +118,7 @@ Iteration 999/1000 - Loss: -0.171
 Iteration 1000/1000 - Loss: -0.171 
 
 
-To evaluate the model, we can use the testing data.
+Evaluate the model using the testing data.
 
 >>> # evaluate the model
 >>> hogde_gp.predict(model, likelihood, x_test, y_test)

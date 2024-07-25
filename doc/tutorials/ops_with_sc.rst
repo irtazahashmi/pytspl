@@ -21,8 +21,9 @@ Let's start by loading a dataset and getting a summary of the simplicial complex
     >>> import matplotlib.pyplot as plt
     >>>
     >>> sc, coordinates, flow = load_dataset("paper")    
+    
 
-Now, we create a synthetic flow.
+Create a synthetic flow.
 
 .. plot::
     :context: close-figs

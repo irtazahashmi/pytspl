@@ -2,28 +2,28 @@ PyTSPL: Topological Signal Processing and Learning in Python
 ============================================================
 
 .. image:: https://readthedocs.org/projects/pytspl/badge/?version=latest
-    :target: https://pytspl.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+  :target: https://pytspl.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
 
 .. image:: https://img.shields.io/pypi/v/pytspl.svg
-   :target: https://pypi.org/project/pytspl
-    :alt: PyPI
+  :target: https://pypi.org/project/pytspl
+  :alt: PyPI
 
 .. image:: https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml/badge.svg
-   :target: https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml
-    :alt: Build Status
+  :target: https://github.com/irtazahashmi/pytspl/actions/workflows/onpush.yml
+  :alt: Build Status
 
 .. image:: https://codecov.io/gh/irtazahashmi/pytspl/graph/badge.svg?token=7KQ0U8FW70
-   :target: https://codecov.io/gh/irtazahashmi/pytspl
-    :alt: Code Coverage
+  :target: https://codecov.io/gh/irtazahashmi/pytspl
+  :alt: Code Coverage
 
 .. image:: https://img.shields.io/pypi/l/pytspl.svg
-   :target: https://github.com/irtazahashmi/pytspl/blob/dev/LICENSE
-   :alt: License
+  :target: https://github.com/irtazahashmi/pytspl/blob/dev/LICENSE
+  :alt: License
 
 .. image:: https://img.shields.io/badge/python-3.11+-blue?logo=python
-   :target: https://www.python.org/
-    :alt: Python Version
+  :target: https://www.python.org/
+  :alt: Python Version
 
 
 The PyTSPL python package is a library for Topological Signal Processing and Learning. It is a 
@@ -131,19 +131,17 @@ We can also plot the edge flow of the SC using:
 
 Let's go ahead and load a larger dataset and plot it:
 
-.. code-block:: python
 
-   >>> sc, coordinates, flow = load_dataset("chicago-sketch")
-   >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
-   >>> fig, ax = fig, ax = plt.subplots(figsize=(80, 40))
-   >>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
+>>> sc, coordinates, flow = load_dataset("chicago-sketch")
+>>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+>>> fig, ax = fig, ax = plt.subplots(figsize=(80, 40))
+>>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
 
 
 .. image:: ../doc/tutorials/figures/chicago-sketch-example.png
   :alt:
 .. image:: doc/tutorials/figures/chicago-sketch-example.png
   :alt:
-
 
 
 Installation
@@ -156,7 +154,7 @@ The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
   pip install pytspl
 
 
-Note that you will need a recent version of ``Python (>=3.10)``.
+Note that you will need a recent version of ``Python (>=3.11)``.
 
 To run the library, you will need to install the following dependencies seperately due to the fact that
 PyPI does not allow for the installation of packages from git repositories:
