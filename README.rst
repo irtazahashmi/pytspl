@@ -154,7 +154,7 @@ The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
   pip install pytspl
 
 
-Note that you will need a recent version of ``Python (>=3.10)``.
+Note that you will need a recent version of ``Python (>=3.11)``.
 
 To run the library, you will need to install the following dependencies seperately due to the fact that
 PyPI does not allow for the installation of packages from git repositories:
