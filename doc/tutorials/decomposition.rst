@@ -1,6 +1,6 @@
-========================================
-Eigendecompotion and Hodge decomposition
-========================================
+=========================================
+Eigendecomposition and Hodge decomposition
+=========================================
 
 In this tutorial, we will show how to perform the eigendecomposition and 
 the Hodge decomposition of a SC using the ``decomposition`` module.
@@ -36,7 +36,7 @@ harmonic, curl and gradient components:
     [-0.18372608]
     [ 0.18372608]]
 
-To plot all the eigenpairs for a component, we can use the following code:
+To plot the eigenpairs for a component, we can use the following code:
 
 .. plot::
     :context: close-figs
@@ -69,6 +69,7 @@ module. First, we need to create a synthetic flow:
     >>> synthetic_flow = np.array([0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09])
     >>> scplot.draw_network(edge_flow=synthetic_flow, ax=ax)
 
+
 We can get the divergence and the curl in the following way:
 
 >>> sc.get_divergence(synthetic_flow)
@@ -76,7 +77,7 @@ array([-2.91, -0.85,  2.43,  0.77,  1.78, -0.14, -1.08])
 >>> sc.get_curl(synthetic_flow)
 [ 0.41 -2.41  1.73]
 
-To get the harmonic, curl and gradient flows, we can use the following code:
+To get the harmonic, curl and gradient flows, we can do the following:
 
 >>> f_h = sc.get_component_flow(flow=synthetic_flow, component="harmonic")
 [-0.07 -0.14  0.21 -0.07  0.34 -0.55  0.55  0.37  0.18 -0.18]
@@ -95,7 +96,7 @@ We can plot the harmonic, curl and gradient flows using the following code:
     >>> scplot.draw_hodge_decomposition(flow=synthetic_flow, figsize=(18, 5))
 
 
-To only plot the harmonic flow, we can use the following code:
+To plot the harmonic flow only, we can do the following:
 
 .. plot::
     :context: close-figs

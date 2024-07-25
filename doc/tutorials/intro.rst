@@ -47,7 +47,7 @@ Coordinates: 7
 Flow: 10
 
 
-We can plot the network using the ``SCPlot`` module.
+Plot the network using the :func:`draw_network` method of the ``SCPlot`` class.
 
 .. plot::
     :context: close-figs
@@ -62,7 +62,7 @@ We can plot the network using the ``SCPlot`` module.
     >>> scplot.draw_network(ax=ax)
 
 
-We can also plot the SC with its edge flow.
+We can also plot the SC with its corresponding edge flow.
 
 .. plot::
     :context: close-figs
@@ -73,7 +73,7 @@ We can also plot the SC with its edge flow.
 
 To retrive the properties of the SC, we can use the ``SimplicialComplex`` object. 
 We can retrieve, for example, adjacency matrix, incidence matrices and the Hodge 
-Laplacian matrices using the rank.
+Laplacian matrices by passing in the rank as a parameter.
 
 >>> sc.adjacency_matrix()
 >>> sc.incidence_matrix(rank=1)
