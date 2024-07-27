@@ -69,7 +69,7 @@ def read_tntp(
     src_col: str,
     dest_col: str,
     skip_rows: int,
-    delimeter: str = "\t",
+    delimiter: str = "\t",
     start_index_zero: bool = True,
 ) -> SCBuilder:
     """Read a tntp file and returns a graph.
@@ -81,7 +81,7 @@ def read_tntp(
         nodes.
         skip_rows (int): The number of (metadata) rows to skip in the tntp
         file.
-        delimeter (str): The delimeter used in the tntp file. Defaults to next
+        delimiter (str): The delimiter used in the tntp file. Defaults to next
         line.
         start_index_zero (bool): True, if the node ids start from 0. False,
         if the node ids start from 1.
@@ -90,7 +90,7 @@ def read_tntp(
         SCBuilder: SC builder object to build the simplicial complex.
     """
     # Read the file
-    df = pd.read_csv(filename, skiprows=skip_rows, sep=delimeter)
+    df = pd.read_csv(filename, skiprows=skip_rows, sep=delimiter)
     # trimmed cols names
     df.columns = [s.strip() for s in df.columns]
 
@@ -128,7 +128,7 @@ def read_tntp(
 
 def read_csv(
     filename: str,
-    delimeter: str,
+    delimiter: str,
     src_col: str,
     dest_col: str,
     feature_cols: list = None,
@@ -138,7 +138,7 @@ def read_csv(
 
     Args:
         filename (str): The name of the csv file.
-        delimeter (str): The delimeter used in the csv file.
+        delimiter (str): The delimiter used in the csv file.
         src_col (str): The name of the column containing the source nodes.
         dest_col (str): The name of the column containing the destination
         nodes.
@@ -149,7 +149,7 @@ def read_csv(
     Returns:
        SCBuilder: SC builder object to build the simplicial complex.
     """
-    df = pd.read_csv(filename, sep=delimeter)
+    df = pd.read_csv(filename, sep=delimiter)
 
     # get the nodes and edges
     nodes, edges = _extract_nodes_edges(
@@ -249,7 +249,7 @@ def read_coordinates(
     node_id_col: str,
     x_col: str,
     y_col: str,
-    delimeter: str,
+    delimiter: str,
     start_index_zero: bool = True,
 ) -> dict:
     """
@@ -260,7 +260,7 @@ def read_coordinates(
         node_id_col (str): The name of the column containing the node ids.
         x_col (str): The name of the column containing the x coordinates.
         y_col (str): The name of the column containing the y coordinates.
-        delimeter (str, optional): The delimeter used in the csv file.
+        delimiter (str, optional): The delimiter used in the csv file.
         start_index_zero (bool): True, if the node ids start from 0. False,
         if the node ids start from 1.
 
@@ -270,7 +270,7 @@ def read_coordinates(
     if not os.path.exists(filename):
         return None
 
-    df_coords = pd.read_csv(filename, sep=delimeter)
+    df_coords = pd.read_csv(filename, sep=delimiter)
     df_coords.columns = [s.strip() for s in df_coords.columns]
 
     if not start_index_zero:
@@ -292,7 +292,7 @@ def read_flow(filename: str, sep: str = "\t", header="infer") -> dict:
 
     Args:
         filename (str): The name of the flow file.
-        sep (str): The delimeter used in the flow file. Defaults to tab.
+        sep (str): The delimiter used in the flow file. Defaults to tab.
         header: The header of the flow file. Defaults to infer.
 
     Returns:

@@ -45,14 +45,14 @@ In the next step, we initialize the Chebyshev Filter Design object.
 >>> from pytspl.filters import ChebyshevFilterDesign
 >>> cheb_filter = ChebyshevFilterDesign(simplicial_complex=sc)
 
-Here, we can plot the Chebyshev Series approximation for a matrix :math:`\textbf{P}`.
+Here, we can plot the Chebyshev series approximation for a matrix :math:`\textbf{P}`.
 
 >>> chebfilter.plot_chebyshev_series_approx(p_choice="L1L")
 
 .. image:: figures/filters/cheb_series_approx.png
 
 
-Aply the filter. Since the flow is a dictionary, we need to convert it to 
+Apply the filter. Since the flow is a dictionary, we need to convert it to 
 a numpy array.
 
 >>> # convert the flow to an numpy array

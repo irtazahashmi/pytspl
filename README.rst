@@ -33,7 +33,7 @@ on `Read the Docs <https://pytspl.readthedocs.io/en/latest/>`_ and development t
 
 
 The primary goal of ``PyTSPL`` is to provide a unified and comprehensive toolset for the analysis and
-visualization of higher-order interactions, currently centered towards simplical complexes (SCs). The 
+visualization of higher-order interactions, currently centered towards simplicial complexes (SCs). The 
 functionalities of SCs are scattered and it’s difficult to use multiple functionalities together. By 
 integrating multiple functionalities within a single library and extending them, PyTSPL aims to facilitate 
 research and practical applications in various domains.
@@ -42,7 +42,7 @@ Currently, the PyTSPL facilitates the functionalities for SCs but the aim is to
 extend the library for additional topological learning functionalities. 
 
 
-**Simlicial complexes (SC):**
+**Simplicial complexes (SC):**
 
 - ``io``: Responsible for reading raw datasets and preprocessing them such that they can be passed on to 
   the next module to build an SC. The raw datasets can be read using the `network_reader` submodule.
@@ -54,7 +54,7 @@ extend the library for additional topological learning functionalities.
 - ``simplicial_complex``: Once the raw data is read using the `io` module, it is stored in the 
   `simplicial_complex` data structure. This data structure allows us to compute the algebraic properties 
   of the SC.  This includes computing the incidence matrix, adjacency matrix, Laplacian matrices and many
-  others. It also allows for the computation of k-step lower and upper shifting and simplical embeddings
+  others. It also allows for the computation of k-step lower and upper shifting and simplicial embeddings
   of the SC.
 
 - ``plot``: Offers the functionality to plot an SC in a quick and meaningful way. The user can draw the entire 
@@ -105,13 +105,13 @@ Let's go ahead and plot the SC using the coordinates:
 >>> scplot.draw_network(ax=ax)
 
 .. image:: ../doc/tutorials/figures/paper-sc-example.png
-  :alt:
-  :width: 40%
-  :align: center
+    :alt:
+    :width: 40%
+    :align: center
 .. image:: doc/tutorials/figures/paper-sc-example.png
-  :alt:
-  :width: 40%
-  :align: center
+    :alt:
+    :width: 40%
+    :align: center
 
 
 We can also plot the edge flow of the SC using:
@@ -120,28 +120,28 @@ We can also plot the edge flow of the SC using:
 >>> scplot.draw_network(edge_flow=flow, ax=ax)
 
 .. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
-  :alt:
-  :width: 45%
-  :align: center
+    :alt:
+    :width: 45%
+    :align: center
 .. image:: doc/tutorials/figures/paper-sc-flow-example.png
-  :alt:
-  :width: 45%
-  :align: center
+    :alt:
+    :width: 45%
+    :align: center
   
 
 Let's go ahead and load a larger dataset and plot it:
 
 
 >>> sc, coordinates, flow = load_dataset("chicago-sketch")
->>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+>>> scplot = SCPlot(simplicial_complex=sc, coordinates=coordinates)
 >>> fig, ax = fig, ax = plt.subplots(figsize=(80, 40))
 >>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
 
 
 .. image:: ../doc/tutorials/figures/chicago-sketch-example.png
-  :alt:
+    :alt:
 .. image:: doc/tutorials/figures/chicago-sketch-example.png
-  :alt:
+    :alt:
 
 
 Installation
@@ -156,7 +156,7 @@ The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
 
 Note that you will need a recent version of ``Python (>=3.11)``.
 
-To run the library, you will need to install the following dependencies seperately due to the fact that
+To run the library, you will need to install the following dependencies separately due to the fact that
 PyPI does not allow for the installation of packages from git repositories:
 
 .. code-block:: bash

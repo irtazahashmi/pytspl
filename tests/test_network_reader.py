@@ -52,7 +52,7 @@ class TestNetworkReader:
         filename = f"{PAPER_DATA_FOLDER}/network.tntp"
         scbuilder = read_tntp(
             filename=filename,
-            delimeter="\t",
+            delimiter="\t",
             src_col="Tail",
             dest_col="Head",
             skip_rows=5,
@@ -70,12 +70,12 @@ class TestNetworkReader:
 
     def test_read_csv(self):
         filename = f"{PAPER_DATA_FOLDER}/edges.csv"
-        delimeter = " "
+        delimiter = " "
         src_col = "Source"
         dest_col = "Target"
         feature_cols = ["Distance"]
         sc = read_csv(
-            filename, delimeter, src_col, dest_col, feature_cols
+            filename, delimiter, src_col, dest_col, feature_cols
         ).to_simplicial_complex()
 
         incidence_mat = sc.incidence_matrix(rank=1).toarray()
@@ -138,7 +138,7 @@ class TestNetworkReader:
             node_id_col="Id",
             x_col="X",
             y_col="Y",
-            delimeter=",",
+            delimiter=",",
         )
         assert len(coordinates) == nodes
 
