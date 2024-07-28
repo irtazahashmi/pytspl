@@ -59,7 +59,7 @@ Plot the network using the :func:`draw_network` method of the ``SCPlot`` class.
     >>> fig, ax = plt.subplots(figsize=(4, 5))
     >>>
     >>> sc, coordinates, flow = load_dataset("paper")    
-    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+    >>> scplot = SCPlot(simplicial_complex=sc, coordinates=coordinates)
     >>> scplot.draw_network(ax=ax)
 
 

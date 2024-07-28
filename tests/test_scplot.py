@@ -8,12 +8,12 @@ from pytspl.simplicial_complex import SimplicialComplex
 
 @pytest.fixture
 def sc_plot(sc_mock: SimplicialComplex, coordinates_mock: np.ndarray):
-    yield SCPlot(simplical_complex=sc_mock, coordinates=coordinates_mock)
+    yield SCPlot(simplicial_complex=sc_mock, coordinates=coordinates_mock)
 
 
 @pytest.fixture
 def sc_plot_no_coords(sc_mock: SimplicialComplex):
-    yield SCPlot(simplical_complex=sc_mock, coordinates=None)
+    yield SCPlot(simplicial_complex=sc_mock, coordinates=None)
 
 
 class TestSCPlot:

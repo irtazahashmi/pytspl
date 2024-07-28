@@ -122,7 +122,7 @@ def load_transportation_dataset(dataset: str) -> tuple:
         src_col="init_node",
         dest_col="term_node",
         skip_rows=METADATA_ROWS,
-        delimeter="\t",
+        delimiter="\t",
         # index starts at 1
         start_index_zero=start_index_zero,
     ).to_simplicial_complex()
@@ -133,7 +133,7 @@ def load_transportation_dataset(dataset: str) -> tuple:
         node_id_col="node",
         x_col="X",
         y_col="Y",
-        delimeter="\t",
+        delimiter="\t",
         start_index_zero=start_index_zero,
     )
 
@@ -172,7 +172,7 @@ def load_chicago_sketch() -> tuple:
         node_id_col="Id",
         x_col="X",
         y_col="Y",
-        delimeter=",",
+        delimiter=",",
         start_index_zero=True,
     )
 

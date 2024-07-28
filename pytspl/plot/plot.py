@@ -17,18 +17,18 @@ class SCPlot:
 
     def __init__(
         self,
-        simplical_complex: SimplicialComplex,
+        simplicial_complex: SimplicialComplex,
         coordinates: dict = None,
     ) -> None:
         """
         Args:
-            simplical_complex (SimplicialComplex): The simplicial
+            simplicial_complex (SimplicialComplex): The simplicial
             complex network object.
             coordinates (dict, optional): Dict of positions
             [node_id : (x, y)] is used for placing the 0-simplices. The
             standard nx spring layer is used otherwise.
         """
-        self.sc = simplical_complex
+        self.sc = simplicial_complex
         self.pos = coordinates
 
     def _init_axes(self, ax) -> dict:

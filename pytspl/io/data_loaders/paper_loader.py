@@ -21,14 +21,14 @@ def load_paper_data() -> tuple:
     """
     # read network data
     filename = PAPER_DATA_FOLDER + "/edges.csv"
-    delimeter = " "
+    delimiter = " "
     src_col = "Source"
     dest_col = "Target"
     feature_cols = ["Distance"]
 
     sc = read_csv(
         filename=filename,
-        delimeter=delimeter,
+        delimiter=delimiter,
         src_col=src_col,
         dest_col=dest_col,
         feature_cols=feature_cols,
@@ -41,7 +41,7 @@ def load_paper_data() -> tuple:
         node_id_col="Id",
         x_col="X",
         y_col="Y",
-        delimeter=" ",
+        delimiter=" ",
     )
 
     # read flow data

@@ -20,7 +20,7 @@ including the number of nodes, edges, and higher-dimensional simplices.
 >>> PAPER_DATA_FOLDER = "pytspl/data/paper_data"
 >>>
 >>> filename = f"{PAPER_DATA_FOLDER}/edges.csv"
->>> delimeter = " "
+>>> delimiter = " "
 >>> src_col = "Source"
 >>> dest_col = "Target"
 >>> feature_cols = ["Distance"]
@@ -28,7 +28,7 @@ including the number of nodes, edges, and higher-dimensional simplices.
 >>> # reading a csv file
 >>> sc = read_csv(
 >>>        filename=filename,
->>>        delimeter=delimeter,
+>>>        delimiter=delimiter,
 >>>        src_col=src_col,
 >>>        dest_col=dest_col,
 >>>        feature_cols=feature_cols
@@ -90,7 +90,7 @@ triangles considering them as 2-simplices.
 
 >>> sc = read_csv(
 >>>        filename=filename,
->>>        delimeter=delimeter,
+>>>        delimiter=delimiter,
 >>>        src_col=src_col,
 >>>        dest_col=dest_col,
 >>>        feature_cols=feature_cols
@@ -108,7 +108,7 @@ and define :math:`\epsilon`. In this case, we get one less triangle (2-simplex).
 
 >>> sc = read_csv(
 >>>        filename=filename,
->>>        delimeter=delimeter,
+>>>        delimiter=delimiter,
 >>>        src_col=src_col,
 >>>        dest_col=dest_col,
 >>>        feature_cols=feature_cols
@@ -141,7 +141,7 @@ We can also load coordinates and edge flow from custom datasets.
 >>>     node_id_col="Id",
 >>>     x_col="X",
 >>>     y_col="Y",
->>>     delimeter=" "
+>>>     delimiter=" "
 >>> )
 >>>
 >>> print(coordinates)
@@ -157,7 +157,7 @@ To load the edge flow data, we can use the :func:`read_flow` function.
 >>>     src_col="Source",
 >>>     dest_col="Target",
 >>>     flow_col="Flow",
->>>     delimeter=" "
+>>>     delimiter=" "
 >>> )
 >>>
 >>> print(flow)

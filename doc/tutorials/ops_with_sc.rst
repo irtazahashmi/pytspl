@@ -1,16 +1,16 @@
-===================================
-Operations with Simplical Complexes
-===================================
+====================================
+Operations with Simplicial Complexes
+====================================
 
 This tutorial will give an overview of the operations possible with 
 simplicial complexes.
 
 Simplicial Shifting
 -------------------
-In simplical shifting, we apply :math:`\mathbf{H}_k` to a 
+In simplicial shifting, we apply :math:`\mathbf{H}_k` to a 
 :math:`k`-simplicial signal :math:`\mathbf{s}^k`, we shift the 
 signal :math:`L` times over the lower or upper neighbourhoods. 
-Let's go ahead and apply simplicial shifting to a simplical complex.
+Let's go ahead and apply simplicial shifting to a simplicial complex.
 
 Let's start by loading a dataset and getting a summary of the simplicial complex.
 
@@ -21,7 +21,13 @@ Let's start by loading a dataset and getting a summary of the simplicial complex
     >>> import matplotlib.pyplot as plt
     >>>
     >>> sc, coordinates, flow = load_dataset("paper")    
-    
+    Num. of nodes: 7
+    Num. of edges: 10
+    Num. of triangles: 3
+    Shape: (7, 10, 3)
+    Max Dimension: 2
+    Coordinates: 7
+    Flow: 10
 
 Create a synthetic flow.
 
@@ -38,7 +44,7 @@ neighbourhoods by applying the function :func:`apply_lower_shifting`.
 
     >>> from pytspl import SCPlot
     >>>
-    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+    >>> scplot = SCPlot(simplicial_complex=sc, coordinates=coordinates)
     >>> fig, axs = plt.subplots(1, 3, figsize=(15, 5))
     >>>
     >>> # plot indicator flow f
@@ -60,7 +66,7 @@ neighbourhoods by applying the function :func:`apply_lower_shifting`.
     >>> scplot.draw_network(edge_flow=flow, ax=axs[2])
 
 
-Similiarly, we can apply the function :func:`apply_upper_shifting` to
+Similarly, we can apply the function :func:`apply_upper_shifting` to
 shift the signal :math:`L_2` times over the upper neighbourhoods.
 
 We can also apply :math:`k`-step simplicial shifting.
@@ -78,8 +84,8 @@ We can also apply :math:`k`-step simplicial shifting.
 
 
 
-Simplicial Embeddings and Simplical Fourier Transform (SFT)
------------------------------------------------------------
+Simplicial Embeddings and Simplicial Fourier Transform (SFT)
+------------------------------------------------------------
 
 Given a flow :math:`\mathbf{f}`, we can extract the harmonic, curl, and gradient 
 embeddings. Such embeddings represent a compressed representation of the edge flow.
@@ -96,7 +102,7 @@ eigenvector.
     >>> # define a synthetic flow
     >>> synthetic_flow = [0.03, 0.5, 2.38, 0.88, -0.53, -0.52, 1.08, 0.47, -1.17, 0.09] 
 
-    >>> # get the simplicial embeddings for hamonic, curl and gradient
+    >>> # get the simplicial embeddings for harmonic, curl and gradient
     >>> f_tilda_h, f_tilda_c, f_tilda_g = sc.get_simplicial_embeddings(synthetic_flow)
     >>>
     >>> print("embedding_h:", f_tilda_h)

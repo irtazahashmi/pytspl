@@ -11,7 +11,7 @@ class EdgeFlowDenoising(BaseFilter):
     """
     Edge flow denoising with a low-pass filter H_P.
 
-    Solve the regularized optimization probelm to estimate f_tilde from
+    Solve the regularized optimization problem to estimate f_tilde from
     f = f0 + ε where, ε is a zero mean Gaussian noise.
     """
 
@@ -83,12 +83,12 @@ class EdgeFlowDenoising(BaseFilter):
             raise ValueError("Run the denoising method first.")
 
         P = self.get_p_matrix(p_choice).toarray()
-        _, eigenvals = get_eigendecomposition(lap_mat=P)
+        _, eigenvalues = get_eigendecomposition(lap_mat=P)
 
         frequency_responses = self.history["frequency_responses"]
 
         plt.figure(figsize=(10, 6))
-        plt.plot(eigenvals, frequency_responses[-1])
+        plt.plot(eigenvalues, frequency_responses[-1])
         plt.xlabel("Frequency", fontsize=12)
         plt.ylabel("Frequency Response", fontsize=12)
         plt.title("Desired Frequency Response", fontsize=14)

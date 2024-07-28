@@ -200,14 +200,14 @@ class SimplicialComplex:
         Returns:
             set[tuple]: Set of faces of the simplex.
         """
-        faceset = set()
-        numnodes = len(simplex)
-        for r in range(numnodes, 0, -1):
+        face_set = set()
+        num_of_nodes = len(simplex)
+        for r in range(num_of_nodes, 0, -1):
             for face in combinations(simplex, r):
-                faceset.add(tuple(sorted(face)))
+                face_set.add(tuple(sorted(face)))
         k = len(simplex) - 1
-        faceset = sorted([face for face in faceset if len(face) == k])
-        return faceset
+        face_set = sorted([face for face in face_set if len(face) == k])
+        return face_set
 
     def identity_matrix(self) -> np.ndarray:
         """Identity matrix of the simplicial complex."""
@@ -256,8 +256,8 @@ class SimplicialComplex:
         adjacency_mat = np.zeros((self.B1.shape[0], self.B1.shape[0]))
 
         for col in range(self.B1.shape[1]):
-            col_nozero = np.where(self.B1[:, col] != 0)[0]
-            from_node, to_node = col_nozero[0], col_nozero[1]
+            col_nonzero = np.where(self.B1[:, col] != 0)[0]
+            from_node, to_node = col_nonzero[0], col_nonzero[1]
             adjacency_mat[from_node, to_node] = 1
             adjacency_mat[to_node, from_node] = 1
 
@@ -421,7 +421,7 @@ class SimplicialComplex:
         L1U = self.upper_laplacian_matrix(rank=k).toarray()
         L1L = self.lower_laplacian_matrix(rank=k).toarray()
 
-        # eigendeomposition
+        # eigendecomposition
         u_h, _ = get_harmonic_eigenpair(L1, tolerance=1e-3)
         u_c, _ = get_curl_eigenpair(L1U, 1e-3)
         u_g, _ = get_gradient_eigenpair(L1L, 1e-3)

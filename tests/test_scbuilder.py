@@ -9,14 +9,14 @@ from pytspl.simplicial_complex.scbuilder import SCBuilder
 def graph():
     data_folder = "pytspl/data/paper_data"
     filename = data_folder + "/edges.csv"
-    delimeter = " "
+    delimiter = " "
     src_col = "Source"
     dest_col = "Target"
     feature_cols = ["Distance"]
 
     g = read_csv(
         filename=filename,
-        delimeter=delimeter,
+        delimiter=delimiter,
         src_col=src_col,
         dest_col=dest_col,
         feature_cols=feature_cols,

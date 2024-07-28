@@ -1,6 +1,6 @@
-=========================================
+===========================================
 Eigendecomposition and Hodge decomposition
-=========================================
+===========================================
 
 In this tutorial, we will show how to perform the eigendecomposition and 
 the Hodge decomposition of a SC using the ``decomposition`` module.
@@ -44,7 +44,7 @@ To plot the eigenpairs for a component, we can use the following code:
 
     >>> from pytspl import SCPlot
     >>>
-    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+    >>> scplot = SCPlot(simplicial_complex=sc, coordinates=coordinates)
     >>> scplot.draw_eigenvectors(component="gradient")
 
 

@@ -37,7 +37,7 @@ class KernelSerializer:
             )
 
         if data_name == "forex":
-            kernels = Kernels.get_forex_kernerls()
+            kernels = Kernels.get_forex_kernels()
             kernel = kernels[kernel_type]
             return kernel
         else:
