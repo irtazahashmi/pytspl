@@ -113,7 +113,7 @@ class ChebyshevFilterDesign(BaseFilter):
             p_choice (str): The choice of P matrix.
 
         Returns:
-            tuple: The alpha and lamda_max value calculated.
+            tuple: The alpha and lambda_max value calculated.
         """
         P = self.get_p_matrix(p_choice).toarray()
         v = self.power_iteration(P=P)
@@ -304,7 +304,7 @@ class ChebyshevFilterDesign(BaseFilter):
             Defaults to 100.
         """
         P = self.get_p_matrix(p_choice).toarray()
-        _, eigenvals = get_eigendecomposition(lap_mat=P)
+        _, eigenvalues = get_eigendecomposition(lap_mat=P)
 
         if not n:
             n = len(P)
@@ -323,9 +323,9 @@ class ChebyshevFilterDesign(BaseFilter):
 
         plt.figure(figsize=(15, 5))
         # eigenvalues
-        plt.scatter(eigenvals, g(eigenvals))
+        plt.scatter(eigenvalues, g(eigenvalues))
         # chebyshev approx
-        plt.scatter(eigenvals, g_chebysev(eigenvals))
+        plt.scatter(eigenvalues, g_chebysev(eigenvalues))
         plt.title("Function approximation using Chebyshev polynomials")
         plt.xlabel("Eigenvalues")
         # add legend
@@ -352,13 +352,13 @@ class ChebyshevFilterDesign(BaseFilter):
 
         # get the unique eigenvalues
         L1 = self.sc.hodge_laplacian_matrix().toarray()
-        U, eigenvals = get_eigendecomposition(lap_mat=L1)
+        U, eigenvalues = get_eigendecomposition(lap_mat=L1)
         # get the true signal
         f_true = self.get_true_signal(f=flow, component=component)
 
         plt.figure(figsize=(15, 5))
-        plt.scatter(eigenvals, U.T @ f_true)
-        plt.scatter(eigenvals, f_cheb_tilde[-1])
+        plt.scatter(eigenvalues, U.T @ f_true)
+        plt.scatter(eigenvalues, f_cheb_tilde[-1])
         plt.title(
             "Frequency response on the eigenvalues vs chebyshev filter approx"
         )

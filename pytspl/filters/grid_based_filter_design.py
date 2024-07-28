@@ -27,7 +27,7 @@ class GridBasedFilterDesign(BaseFilter):
         self, P: np.ndarray, num_of_samples: int
     ) -> np.ndarray:
         """
-        Sample M1 and M2 grid points unoformly in the interval for the smallest
+        Sample M1 and M2 grid points uniformly in the interval for the smallest
         set value greater than 0 as the lower bound.
 
         Args:

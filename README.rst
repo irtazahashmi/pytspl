@@ -99,18 +99,16 @@ Let's go ahead and plot the SC using the coordinates:
 >>> from pytspl import SCPlot
 >>> import matplotlib.pyplot as plt
 >>>
->>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+>>> scplot = SCPlot(simplicial_complex=sc, coordinates=coordinates)
 >>>
 >>> fig, ax = plt.subplots(figsize=(4, 5))
 >>> scplot.draw_network(ax=ax)
 
 .. image:: ../doc/tutorials/figures/paper-sc-example.png
     :alt:
-    :width: 40%
     :align: center
 .. image:: doc/tutorials/figures/paper-sc-example.png
     :alt:
-    :width: 40%
     :align: center
 
 
@@ -121,11 +119,9 @@ We can also plot the edge flow of the SC using:
 
 .. image:: ../doc/tutorials/figures/paper-sc-flow-example.png
     :alt:
-    :width: 45%
     :align: center
 .. image:: doc/tutorials/figures/paper-sc-flow-example.png
     :alt:
-    :width: 45%
     :align: center
   
 

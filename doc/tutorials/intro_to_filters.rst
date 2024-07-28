@@ -34,7 +34,7 @@ Plot the simplicial complex using the :func:`draw_network` function.
 >>>
 >>> fig, ax = plt.subplots(1, 1, figsize=(80, 40))
 >>>
->>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+>>> scplot = SCPlot(simplicial_complex=sc, coordinates=coordinates)
 >>> scplot.draw_network(with_labels=False, node_size=200, arrowsize=20, ax=ax)
 
 .. image:: figures/chicago-sketch-example.png

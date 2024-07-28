@@ -21,8 +21,8 @@ def get_total_variance(laplacian_matrix: np.ndarray) -> float:
     Returns:
         float: The total variance.
     """
-    eigenvecs, _ = get_eigendecomposition(laplacian_matrix)
-    return np.diag(eigenvecs.T @ laplacian_matrix @ eigenvecs)
+    eigenvectors, _ = get_eigendecomposition(laplacian_matrix)
+    return np.diag(eigenvectors.T @ laplacian_matrix @ eigenvectors)
 
 
 def get_divergence(B1: np.ndarray, flow: np.ndarray) -> np.ndarray:
@@ -54,14 +54,14 @@ def get_curl(B2: np.ndarray, flow: np.ndarray) -> np.ndarray:
 
 
 def get_harmonic_eigenpair(
-    hodgle_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
+    hodge_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
     Calculate the harmonic eigenvectors of the Hodge Laplacian - e.g. L1
     with corresponding eigenvalues.
 
     Args:
-        hodgle_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
+        hodge_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
         tolerance (float): The tolerance for eigenvalues to be considered
         zero. Defaults to machine limits for floating point types.
 
@@ -69,7 +69,7 @@ def get_harmonic_eigenpair(
         u_h (np.ndarray): The harmonic  eigenvectors U(H).
         eigenvalues (np.ndarray): The eigenvalues of the Hodge Laplacian.
     """
-    eigenvectors, eigenvalues = get_eigendecomposition(hodgle_lap_mat)
+    eigenvectors, eigenvalues = get_eigendecomposition(hodge_lap_mat)
     # get columns with zero eigenvalues as anything below tolerance
     # is considered zero
     u_h = eigenvectors[:, np.where(eigenvalues <= tolerance)[0]]

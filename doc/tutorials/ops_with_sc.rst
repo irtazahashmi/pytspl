@@ -21,7 +21,13 @@ Let's start by loading a dataset and getting a summary of the simplicial complex
     >>> import matplotlib.pyplot as plt
     >>>
     >>> sc, coordinates, flow = load_dataset("paper")    
-    
+    Num. of nodes: 7
+    Num. of edges: 10
+    Num. of triangles: 3
+    Shape: (7, 10, 3)
+    Max Dimension: 2
+    Coordinates: 7
+    Flow: 10
 
 Create a synthetic flow.
 
@@ -38,7 +44,7 @@ neighbourhoods by applying the function :func:`apply_lower_shifting`.
 
     >>> from pytspl import SCPlot
     >>>
-    >>> scplot = SCPlot(simplical_complex=sc, coordinates=coordinates)
+    >>> scplot = SCPlot(simplicial_complex=sc, coordinates=coordinates)
     >>> fig, axs = plt.subplots(1, 3, figsize=(15, 5))
     >>>
     >>> # plot indicator flow f

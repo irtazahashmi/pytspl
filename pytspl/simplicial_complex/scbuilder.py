@@ -1,5 +1,5 @@
 """SC builder module to build simplicial complex networks using
-0-simplicies (nodes), 1-simplices (edges) and 2-simplicies (triangles).
+0-simplices (nodes), 1-simplices (edges) and 2-simplices (triangles).
 
 The 2-simplices can be added in three ways:
     - Triangles passed as an argument.
@@ -24,9 +24,9 @@ class SCBuilder:
         edge_features: dict = {},
     ):
         """Initialize the SCBuilder object."""
-        # 0-simplicies - nodes
+        # 0-simplices - nodes
         self.nodes = nodes
-        # 1-simplicies - edges
+        # 1-simplices - edges
         self.edges = edges
 
         # node and edge features
@@ -92,30 +92,30 @@ class SCBuilder:
     ) -> SimplicialComplex:
         """
         Convert the graph to a simplicial complex using the given condition
-        of simplicies. The simplicial complex will also have node and edge
+        of simplices. The simplicial complex will also have node and edge
         features.
 
         Args:
-            condition (str, optional): Condition to build the 2-simplicies
+            condition (str, optional): Condition to build the 2-simplices
             (triangles). Defaults to "all".
             Options:
-            - "all": All simplicies.
+            - "all": All simplices.
             - "distance": Based on distance.
 
             dist_col_name (str, optional): Name of the column that contains
             the distance.
             dist_threshold (float, optional): Distance threshold to consider
-            for simplicies. Defaults to 1.5.
+            for simplices. Defaults to 1.5.
 
         Returns:
             SimplicialComplex: Simplicial complex network.
         """
         if triangles is None:
             if condition == "all":
-                # add all 2-simplicies
+                # add all 2-simplices
                 triangles = self.triangles()
             else:
-                # add 2-simplicies based on condition
+                # add 2-simplices based on condition
                 triangles = self.triangles_dist_based(
                     dist_col_name=dist_col_name, epsilon=dist_threshold
                 )

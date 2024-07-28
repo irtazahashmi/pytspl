@@ -8,7 +8,7 @@ from pytspl.simplicial_complex import SimplicialComplex
 
 
 class BaseFilter:
-    """Base filter class for desining linear filters."""
+    """Base filter class for designing linear filters."""
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the filter design using a simplicial complex.
@@ -155,7 +155,7 @@ class BaseFilter:
         )
 
         # concatenate the eigenvalues
-        eigenvals = np.concatenate((e_h, e_c, e_g))
+        eigen_vals = np.concatenate((e_h, e_c, e_g))
 
         # mask the eigenvectors
         mask = np.zeros(L1.shape[0])
@@ -173,6 +173,6 @@ class BaseFilter:
             )
 
         # sort mask according to eigenvalues
-        mask = mask[np.argsort(eigenvals)]
+        mask = mask[np.argsort(eigen_vals)]
 
         return mask

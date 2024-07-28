@@ -37,7 +37,7 @@ class Kernels(Enum):
         """Return the names of the implemented kernels."""
         return list(map(lambda c: c.value, cls))
 
-    def get_forex_kernerls():
+    def get_forex_kernels():
         """Return the implemented kernels for the forex data."""
         return {
             Kernels.DIFFUSION.value: DiffusionKernelForex,

@@ -16,7 +16,7 @@ from pytspl.simplicial_complex.simplicial_complex import SimplicialComplex
 
 class SimplicialTrendFilter(BaseFilter):
     """
-    Simiplicial trend filter class for denoising and interpolation.
+    Simplicial trend filter class for denoising and interpolation.
     Inherits from the filter base class.
     """
 

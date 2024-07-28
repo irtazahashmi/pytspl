@@ -249,7 +249,7 @@ class HodgeGPTrainer:
             optimizer.zero_grad()
             # Output from model
             output = model(x_train)
-            # Calc loss and backprop gradients
+            # Calculate loss and backpropagation gradients
             loss = -mll(output, y_train)
             loss.backward()
             print(

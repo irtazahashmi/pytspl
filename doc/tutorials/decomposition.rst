@@ -1,6 +1,6 @@
-=========================================
+===========================================
 Eigendecomposition and Hodge decomposition
-=========================================
+===========================================
 
 In this tutorial, we will show how to perform the eigendecomposition and 
 the Hodge decomposition of a SC using the ``decomposition`` module.

@@ -16,7 +16,7 @@ class TestKernels:
         assert names == expected_names
 
     def test_get_forex_kernels(self):
-        forex_kernels = Kernels.get_forex_kernerls()
+        forex_kernels = Kernels.get_forex_kernels()
 
         assert isinstance(forex_kernels, dict)
         assert len(forex_kernels) == 5
