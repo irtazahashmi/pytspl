@@ -116,3 +116,11 @@ The history contains the:
            0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
          [ 6.52287870e-03,  0.00000000e+00,  9.60182326e-01, ...,
 ...
+
+
+References
+----------
+
+- :cite:t:`yang2022simplicial`
+- The library utilizes the chebpy Python library for Chebyshev series approximation. For more information, see the `GitHub repository <https://github.com/chebpy/chebpy>`_.
+

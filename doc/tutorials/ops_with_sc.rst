@@ -111,3 +111,10 @@ eigenvector.
     embedding_h: [-1.00084785]
     embedding_g: [-1.00061494 -1.00127703  1.00173495 -1.00287539  0.99531105  1.00412064]
     embedding_c: [-1.          0.99881597  0.99702056]
+
+
+References
+----------
+
+- :cite:t:`barbarossa_et_al`
+- :cite:t:`yang2022simplicial`

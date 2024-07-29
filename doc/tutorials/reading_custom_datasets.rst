@@ -163,3 +163,8 @@ To load the edge flow data, we can use the :func:`read_flow` function.
 >>> print(flow)
 {0: 2.25, 1: 0.13, 2: 1.72, 3: -2.12, 4: 1.59, 5: 1.08, 6: -0.3, 7: -0.21, 8: 1.25, 9: 1.45}
 
+
+References
+----------
+
+- Datasets by :cite:t:`Jia_2019`

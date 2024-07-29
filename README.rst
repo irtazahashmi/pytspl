@@ -142,8 +142,15 @@ Let's go ahead and load a larger dataset and plot it:
 
 Installation
 ------------
+Before installing the PyTSPL, create a virtual environment and activate it.
 
-The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
+.. code-block:: bash
+
+  python3 -m venv pytspl-env
+  source pytspl-env/bin/activate
+
+
+The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_ can be installed using pip:
 
 .. code-block:: bash
 
@@ -170,5 +177,38 @@ Acknowledgements
 ----------------
 The PyTSPL was started in 2024 as an academic open-source project for research purposes at 
 Delft University of Technology. 
+
+
+Citations
+----------
+If you are using the library, please consider citing the theoretical papers it is based on.
+
+.. code-block:: bibtex
+
+  @article{yang2022simplicial,
+    title={Simplicial convolutional filters},
+    author={Yang, Maosheng and Isufi, Elvin and Schaub, Michael T and Leus, Geert},
+    journal={IEEE Transactions on Signal Processing},
+    volume={70},
+    pages={4633--4648},
+    year={2022},
+    publisher={IEEE}
+  }
+
+  @InProceedings{pmlr-v238-yang24e,
+    title = 	 {Hodge-Compositional Edge Gaussian Processes},
+    author =       {Yang, Maosheng and Borovitskiy, Viacheslav and Isufi, Elvin},
+    booktitle = 	 {Proceedings of The 27th International Conference on Artificial Intelligence and Statistics},
+    pages = 	 {3754--3762},
+    year = 	 {2024},
+    volume = 	 {238},
+    series = 	 {Proceedings of Machine Learning Research},
+    month = 	 {02--04 May},
+    publisher =    {PMLR},
+  }
+
+
+The ``filters`` module of the library is based on this `initial Matlab code <https://github.com/cookbook-ms/simplicial_convolutions/>`_
+and the ``hodge_gp`` module is based on this `Python repository <https://github.com/cookbook-ms/Hodge-Edge-GP/>`_.
 
 

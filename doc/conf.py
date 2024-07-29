@@ -59,6 +59,8 @@ import matplotlib.pyplot as plt
 from pytspl import load_dataset, SCPlot
 """
 
+extensions.append("sphinxcontrib.bibtex")
+bibtex_bibfiles = ["references.bib"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
