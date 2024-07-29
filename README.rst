@@ -142,8 +142,15 @@ Let's go ahead and load a larger dataset and plot it:
 
 Installation
 ------------
+Before installing the PyTSPL, create a virtual environment and activate it.
 
-The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_.
+.. code-block:: bash
+
+  python3 -m venv pytspl-env
+  source pytspl-env/bin/activate
+
+
+The PyTSPL is available on `PyPI <https://pypi.org/project/pytspl/>`_ can be installed using pip:
 
 .. code-block:: bash
 
