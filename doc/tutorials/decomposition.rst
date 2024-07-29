@@ -106,3 +106,11 @@ To plot the harmonic flow only, we can do the following:
     :context: close-figs
 
     >>> scplot.draw_hodge_decomposition(flow=synthetic_flow, component="harmonic", figsize=(5, 5))
+
+
+
+References
+----------
+
+- :cite:t:`barbarossa_et_al`
+- :cite:t:`yang2022simplicial`

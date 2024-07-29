@@ -127,3 +127,10 @@ Test MSE: 4.291597299754812e-09
 Test R2: 1.0
 Test MLSS: -3.288797616958618
 Test NLPD: -3.5441062450408936
+
+
+References
+----------
+
+- :cite:t:`pmlr-v238-yang24e`
+
