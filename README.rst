@@ -208,6 +208,7 @@ If you are using the library, please consider citing the theoretical papers it i
   }
 
 
-The ``filters`` module of the library is based on this `initial Matlab code <https://github.com/cookbook-ms/simplicial_convolutions/>`_. 
+The ``filters`` module of the library is based on this `initial Matlab code <https://github.com/cookbook-ms/simplicial_convolutions/>`_
+and the ``hodge_gp`` module is based on this `Python repository <https://github.com/cookbook-ms/Hodge-Edge-GP/>`_.
 
 
