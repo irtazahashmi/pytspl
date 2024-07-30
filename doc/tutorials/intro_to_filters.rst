@@ -3,7 +3,7 @@ Introduction to Filters
 =======================
 
 
-``PyTSPL `` has functional for various filters, namely Simplicial Convolutional Filters and Simplicial Trend Filters.
+``PyTSPL`` has functional for various filters, namely Simplicial Convolutional Filters and Simplicial Trend Filters.
 The Simplicial Convolutional Filters include the following filters:
 
 - Least Squares Filter Design

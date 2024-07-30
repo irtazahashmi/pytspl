@@ -345,13 +345,62 @@ class SCPlot:
             )
             ax.add_patch(tri)
 
+    def _calculate_edge_label_position(
+        self, src: tuple, dest: tuple, offset: float
+    ) -> tuple:
+        """Calculate the position of the edge label based on the edge
+        position."""
+
+        center_coeff = 0.5
+
+        (x1, y1) = self.pos[src]
+        (x2, y2) = self.pos[dest]
+
+        # calculate the slope of the edge
+        if x2 - x1 == 0:
+            slope = 0
+        else:
+            slope = (y2 - y1) / (x2 - x1)
+
+        # straight edge
+        if np.abs(slope) == 0:
+            # horizontal edge
+            if x1 == x2:
+                x, y = (
+                    x1 * center_coeff
+                    + x2 * (1.0 - center_coeff)
+                    + (offset / 3),
+                    y1 * center_coeff + y2 * (1.0 - center_coeff),
+                )
+            else:
+                # vertical edge
+                x, y = (
+                    x1 * center_coeff + x2 * (1.0 - center_coeff),
+                    y1 * center_coeff + y2 * (1.0 - center_coeff) - offset,
+                )
+
+        elif np.abs(slope) <= 0.1:
+            x, y = (
+                x1 * center_coeff + x2 * (1.0 - center_coeff),
+                y1 * center_coeff + y2 * (1.0 - center_coeff) + (offset / 2),
+            )
+
+        # diagonal edge
+        else:
+            x, y = (
+                x1 * center_coeff + x2 * (1.0 - center_coeff) - offset,
+                y1 * center_coeff + y2 * (1.0 - center_coeff) + offset,
+            )
+
+        return x, y
+
     def draw_edge_labels(
         self,
         edge_labels: dict,
-        label_pos: float = 0.5,
         font_size: int = 10,
         font_color: str = "k",
         font_weight: str = "normal",
+        offset=0.15,
         alpha=None,
         ax=None,
     ) -> dict:
@@ -362,14 +411,14 @@ class SCPlot:
             edge_labels (dict): The labels of the edges.
             e.g. {(0, 1): 0.5, (1, 2): 0.3, (2, 0): 0.2}
             Defaults to None.
-            label_pos (float, optional): The position of the label.
-            Defaults to 0.5.
             font_size (int, optional): The font size of the labels.
             Defaults to 10.
             font_color (str, optional): The color of the labels.
             Defaults to 'k'.
             font_weight (str, optional): The font weight of the labels.
             Defaults to 'normal'.
+            offset (float, optional): The offset of the labels from the
+            center of the edge. Defaults to 0.15.
             alpha (float, optional): The transparency of the labels.
             Defaults to None.
             ax (matplotlib.axes.Axes, optional): The axes object.
@@ -384,11 +433,8 @@ class SCPlot:
 
         edge_items = {}
         for (src, dest), label in edge_labels.items():
-            (x1, y1) = self.pos[src]
-            (x2, y2) = self.pos[dest]
-            (x, y) = (
-                x1 * label_pos + x2 * (1.0 - label_pos),
-                y1 * label_pos + y2 * (1.0 - label_pos),
+            (x, y) = self._calculate_edge_label_position(
+                src=src, dest=dest, offset=offset
             )
 
             t = ax.text(
@@ -410,11 +456,9 @@ class SCPlot:
         self,
         edge_flow=None,
         directed: bool = True,
-        node_size: int = 400,
-        edge_width: int = 5,
-        arrowsize: int = 30,
         with_labels: bool = True,
         ax=None,
+        **kwargs,
     ) -> None:
         """
         Draw the simplicial complex network with edge flow. If the flow
@@ -426,17 +470,98 @@ class SCPlot:
             provide a numpy array of the flow. Defaults to None.
             directed (bool, optional): Whether the edges are directed.
             Defaults to True.
-            node_size (int, optional): The size of the nodes.
-            Defaults to 400.
-            edge_width (int, optional): The width of the edges.
-            Defaults to 5.
-            arrowsize (int, optional): The size of the arrows.
-            Defaults to 30.
             with_labels (bool, optional): Whether to show the node labels.
             Defaults to True.
             ax (matplotlib.axes.Axes, optional): The axes object.
             Defaults to None.
+
+        Node kwargs:
+            node_size (int, optional): The size of the nodes.
+            Defaults to 300.
+            node_color (str, optional): The color of the nodes.
+            Defaults to '#ff7f0e'.
+            node_edge_colors (str, optional): The color of the node edges.
+            Defaults to 'black'.
+            font_size (float, optional): The font size of the node labels.
+            Defaults to 12.
+            font_color (str, optional): The color of the node labels.
+            Defaults to 'k'.
+            font_weight (str, optional): The font weight of the node labels.
+            Defaults to 'normal'.
+            cmap (mpl.colors.Colormap, optional): The color map.
+            Defaults to plt.cm.Blues.
+            vmin (float, optional): The minimum value for the color map.
+            Defaults to None.
+            vmax (float, optional): The maximum value for the color map.
+            Defaults to None.
+            alpha (float, optional): The transparency of the nodes.
+            Defaults to 0.8.
+            margins (float, optional): The margins of the plot.
+            Defaults to None.
+
+        Edge kwargs:
+            edge_color (str, optional): The color of the edges.
+            Defaults to 'lightblue'.
+            edge_width (float, optional): The width of the edges.
+            Defaults to 1.0.
+            arrowsize (int, optional): The size of the arrows.
+            Defaults to 10.
+            edge_cmap (mpl.colors.Colormap, optional): The color map of
+            the edges. Defaults to plt.cm.Blues.
+            edge_vmin (float, optional): The minimum value for the color
+            map. Defaults to None.
+            edge_vmax (float, optional): The maximum value for the color
+            map. Defaults to None.
+            directed (bool, optional): Whether the edges are directed.
+            Defaults to True.
+            alpha (float, optional): The transparency of the edges.
+            Defaults to 0.8.
+
+        Edge label kwargs:
+            label_pos (float, optional): The position of the label.
+            Defaults to 0.5.
+            font_size (int, optional): The font size of the labels.
+            Defaults to 10.
+            font_color (str, optional): The color of the labels.
+            Defaults to 'k'.
+            font_weight (str, optional): The font weight of the labels.
+            Defaults to 'normal'.
+            alpha (float, optional): The transparency of the labels.
+            Defaults to None.
         """
+        from inspect import signature
+
+        # check if any kwargs passed - default values are used
+        if len(kwargs) == 0:
+            kwargs = {
+                "node_size": 400,
+                "edge_width": 5,
+                "arrowsize": 30,
+                "font_size": 12,
+            }
+
+        # get the default arguments of the function
+        node_kwargs = signature(self.draw_sc_nodes).parameters.keys()
+        edge_kwargs = signature(self.draw_sc_edges).parameters.keys()
+        label_kwargs = signature(self.draw_edge_labels).parameters.keys()
+
+        valid_kwargs = (node_kwargs | edge_kwargs | label_kwargs) - {
+            "edge_flow",
+            "directed",
+            "with_labels",
+            "ax",
+        }
+
+        if any([k not in valid_kwargs for k in kwargs]):
+            invalid_args = ", ".join(
+                [k for k in kwargs if k not in valid_kwargs]
+            )
+            raise ValueError(f"Invalid arguments: {invalid_args}")
+
+        node_kwargs = {k: v for k, v in kwargs.items() if k in node_kwargs}
+        edge_kwargs = {k: v for k, v in kwargs.items() if k in edge_kwargs}
+        label_kwargs = {k: v for k, v in kwargs.items() if k in label_kwargs}
+
         # initialize the axes
         if ax is None:
             ax = plt.gca()
@@ -451,19 +576,18 @@ class SCPlot:
             edge_color = list(edge_flow.values())
 
         # draw the nodes
-        self.draw_sc_nodes(node_size=node_size, with_labels=with_labels, ax=ax)
+        self.draw_sc_nodes(with_labels=with_labels, ax=ax, **node_kwargs)
         # draw the edges
         self.draw_sc_edges(
             edge_flow=edge_flow,
-            edge_width=edge_width,
-            arrowsize=arrowsize,
             directed=directed,
             ax=ax,
+            **edge_kwargs,
         )
 
         # plot edge labels
         if with_labels and np.all([isinstance(c, Number) for c in edge_color]):
-            self.draw_edge_labels(edge_labels=edge_flow, font_size=15, ax=ax)
+            self.draw_edge_labels(edge_labels=edge_flow, ax=ax, **label_kwargs)
 
     def draw_hodge_decomposition(
         self,
