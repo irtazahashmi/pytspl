@@ -518,14 +518,14 @@ class SCPlot:
             Defaults to 0.8.
 
         Edge label kwargs:
-            label_pos (float, optional): The position of the label.
-            Defaults to 0.5.
             font_size (int, optional): The font size of the labels.
             Defaults to 10.
             font_color (str, optional): The color of the labels.
             Defaults to 'k'.
             font_weight (str, optional): The font weight of the labels.
             Defaults to 'normal'.
+            offset (float, optional): The offset of the labels from the
+            center of the edge. Defaults to 0.15.
             alpha (float, optional): The transparency of the labels.
             Defaults to None.
         """
@@ -596,6 +596,7 @@ class SCPlot:
         round_fig: bool = True,
         round_sig_fig: int = 2,
         figsize=(15, 5),
+        font_dict={"fontsize": 20},
     ) -> None:
         """
         Draw the Hodge decomposition of the flow.
@@ -610,6 +611,8 @@ class SCPlot:
             to round to. Defaults to 2.
             figsize (tuple, optional): The size of the figure.
             Defaults to (15, 5).
+            font_dict (dict, optional): The font dictionary. Defaults to
+            {"fontsize": 20}.
 
         Raises:
             ValueError: If an invalid component is provided.
@@ -625,7 +628,10 @@ class SCPlot:
             )
             # create a single figure
             ax = fig.add_subplot(1, 1, 1)
-            ax.set_title(f"f_{component}")
+            ax.set_title(
+                rf"$\mathbf{{f_{{{component[0].upper()}}}}}$",
+                fontdict=font_dict,
+            )
             self.draw_network(edge_flow=component_flow, ax=ax)
 
         # if no component is specified, draw all three components
@@ -654,17 +660,17 @@ class SCPlot:
 
             # gradient flow
             ax1 = fig.add_subplot(1, 3, 1)
-            ax1.set_title("f_g")
+            ax1.set_title(rf"$\mathbf{{f_{{G}}}}$", fontdict=font_dict)
             self.draw_network(edge_flow=f_g, ax=ax1)
 
             # curl flow
             ax2 = fig.add_subplot(1, 3, 2)
-            ax2.set_title("f_c")
+            ax2.set_title(rf"$\mathbf{{f_{{C}}}}$", fontdict=font_dict)
             self.draw_network(edge_flow=f_c, ax=ax2)
 
             # harmonic flow
             ax3 = fig.add_subplot(1, 3, 3)
-            ax3.set_title("f_h")
+            ax3.set_title(rf"$\mathbf{{f_{{H}}}}$", fontdict=font_dict)
             self.draw_network(edge_flow=f_h, ax=ax3)
 
         plt.show()
@@ -677,6 +683,7 @@ class SCPlot:
         round_sig_fig: int = 2,
         with_labels: bool = True,
         figsize=(15, 5),
+        font_dict={"fontsize": 20},
     ):
         """
         Draw the eigenvectors for the given component and eigenvalue
@@ -694,6 +701,8 @@ class SCPlot:
             Defaults to True.
             figsize (tuple, optional): The size of the figure. Defaults to
             (15, 5).
+            font_dict (dict, optional): The font dictionary. Defaults to
+            {"fontsize": 20}.
         """
         viz_per_row = 3
 
@@ -729,7 +738,9 @@ class SCPlot:
             ax = fig.add_subplot(num_rows, num_cols, positions[i])
 
             ax.set_title(
-                f"λ_{component} = {round(eigenvals[eig_vec], round_sig_fig)}"
+                rf"$\lambda_{{{component[0].upper()}}}$"
+                + f" = {round(eigenvals[eig_vec], round_sig_fig)}",
+                fontdict=font_dict,
             )
 
             flow = U[:, eig_vec]

@@ -2525,13 +2525,13 @@ files = [
 
 [[package]]
 name = "pyg-nightly"
-version = "2.6.0.dev20240729"
+version = "2.6.0.dev20240730"
 description = "Graph Neural Network Library for PyTorch"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pyg_nightly-2.6.0.dev20240729-py3-none-any.whl", hash = "sha256:da01458c9e4b5e14ca3fc0a088e342407db435a4843d1d7d4d692ed7e370dd24"},
-    {file = "pyg_nightly-2.6.0.dev20240729.tar.gz", hash = "sha256:492560f9bf5207e7b579dcb334169cc767b8235aa6ab925622dafa7ac654baff"},
+    {file = "pyg_nightly-2.6.0.dev20240730-py3-none-any.whl", hash = "sha256:c84736198c16dd3feb2bf7e736f87215363cd905e01634c2aee2efb370d6a0f6"},
+    {file = "pyg_nightly-2.6.0.dev20240730.tar.gz", hash = "sha256:e51cc707400059cc02d1df0d49b19b01bb39b0d8e811b2cb35958a3696ea3806"},
 ]
 
 [package.dependencies]
