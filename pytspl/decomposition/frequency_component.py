@@ -11,7 +11,7 @@ from enum import Enum
 
 class FrequencyComponent(Enum):
     """The frequency components that can be extracted from a
-    graph signal."""
+    edge flows."""
 
     HARMONIC = "harmonic"
     CURL = "curl"

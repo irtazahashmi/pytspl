@@ -50,7 +50,7 @@ class TestChebyshevFilterDesign:
     def test_logistic_function(self, chebyshev_filter: ChebyshevFilterDesign):
         cut_off_frequency = 0.01
         steep = 100
-        logistic_func = chebyshev_filter._logistic_function(
+        logistic_func = chebyshev_filter.logistic_function(
             cut_off_frequency, steep
         )
         # Test for a few sample values

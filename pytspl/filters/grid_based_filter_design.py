@@ -6,7 +6,6 @@ import numpy as np
 from scipy.sparse import csr_matrix
 
 from pytspl.decomposition.eigendecomposition import get_eigendecomposition
-from pytspl.decomposition.frequency_component import FrequencyComponent
 from pytspl.filters.base_filter import BaseFilter
 from pytspl.simplicial_complex import SimplicialComplex
 
@@ -44,14 +43,15 @@ class GridBasedFilterDesign(BaseFilter):
         return np.linspace(lambda_min, lambda_max, num_of_samples)
 
     @staticmethod
-    def _compute_frequency_response(
+    def _compute_frequency_response_hp(
         eigenvalue: float, mu: float = 0.5
     ) -> float:
         """
-        Compute the frequency response for a given eigenvalue.
+        Compute the frequency response of the low-pass filter (Hp)
+        for the given eigenvalue.
 
         Args:
-            eigenvalue (float): Eigenvalue of the simplicial complex.
+            eigenvalue (float): The eigenvalue.
             mu (float): Damping factor.
 
         Returns:
@@ -79,7 +79,7 @@ class GridBasedFilterDesign(BaseFilter):
 
         # compute the frequency response for each sampled eigenvalue
         sampled_freq_response = [
-            self._compute_frequency_response(eigenvalue=eigenvalue, mu=mu)
+            self._compute_frequency_response_hp(eigenvalue=eigenvalue, mu=mu)
             for eigenvalue in sampled_eigenvals
         ]
 
@@ -123,10 +123,7 @@ class GridBasedFilterDesign(BaseFilter):
 
         for l in range(L):
             # building the system matrix
-            if l == 0:
-                system_mat[:, l] = np.ones(len(eigenvals))
-            else:
-                system_mat[:, l] = system_mat[:, l - 1] * eigenvals
+            system_mat[:, l] = eigenvals**l
 
             # solve the system using least squares solution to obtain
             # filter coefficients
@@ -168,10 +165,10 @@ class GridBasedFilterDesign(BaseFilter):
             mu (float): The damping factor.
         """
         P = self.get_p_matrix(p_choice)
-        U, eigenvals = get_eigendecomposition(lap_mat=P.toarray())
+        U, _ = get_eigendecomposition(lap_mat=P.toarray())
 
         # number of samples
-        num_of_samples = len(eigenvals)
+        num_of_samples = len(f_true)
         # sample eigenvalues & their frequency responses
         g, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
             P=P.toarray(), num_of_samples=num_of_samples, mu=mu
@@ -198,45 +195,44 @@ class GridBasedFilterDesign(BaseFilter):
     def subcomponent_extraction(
         self,
         f: np.ndarray,
-        f_true: np.ndarray,
+        component: str,
         p_choice: str,
         L: int,
-        component: str = None,
+        num_of_samples: int = 10,
+        mu: float = 0.5,
+        cut_off_frequency: float = 0.01,
+        steep: int = 100,
     ) -> None:
         """
         Subcomponent extraction using the grid-based simplicial filter H_1.
 
-        The subcomponent extraction can be done using two methods:
-            1. Type one extraction: L1 = L2 = L and α = β = 1.
-            2. Type two extraction: L1 != L2 and α != β.
-
         Args:
             f (np.ndarray): The noisy signal.
-            f_true (np.ndarray): The true signal.
+            component (str): The component to extract.
             p_choice (str): The choice of matrix P.
             L (int): The filter size.
-            component (str, Optional): The component of the signal
-            to be extracted.
-            component (str, Optional): The component of the signal
-            to be extracted. If given, the filter will be designed
-            to extract the subcomponent using the type two extraction.
+            num_of_samples (int, Optional): Number of eigenvalues to
+            sample. Default is 10.
+            mu (float, Optional): The damping factor. Default is 0.5.
+            cut_off_frequency (float, Optional): The cut-off frequency.
+            Default is 0.01.
+            steep (int, Optional): The steepness of the logistic function.
+            Default is 100.
         """
         P = self.get_p_matrix(p_choice)
-        U, eigenvals = get_eigendecomposition(lap_mat=P.toarray())
+        U, _ = get_eigendecomposition(lap_mat=P.toarray())
 
-        # number of samples
-        num_of_samples = len(eigenvals)
         # sample eigenvalues & their frequency responses
         _, eigenvals_sampled = self._compute_sampled_continuous_freq_response(
-            P=P.toarray(), num_of_samples=num_of_samples
+            P=P.toarray(), num_of_samples=num_of_samples, mu=mu
         )
 
-        if component is not None:
-            # type one extraction
-            alpha = self.get_component_coefficients(component=component)
-        else:
-            # type two extraction
-            alpha = [0] + [1] * (len(eigenvals) - 1)
+        g_g = self.logistic_function(
+            cut_off_frequency=cut_off_frequency, steep=steep
+        )
+        alpha = g_g(eigenvals_sampled)
+
+        f_true = self.get_true_signal(f=f, component=component)
 
         H, f_estimated, frequency_responses, errors = self._apply_filter(
             P=P,
@@ -259,7 +255,6 @@ class GridBasedFilterDesign(BaseFilter):
     def general_filter(
         self,
         f: np.ndarray,
-        f_true: np.ndarray,
         L1: int,
         L2: int,
     ) -> tuple:
@@ -268,7 +263,6 @@ class GridBasedFilterDesign(BaseFilter):
 
         Args:
             f (np.ndarray): The signal to be filtered.
-            f_true (np.ndarray): The true signal.
             L1 (int): The size of the filter for the gradient extraction.
             L2 (int): The size of the filter for the curl extraction.
 
@@ -285,11 +279,7 @@ class GridBasedFilterDesign(BaseFilter):
         # gradient extraction
         if L1 > 0:
             self.subcomponent_extraction(
-                f=f,
-                f_true=f_true,
-                p_choice="L1L",
-                L=L1,
-                component=FrequencyComponent.GRADIENT.value,
+                f=f, component="gradient", p_choice="L1L", L=L1
             )
             f_est_g = self.history["f_estimated"]
             history["L1"] = self.history
@@ -297,11 +287,7 @@ class GridBasedFilterDesign(BaseFilter):
         # curl extraction
         if L2 > 0:
             self.subcomponent_extraction(
-                f=f,
-                f_true=f_true,
-                p_choice="L1U",
-                L=L2,
-                component=FrequencyComponent.CURL.value,
+                f=f, component="curl", p_choice="L1U", L=L2
             )
             f_est_c = self.history["f_estimated"]
             history["L2"] = self.history

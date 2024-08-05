@@ -55,14 +55,14 @@ neighbourhoods by applying the function :func:`apply_lower_shifting`.
     >>> steps = 1
     >>> flow = sc.apply_lower_shifting(synthetic_flow, steps=steps)
     >>>
-    >>> axs[1].set_title(r"One step lower shifting - $L_{1, l} \ \ \mathbf{f}$")
+    >>> axs[1].set_title(r"One step lower shifting - $\mathbf{L_{1, l}} \ \ \mathbf{f}$")
     >>> scplot.draw_network(edge_flow=flow, ax=axs[1])
     >>>
     >>> # apply two steps lower shifting
     >>> steps = 2
     >>> flow = sc.apply_lower_shifting(synthetic_flow, steps=steps)
     >>>
-    >>> axs[2].set_title(r"Two steps lower shifting - $L_{1, l}^2 \ \ \mathbf{f}$")
+    >>> axs[2].set_title(r"Two steps lower shifting - $\mathbf{L_{1, l}}^2 \ \ \mathbf{f}$")
     >>> scplot.draw_network(edge_flow=flow, ax=axs[2])
 
 
@@ -110,7 +110,7 @@ eigenvector.
     >>> print("embedding_c:", f_tilda_c)
     embedding_h: [-1.00084785]
     embedding_g: [-1.00061494 -1.00127703  1.00173495 -1.00287539  0.99531105  1.00412064]
-    embedding_c: [-1.          0.99881597  0.99702056]
+    embedding_c: [-1. 0.99881597  0.99702056]
 
 
 References

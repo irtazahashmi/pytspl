@@ -1,4 +1,5 @@
-"""Module for calculating the Hodge decomposition of a flow on a graph.
+"""Module for calculating the Hodge decomposition of a edge flow
+defined over a network.
 
 The following components can be extracted:
 - Total variance

@@ -16,21 +16,6 @@ class ChebyshevFilterDesign(BaseFilter):
         """Initialize the Chebyshev filter using the simplicial complex."""
         super().__init__(simplicial_complex=simplicial_complex)
 
-    def _logistic_function(
-        self, cut_off_frequency: float = 0.01, steep: int = 100
-    ) -> np.ndarray:
-        """
-        Compute the logistic function for the given input.
-
-        Args:
-            cut_off_frequency (float): The cut-off frequency.
-            steep (int): The steepness of the logistic function.
-
-        Returns:
-            np.ndarray: The logistic function output.
-        """
-        return lambda lam: 1 / (1 + np.exp(-steep * (lam - cut_off_frequency)))
-
     def _get_chebyshev_series(
         self,
         n: int,
@@ -54,7 +39,7 @@ class ChebyshevFilterDesign(BaseFilter):
         Returns:
             np.ndarray: The Chebyshev series.
         """
-        g_g = self._logistic_function(
+        g_g = self.logistic_function(
             cut_off_frequency=cut_off_frequency, steep=steep
         )
         domain = [domain_min, domain_max]
@@ -259,7 +244,7 @@ class ChebyshevFilterDesign(BaseFilter):
                 np.squeeze(H_cheb_approx[k, :, :]) - H_ideal, ord=2
             )
 
-            # compute the error with respect to the true signal
+            # compute the component error with respect to the true signal
             f_cheb[k] = np.squeeze(H_cheb_approx[k, :, :]) @ f
             extracted_comp_error[k] = self.calculate_error_NRMSE(
                 f_cheb[k], f_true
@@ -309,7 +294,9 @@ class ChebyshevFilterDesign(BaseFilter):
         if not n:
             n = len(P)
 
-        g = self._logistic_function()
+        g = self.logistic_function(
+            cut_off_frequency=cut_off_frequency, steep=steep
+        )
 
         # mean of the largest eigenvalue
         _, lambda_max = self.get_alpha(p_choice=p_choice)
@@ -335,13 +322,16 @@ class ChebyshevFilterDesign(BaseFilter):
         self,
         flow: np.ndarray,
         component: str,
+        fontdict: dict = None,
     ) -> None:
         """
-        Plot the frequency response approximation.
+        Plot the built filter's frequency response.
 
         Args:
             flow (np.ndarray): The input flow.
             component (str): The component of the flow.
+            fontdict (dict, optional): The font dictionary used
+            for plotting. Defaults to None.
 
         Raises:
             ValueError: If the apply method is not run first.
@@ -350,17 +340,33 @@ class ChebyshevFilterDesign(BaseFilter):
         if f_cheb_tilde is None:
             raise ValueError("Run the apply method first.")
 
-        # get the unique eigenvalues
+        if not fontdict:
+            fontdict = {
+                "fontsize": 14,
+            }
+
         L1 = self.sc.hodge_laplacian_matrix().toarray()
+
         U, eigenvalues = get_eigendecomposition(lap_mat=L1)
         # get the true signal
         f_true = self.get_true_signal(f=flow, component=component)
 
+        # plot the filter frequency responses
         plt.figure(figsize=(15, 5))
         plt.scatter(eigenvalues, U.T @ f_true)
         plt.scatter(eigenvalues, f_cheb_tilde[-1])
         plt.title(
-            "Frequency response on the eigenvalues vs chebyshev filter approx"
+            "Estimated extracted component using Chebyshev filter approx",
+            fontdict=fontdict,
         )
         # add legend
-        plt.legend(["True flow", "Chebyshev approx"])
+        plt.legend(
+            ["True component", "Chebyshev approx component"],
+            fontsize=fontdict["fontsize"],
+        )
+
+        plt.xlabel("Eigenvalues", fontdict=fontdict)
+        plt.ylabel("Frequency response", fontdict=fontdict)
+
+        plt.xticks(fontsize=fontdict["fontsize"])
+        plt.yticks(fontsize=fontdict["fontsize"])

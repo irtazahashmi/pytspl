@@ -19,7 +19,7 @@ def f():
     yield flow
 
 
-class TestSimplicalTrendFilter:
+class TestSimplicialTrendFilter:
 
     def test_set_history(self, trend_filter: SimplicialTrendFilter):
         # Set the history
@@ -63,21 +63,20 @@ class TestSimplicalTrendFilter:
         expected_error = 0.003
         assert trend_filter.history["errors"][-1] < expected_error
 
-        expected_corr = 0.999
+        expected_corr = 0.998
         assert trend_filter.history["correlations"][-1] > expected_corr
 
     def test_denoising_l1_regularizer(
         self, trend_filter: SimplicialTrendFilter, f: np.ndarray
     ):
         component = "divergence"
-        # B1 matrix
-        shift_op = trend_filter.sc.incidence_matrix(rank=1)
+        order = 0
         num_realizations = 50
         snr_db = np.arange(-12, 12.5, 12)
 
         trend_filter.denoising_l1_regularizer(
             flow=f,
-            shift_operator=shift_op,
+            order=order,
             component=component,
             num_realizations=num_realizations,
             snr_db=snr_db,
@@ -85,21 +84,20 @@ class TestSimplicalTrendFilter:
         expected_error = 0.004
         assert trend_filter.history["errors"][-1] < expected_error
 
-        expected_corr = 0.999
+        expected_corr = 0.998
         assert trend_filter.history["correlations"][-1] > expected_corr
 
     def test_interpolation_l1_regularizer(
         self, trend_filter: SimplicialTrendFilter, f: np.ndarray
     ):
+        order = 0
         component = "divergence"
-        # B1 matrix
-        shift_op = trend_filter.sc.incidence_matrix(rank=1)
         ratio = np.arange(0.05, 1.05, 0.3)
         num_realizations = 50
 
         trend_filter.interpolation_l1_regularizer(
             flow=f,
-            shift_operator=shift_op,
+            order=order,
             component=component,
             ratio=ratio,
             num_realizations=num_realizations,

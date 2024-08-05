@@ -1,4 +1,5 @@
-"""Module to extract eigendecomposition into eigenvalues and eigenvectors.
+"""Module to perform eigendecomposition and obtain eigenvalues and
+eigenvectors (eigenpairs).
 
 After eigendecomposition, the components are extracted
 into harmonic, curl and gradient eigenvalues and eigenvectors
