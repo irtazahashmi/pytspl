@@ -2,7 +2,7 @@
 eigenvectors (eigenpairs).
 
 After eigendecomposition, the components are extracted
-into harmonic, curl and gradient eigenvalues and eigenvectors
+into gradient, curl and harmonic eigenvalues and eigenvectors
 (eigenpairs).
 """
 
@@ -54,36 +54,35 @@ def get_curl(B2: np.ndarray, flow: np.ndarray) -> np.ndarray:
     return B2.T @ flow
 
 
-def get_harmonic_eigenpair(
-    hodge_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
+def get_gradient_eigenpair(
+    lower_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
-    Calculate the harmonic eigenvectors of the Hodge Laplacian - e.g. L1
-    with corresponding eigenvalues.
+    Calculate the gradient eigenvectors of the lower Laplacian.
+    e.g. L1L with corresponding eigenvalues.
 
     Args:
-        hodge_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
+        lower_lap_mat (np.ndarray): The lower Laplacian matrix L(k, l)
         tolerance (float): The tolerance for eigenvalues to be considered
         zero. Defaults to machine limits for floating point types.
 
     Returns:
-        u_h (np.ndarray): The harmonic  eigenvectors U(H).
-        eigenvalues (np.ndarray): The eigenvalues of the Hodge Laplacian.
+        np.ndarray: The gradient eigenvectors U(G)
+        np.ndarray: The eigenvalues of the lower Laplacian
     """
-    eigenvectors, eigenvalues = get_eigendecomposition(hodge_lap_mat)
-    # get columns with zero eigenvalues as anything below tolerance
-    # is considered zero
-    u_h = eigenvectors[:, np.where(eigenvalues <= tolerance)[0]]
-    eigenvalues = eigenvalues[np.where(eigenvalues <= tolerance)[0]]
-    return u_h, eigenvalues
+    eigenvectors, eigenvalues = get_eigendecomposition(lower_lap_mat)
+    # get columns with non-zero eigenvalues
+    u_g = eigenvectors[:, np.where(eigenvalues > tolerance)[0]]
+    eigenvalues = eigenvalues[np.where(eigenvalues > tolerance)[0]]
+    return u_g, eigenvalues
 
 
 def get_curl_eigenpair(
     upper_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
-    Calculate the curl eigenvectors of the upper Laplacian e.g. L1U
-    with corresponding eigenvalues.
+    Calculate the curl eigenvectors of the upper Laplacian.
+    e.g. L1U with corresponding eigenvalues.
 
     Args:
         upper_lap_mat (np.ndarray): The upper Laplacian matrix L(k, u).
@@ -91,8 +90,8 @@ def get_curl_eigenpair(
         zero. Defaults to machine limits for floating point types.
 
     Returns:
-        u_c (np.ndarray): The curl eigenvectors U(C)
-        lambda_vals (np.ndarray): The eigenvalues of the upper Laplacian
+        np.ndarray: The curl eigenvectors U(C)
+        np.ndarray: The eigenvalues of the upper Laplacian
     """
     eigenvectors, eigenvalues = get_eigendecomposition(upper_lap_mat)
     # get columns with non-zero eigenvalues
@@ -101,27 +100,28 @@ def get_curl_eigenpair(
     return u_c, eigenvalues
 
 
-def get_gradient_eigenpair(
-    lower_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
+def get_harmonic_eigenpair(
+    hodge_lap_mat: np.ndarray, tolerance: float = np.finfo(float).eps
 ) -> tuple:
     """
-    Calculate the gradient eigenvectors of the lower Laplacian e.g. L1L
-    with corresponding eigenvalues.
+    Calculate the harmonic eigenvectors of the Hodge Laplacian
+    e.g. L1 with corresponding eigenvalues.
 
     Args:
-        lower_lap_mat (np.ndarray): The lower Laplacian matrix L(k, l)
+        hodge_lap_mat (np.ndarray): The Hodge Laplacian matrix L(k)
         tolerance (float): The tolerance for eigenvalues to be considered
         zero. Defaults to machine limits for floating point types.
 
     Returns:
-        u_g (np.ndarray): The gradient eigenvectors U(G)
-        lambda_vals (np.ndarray): The eigenvalues of the lower Laplacian
+        np.ndarray: The harmonic  eigenvectors U(H).
+        np.ndarray: The eigenvalues of the Hodge Laplacian.
     """
-    eigenvectors, eigenvalues = get_eigendecomposition(lower_lap_mat)
-    # get columns with non-zero eigenvalues
-    u_g = eigenvectors[:, np.where(eigenvalues > tolerance)[0]]
-    eigenvalues = eigenvalues[np.where(eigenvalues > tolerance)[0]]
-    return u_g, eigenvalues
+    eigenvectors, eigenvalues = get_eigendecomposition(hodge_lap_mat)
+    # get columns with zero eigenvalues as anything below tolerance
+    # is considered zero
+    u_h = eigenvectors[:, np.where(eigenvalues <= tolerance)[0]]
+    eigenvalues = eigenvalues[np.where(eigenvalues <= tolerance)[0]]
+    return u_h, eigenvalues
 
 
 def get_eigendecomposition(
@@ -143,8 +143,8 @@ def get_eigendecomposition(
         types.
 
     Returns:
-        eigenvectors (np.ndarray): The eigenvectors U(k)
-        eigenvalues (np.ndarray): The eigenvalues.
+        np.ndarray: The eigenvectors U(k)
+        np.ndarray: The eigenvalues.
     """
     assert isinstance(
         lap_mat, np.ndarray

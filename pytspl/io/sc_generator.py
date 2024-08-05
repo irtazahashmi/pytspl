@@ -1,4 +1,4 @@
-"""Module for generating random simplicial complexes."""
+"""Module for generating a random simplicial complex."""
 
 import networkx as nx
 
@@ -18,8 +18,8 @@ def generate_random_simplicial_complex(
         seed (int): Seed for random number generator.
 
     Returns:
-        tuple: Tuple of the simplicial complex and the coordinates of the
-        nodes.
+        SimplicialComplex: The generated simplicial complex.
+        dict: The coordinates of the nodes.
     """
     G = nx.erdos_renyi_graph(n=num_of_nodes, p=p, seed=seed, directed=False)
 

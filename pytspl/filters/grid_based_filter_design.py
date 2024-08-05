@@ -1,6 +1,4 @@
-"""Grid-based filter design module for denoising and subcomponent
-extraction.
-"""
+"""Grid-based filter design."""
 
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -11,8 +9,8 @@ from pytspl.simplicial_complex import SimplicialComplex
 
 
 class GridBasedFilterDesign(BaseFilter):
-    """Module for grid-based filter design that inherits from the
-    Filter base class.
+    """Module for grid-based filter design inheriting from the
+    BaseFilter class.
     """
 
     def __init__(self, simplicial_complex: SimplicialComplex):
@@ -71,7 +69,8 @@ class GridBasedFilterDesign(BaseFilter):
             mu (float): Damping factor.
 
         Returns:
-            tuple: Sampled frequency responses and sampled eigenvalues.
+            np.ndarray: Sampled frequency responses.
+            np.ndarray: Sampled eigenvalues.
         """
         sampled_eigenvals = self._sample_grid_points(
             P=P, num_of_samples=num_of_samples
@@ -109,8 +108,10 @@ class GridBasedFilterDesign(BaseFilter):
             L (int): The filter size.
 
         Returns:
-            tuple: The filter, the estimated signal, the
-            frequency responses, and the errors.
+            np.ndarray: The filter.
+            np.ndarray: The estimated signal.
+            np.ndarray: The frequency responses.
+            np.ndarray: The errors in the extracted component.
         """
         # learn the regularization filter with topological filter
         system_mat = np.zeros((len(eigenvals), L))
@@ -267,7 +268,9 @@ class GridBasedFilterDesign(BaseFilter):
             L2 (int): The size of the filter for the curl extraction.
 
         Returns:
-            np.ndarray: The estimated harmonic, curl and gradient components.
+            np.ndarray: The estimated harmonic component.
+            np.ndarray: The estimated curl component.
+            np.ndarray: The estimated gradient component.
         """
         f_est_g, f_est_c, f_est_h = 0, 0, 0
 

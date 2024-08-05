@@ -1,4 +1,4 @@
-"""Module for edge flow denoising."""
+"""Edge flow denoising with a low-pass filter H_P."""
 
 import numpy as np
 

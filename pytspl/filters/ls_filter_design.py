@@ -1,6 +1,4 @@
-"""LS-based filter design module for subcomponent extraction of type I
-and type II filters.
-"""
+"""LS-based filter design."""
 
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -42,8 +40,10 @@ class LSFilterDesign(BaseFilter):
             L (int): The size of the filter.
 
         Returns:
-            tuple: The estimated filter, signal, frequency responses and
-            error per filter size.
+            np.ndarray: The estimated filter.
+            np.ndarray: The estimated signal.
+            np.ndarray: The frequency response of the filter.
+            np.ndarray: The error per filter size.
         """
         # create a matrix to store the system
         system_mat = np.zeros((len(eigenvals), L))
@@ -218,7 +218,9 @@ class LSFilterDesign(BaseFilter):
             eigenvalues as unique. Defaults to 1e-3.
 
         Returns:
-            np.ndarray: The estimated harmonic, curl and gradient components.
+            np.ndarray: The estimated harmonic component.
+            np.ndarray: The estimated curl component.
+            np.ndarray: The estimated gradient component.
         """
         self._reset_history()
 

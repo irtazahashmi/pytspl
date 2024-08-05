@@ -1,4 +1,4 @@
-"""Filter module for filter design and denoising."""
+"""Base filter."""
 
 import numpy as np
 from scipy.sparse import csr_matrix

@@ -1,4 +1,5 @@
-"""Types of kernels for the Hodge Gaussian Process model."""
+"""Types of kernels for the Hodge-composition edge
+Gaussian processes."""
 
 from enum import Enum
 

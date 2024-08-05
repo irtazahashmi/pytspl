@@ -90,7 +90,8 @@ class HodgeGPTrainer:
             to be considered zero. Defaults to 1e-3.
 
         Returns:
-            list(torch.tensor): The eigenpairs of the Laplacian matrices.
+            list(torch.tensor): The eigenpairs of the Laplacian matrices
+            for the harmonic, gradient, and curl components.
         """
         h_eigenvecs, h_eigenvals = self.sc.get_component_eigenpair(
             component="harmonic", tolerance=tolerance
@@ -136,8 +137,9 @@ class HodgeGPTrainer:
             y (torch.tensor): The target values.
 
         Returns:
-            tuple(torch.tensor, torch.tensor, torch.tensor): The normalized
-            target values.
+            torch.tensor: The normalized training target values.
+            torch.tensor: The normalized testing target values.
+            torch.tensor: The normalized target values.
         """
         orig_mean, orig_std = torch.mean(y_train), torch.std(y_train)
 
@@ -164,8 +166,12 @@ class HodgeGPTrainer:
             seed (int, optional): The random seed. Defaults to 4.
 
         Returns:
-            tuple(torch.tensor, torch.tensor, torch.tensor, torch.tensor,
-            torch.tensor, torch.tensor): The training and testing data.
+            torch.tensor: The training input data.
+            torch.tensor: The training target data.
+            torch.tensor: The testing input data.
+            torch.tensor: The testing target data.
+            torch.tensor: The input data.
+            torch.tensor: The target data.
         """
 
         B1 = self.sc.incidence_matrix(rank=1).toarray()
@@ -383,6 +389,7 @@ class HodgeGPTrainer:
 
         # variance
         variance = np.diag(K)
+
         # vmin, vmax
         vmin = variance.min()
         vmax = variance.max()

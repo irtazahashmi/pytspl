@@ -100,7 +100,7 @@ class TestHodgeGPTrainer:
         likelihood.train()
         hodge_gp_trainer.train(model, likelihood, X_train, y_train)
 
-        # test predictions
+        # test metrics prediction
         predictions = hodge_gp_trainer.predict(
             model, likelihood, X_test, y_test
         )
@@ -113,3 +113,8 @@ class TestHodgeGPTrainer:
         assert mae < 0.1
         assert mse < 0.01
         assert r2 > 0.99
+
+        K, variance = hodge_gp_trainer.build_matern_kernel()
+
+        assert K is not None
+        assert variance is not None
