@@ -195,6 +195,13 @@ If you are using the library, please consider citing the theoretical papers it i
     publisher={IEEE}
   }
 
+  @article{yang2023convolutional,
+    title={Convolutional learning on simplicial complexes},
+    author={Yang, Maosheng and Isufi, Elvin},
+    journal={arXiv preprint arXiv:2301.11163},
+    year={2023}
+  }
+
   @InProceedings{pmlr-v238-yang24e,
     title={Hodge-Compositional Edge Gaussian Processes},
     author={Yang, Maosheng and Borovitskiy, Viacheslav and Isufi, Elvin},

@@ -7,6 +7,34 @@ the Hodge decomposition of a SC using the ``decomposition`` module.
 
 Eigendecomposition
 -------------------
+We can represent the signals of different orders over bases built with the eigenvectors of the 
+higher-order Laplacian matrices. Thus, the eigendecomposition of the Hodge Laplacians is defined as
+
+.. math::
+
+    \mathbf{L}_k = \mathbf{U}_k \mathbf{\Lambda}_k \mathbf{U}_k^\top
+
+where :math:`\mathbf{U}_k` is an orthonormal matrix that collects the 
+eigenvectors and :math:`\mathbf{\Lambda}_k` is a diagonal matrix with the 
+associated eigenvalues. The Hodge decomposition establishes a 
+correspondence between :math:`\mathbf{U}_1` and the three orthogonal subspaces, 
+that is, the eigenvectors of :math:`\mathbf{U}_1` fully span the three 
+orthogonal subspaces, namely gradient, curl, and harmonic, given by the 
+Hodge decomposition. Given the 1-Hodge Laplacian of 
+a simplicial complex
+
+.. math::
+
+    \mathbf{L}_1 = \mathbf{L}_{1,l} + \mathbf{L}_{1, u}
+
+the following holds:
+
+- Gradient eigenvectors :math:`\mathbf{U_G} = [ \mathbf{u_{G, 1}} \dots \mathbf{u}_{\mathbf{G}, N_\mathbf{G}}] \in \mathbb{R}^{N_1 \times N_{\mathbf{G}}}` of :math:`\mathbf{L}_{1,l}`, associated with their corresponding nonzero eigenvalues, span the gradient space :math:`im(\mathbf{B}_1^\top)` with dimension :math:`N_\mathbf{G}`.
+
+- Curl eigenvectors :math:`\mathbf{U_C} = [ \mathbf{u_{C, 1}} \dots \mathbf{u}_{\mathbf{C}, N_\mathbf{C}}] \in \mathbb{R}^{N_1 \times N_{\mathbf{C}}}` of :math:`\mathbf{L}_{1,u}`, associated with their corresponding nonzero eigenvalues, span the curl space :math:`im(\mathbf{B}_2)` with dimension :math:`N_\mathbf{C}`.
+
+- Harmonic eigenvectors :math:`\mathbf{U_H} = [ \mathbf{u_{H, 1}} \dots \mathbf{u}_{\mathbf{H}, N_\mathbf{H}}] \in \mathbb{R}^{N_1\times N_{\mathbf{H}}}` of :math:`\mathbf{L}_{1}`, associated with their corresponding zero eigenvalues, span the harmonic space :math:`ker(\mathbf{L}_1)` with dimension :math:`N_\mathbf{H}`.
+
 
 The eigendecomposition of a SC can be calculated in the following way for
 harmonic, curl and gradient components:
@@ -59,6 +87,21 @@ We can also plot the selected indices of the eigenvectors:
 
 Hodge decomposition
 -------------------
+The Hodge decomposition states that the space of :math:`k`-simplex signals can be decomposed into three orthogonal subspaces that can be written as
+
+.. math::
+
+    \mathbb{R}^{N_k} = im(\mathbf{B}_{k+1}) \oplus im(\mathbf{B}_{k}^\top) \oplus ker(\mathbf{L}_k)
+
+where :math:`im` is the image space and :math:`ker` is the kernel space of the respective matrices. The subspace :math:`im(\mathbf{B}_{k+1})` is known as the gradient subspace, :math:`im(\mathbf{B}_{k}^\top)` as the curl subspace, and :math:`ker(\mathbf{L}_k)` as the harmonic subspace. Therefore, we can decompose any edge flow :math:`\mathbf{f} \in \mathbb{R}^{N_1}` into the orthogonal components
+
+.. math::
+
+    \mathbf{f} = \mathbf{f}_G + \mathbf{f}_C + \mathbf{f}_H,
+
+where :math:`\mathbf{f}_G` is the gradient component :math:`\mathbf{f}_G \in im( \mathbf{B}_1^\top )`, :math:`\mathbf{f}_C` is the curl component :math:`\mathbf{f}_C \in im( \mathbf{B}_2 )`, and :math:`\mathbf{f}_H` is the harmonic component :math:`\mathbf{f}_H \in ker( \mathbf{L}_1 )`. By decomposing the signal into three different components, we can extract the different properties of the flow. For instance, we can study the effect of an external source or sink by extracting the gradient component of the edge flow.
+
+
 
 The Hodge decomposition of an edge flow can be calculated using the same 
 module. First, we need to create a synthetic flow:
