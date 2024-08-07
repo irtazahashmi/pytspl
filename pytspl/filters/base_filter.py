@@ -1,4 +1,4 @@
-"""Filter module for filter design and denoising."""
+"""Base filter."""
 
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -57,6 +57,22 @@ class BaseFilter:
         return np.linalg.norm(f_estimated - f_true) / np.linalg.norm(f_true)
 
     @staticmethod
+    def logistic_function(
+        cut_off_frequency: float = 0.01, steep: int = 100
+    ) -> np.ndarray:
+        """
+        Compute the logistic function for the given input.
+
+        Args:
+            cut_off_frequency (float): The cut-off frequency.
+            steep (int): The steepness of the logistic function.
+
+        Returns:
+            np.ndarray: The logistic function output.
+        """
+        return lambda lam: 1 / (1 + np.exp(-steep * (lam - cut_off_frequency)))
+
+    @staticmethod
     def power_iteration(P: np.ndarray, iterations: int = 50) -> np.ndarray:
         """Power iteration algorithm to approximate the largest eigenvalue.
 
@@ -73,6 +89,8 @@ class BaseFilter:
             v = P @ v
             v = v / np.linalg.norm(v)
 
+        # add machine epsilon to avoid zero division
+        v = v + np.finfo(float).eps
         v = v.astype(float)
         return v
 

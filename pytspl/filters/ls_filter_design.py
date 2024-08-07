@@ -1,6 +1,4 @@
-"""LS-based filter design module for subcomponent extraction of type I
-and type II filters.
-"""
+"""LS-based filter design."""
 
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -42,8 +40,10 @@ class LSFilterDesign(BaseFilter):
             L (int): The size of the filter.
 
         Returns:
-            tuple: The estimated filter, signal, frequency responses and
-            error per filter size.
+            np.ndarray: The estimated filter.
+            np.ndarray: The estimated signal.
+            np.ndarray: The frequency response of the filter.
+            np.ndarray: The error per filter size.
         """
         # create a matrix to store the system
         system_mat = np.zeros((len(eigenvals), L))
@@ -53,12 +53,9 @@ class LSFilterDesign(BaseFilter):
         frequency_responses = np.zeros((L, len(U)))
         f_estimated = None
 
-        for L in range(L):
+        for l in range(L):
             # create the system matrix
-            if L == 0:
-                system_mat[:, L] = np.ones(len(eigenvals))
-            else:
-                system_mat[:, L] = system_mat[:, L - 1] * eigenvals
+            system_mat[:, l] = eigenvals**l
 
             # Least square solution to obtain the filter coefficients
             h = np.linalg.lstsq(system_mat, alpha, rcond=None)[0]
@@ -66,19 +63,19 @@ class LSFilterDesign(BaseFilter):
             # building the topological filter
             H = np.zeros(lap_matrix.shape, dtype=float)
 
-            for l in range(len(h)):
-                H += h[l] * (lap_matrix**l).toarray()
+            for i in range(len(h)):
+                H += h[i] * (lap_matrix**i).toarray()
 
             # filter the signal
             f_estimated = H @ f
 
             # compute the error for each filter size
-            errors[L] = self.calculate_error_NRMSE(f_estimated, f_true)
+            errors[l] = self.calculate_error_NRMSE(f_estimated, f_true)
 
             # filter frequency response (H_1_tilda)
-            frequency_responses[L] = np.diag(U.T @ H @ U)
+            frequency_responses[l] = np.diag(U.T @ H @ U)
 
-            print(f"Filter size: {L} - Error: {errors[L]}")
+            print(f"Filter size: {l} - Error: {errors[l]}")
 
         f_estimated = np.asarray(f_estimated)
 
@@ -196,7 +193,6 @@ class LSFilterDesign(BaseFilter):
         )
 
         # update the results
-        # update the results
         self.set_history(
             filter=H,
             f_estimated=f_estimated,
@@ -222,7 +218,9 @@ class LSFilterDesign(BaseFilter):
             eigenvalues as unique. Defaults to 1e-3.
 
         Returns:
-            np.ndarray: The estimated harmonic, curl and gradient components.
+            np.ndarray: The estimated harmonic component.
+            np.ndarray: The estimated curl component.
+            np.ndarray: The estimated gradient component.
         """
         self._reset_history()
 

@@ -1,4 +1,4 @@
-"""Module for Chebyshev filter design."""
+"""Chebyshev polynomial filter design."""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,26 +10,12 @@ from pytspl.simplicial_complex import SimplicialComplex
 
 
 class ChebyshevFilterDesign(BaseFilter):
-    """Chebyshev filter design inheriting from the BaseFilter class."""
+    """Chebyshev polynomial filter design inheriting from the
+    BaseFilter class."""
 
     def __init__(self, simplicial_complex: SimplicialComplex):
         """Initialize the Chebyshev filter using the simplicial complex."""
         super().__init__(simplicial_complex=simplicial_complex)
-
-    def _logistic_function(
-        self, cut_off_frequency: float = 0.01, steep: int = 100
-    ) -> np.ndarray:
-        """
-        Compute the logistic function for the given input.
-
-        Args:
-            cut_off_frequency (float): The cut-off frequency.
-            steep (int): The steepness of the logistic function.
-
-        Returns:
-            np.ndarray: The logistic function output.
-        """
-        return lambda lam: 1 / (1 + np.exp(-steep * (lam - cut_off_frequency)))
 
     def _get_chebyshev_series(
         self,
@@ -54,7 +40,7 @@ class ChebyshevFilterDesign(BaseFilter):
         Returns:
             np.ndarray: The Chebyshev series.
         """
-        g_g = self._logistic_function(
+        g_g = self.logistic_function(
             cut_off_frequency=cut_off_frequency, steep=steep
         )
         domain = [domain_min, domain_max]
@@ -66,7 +52,7 @@ class ChebyshevFilterDesign(BaseFilter):
         P: np.ndarray,
         coefficients: np.ndarray,
         alpha: float,
-        k_trnc: int,
+        order: int,
     ) -> np.ndarray:
         """
         Approximate the Chebyshev filter.
@@ -76,16 +62,16 @@ class ChebyshevFilterDesign(BaseFilter):
             coefficients (np.ndarray): The coefficients of the Chebyshev
             filter.
             alpha (float): The alpha value.
-            k_trnc (int): The truncation order of the Chebyshev filter.
+            order (int): The order of the Chebyshev polynomial.
 
         Returns:
             np.ndarray: The Chebyshev filter approximation.
         """
-        coeffs = np.asarray(coefficients[:k_trnc])
+        coeffs = np.asarray(coefficients[:order])
         K = len(coeffs)
 
         I = np.eye(P.shape[0], P.shape[1])
-        H_cheb_approx = np.zeros((k_trnc, P.shape[0], P.shape[1]), dtype=float)
+        H_cheb_approx = np.zeros((order, P.shape[0], P.shape[1]), dtype=float)
 
         for k in range(K):
             if k == 0:
@@ -129,11 +115,10 @@ class ChebyshevFilterDesign(BaseFilter):
         Calculate the ideal frequency of the component.
 
         Args:
-            component coeffs: The masked coefficients of the component.
+            component_coeffs: The masked coefficients of the component.
 
         Returns:
-            np.ndarray: The ideal frequency of the given component and
-            p_matrix.
+            np.ndarray: The ideal frequency of the given component.
         """
         P = self.get_p_matrix("L1").toarray()
         U, _ = get_eigendecomposition(lap_mat=P)
@@ -145,7 +130,7 @@ class ChebyshevFilterDesign(BaseFilter):
         p_choice: str,
         coeffs: np.ndarray,
         alpha: float,
-        k_trunc_order: int,
+        order: int,
     ) -> np.ndarray:
         """
         Calculate the Chebyshev frequency approximation.
@@ -154,22 +139,19 @@ class ChebyshevFilterDesign(BaseFilter):
             p_choice (str): The choice of P matrix.
             coeffs (np.ndarray): The coefficients of the Chebyshev filter.
             alpha (float): The alpha value.
-            k_trunc_order (int): The truncation order of the Chebyshev
-            filter.
+            order (int): The order of the Chebyshev polynomial.
 
         Returns:
             np.ndarray: The Chebyshev frequency approximation.
         """
         P = self.get_p_matrix(p_choice).toarray()
 
-        H_cheb_approx = np.zeros(
-            (k_trunc_order, P.shape[0], P.shape[1]), dtype=float
-        )
+        H_cheb_approx = np.zeros((order, P.shape[0], P.shape[1]), dtype=float)
 
-        for k in range(k_trunc_order):
+        for k in range(order):
             print(f"Calculating Chebyshev filter approximation for k = {k}...")
             H_cheb_approx[k - 1 :, :, :] = self._chebyshev_filter_approximate(
-                P=P, coefficients=coeffs, alpha=alpha, k_trnc=k + 1
+                P=P, coefficients=coeffs, alpha=alpha, order=k + 1
             )
 
         return H_cheb_approx
@@ -200,8 +182,8 @@ class ChebyshevFilterDesign(BaseFilter):
             steep (int, optional): The steepness of the logistic function.
             Defaults to 100.
         """
-        # if n is not provided, the filter size is the same as the
-        # number of points
+        # if n is not provided
+        # the filter size is the same as the number of points
         if not n:
             n = L
 
@@ -235,7 +217,7 @@ class ChebyshevFilterDesign(BaseFilter):
             p_choice=p_choice,
             coeffs=coeffs,
             alpha=alpha,
-            k_trunc_order=L,
+            order=L,
         )
 
         errors_response = np.zeros(L)
@@ -259,7 +241,7 @@ class ChebyshevFilterDesign(BaseFilter):
                 np.squeeze(H_cheb_approx[k, :, :]) - H_ideal, ord=2
             )
 
-            # compute the error with respect to the true signal
+            # compute the component error with respect to the true signal
             f_cheb[k] = np.squeeze(H_cheb_approx[k, :, :]) @ f
             extracted_comp_error[k] = self.calculate_error_NRMSE(
                 f_cheb[k], f_true
@@ -309,11 +291,13 @@ class ChebyshevFilterDesign(BaseFilter):
         if not n:
             n = len(P)
 
-        g = self._logistic_function()
+        g = self.logistic_function(
+            cut_off_frequency=cut_off_frequency, steep=steep
+        )
 
         # mean of the largest eigenvalue
         _, lambda_max = self.get_alpha(p_choice=p_choice)
-        g_chebysev = self._get_chebyshev_series(
+        g_chebyshev = self._get_chebyshev_series(
             n=n,
             domain_min=0,
             domain_max=lambda_max,
@@ -325,7 +309,7 @@ class ChebyshevFilterDesign(BaseFilter):
         # eigenvalues
         plt.scatter(eigenvalues, g(eigenvalues))
         # chebyshev approx
-        plt.scatter(eigenvalues, g_chebysev(eigenvalues))
+        plt.scatter(eigenvalues, g_chebyshev(eigenvalues))
         plt.title("Function approximation using Chebyshev polynomials")
         plt.xlabel("Eigenvalues")
         # add legend
@@ -335,13 +319,16 @@ class ChebyshevFilterDesign(BaseFilter):
         self,
         flow: np.ndarray,
         component: str,
+        fontdict: dict = None,
     ) -> None:
         """
-        Plot the frequency response approximation.
+        Plot the built filter's frequency response.
 
         Args:
             flow (np.ndarray): The input flow.
             component (str): The component of the flow.
+            fontdict (dict, optional): The font dictionary used
+            for plotting. Defaults to None.
 
         Raises:
             ValueError: If the apply method is not run first.
@@ -350,17 +337,33 @@ class ChebyshevFilterDesign(BaseFilter):
         if f_cheb_tilde is None:
             raise ValueError("Run the apply method first.")
 
-        # get the unique eigenvalues
+        if not fontdict:
+            fontdict = {
+                "fontsize": 14,
+            }
+
         L1 = self.sc.hodge_laplacian_matrix().toarray()
+
         U, eigenvalues = get_eigendecomposition(lap_mat=L1)
         # get the true signal
         f_true = self.get_true_signal(f=flow, component=component)
 
+        # plot the filter frequency responses
         plt.figure(figsize=(15, 5))
         plt.scatter(eigenvalues, U.T @ f_true)
         plt.scatter(eigenvalues, f_cheb_tilde[-1])
         plt.title(
-            "Frequency response on the eigenvalues vs chebyshev filter approx"
+            "Estimated extracted component using Chebyshev filter approx",
+            fontdict=fontdict,
         )
         # add legend
-        plt.legend(["True flow", "Chebyshev approx"])
+        plt.legend(
+            ["True component", "Chebyshev approx component"],
+            fontsize=fontdict["fontsize"],
+        )
+
+        plt.xlabel("Eigenvalues", fontdict=fontdict)
+        plt.ylabel("Frequency response", fontdict=fontdict)
+
+        plt.xticks(fontsize=fontdict["fontsize"])
+        plt.yticks(fontsize=fontdict["fontsize"])

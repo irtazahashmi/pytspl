@@ -3,22 +3,24 @@ Loading Custom Datasets and Building a Simplicial Complex
 =========================================================
 
 In this tutorial, we provide examples to read data and build a simplicial 
-complex using different formats of data.
+complex using data in different formats. These formats include CSV files,
+TNTP files and incidence matrices. We also show how to load coordinates and
+edge flow data from custom datasets.
 
 CSV and TNTP Format
 -------------------
 
-Here, we load a CSV file containing edges of a graph, process the data to 
-identify source and target nodes, extract a specific feature (distance), and 
-convert this data into a simplicial complex. The summary provides a quick 
-overview of the structure and properties of the generated simplicial complex, 
+Here, we load a CSV file containing edges defined over a network. The function 
+processes the data to identify source and target nodes, extracts features, and 
+builds a simplicial complex (SC). The summary of the SC is printed, providing
+overview of the structure and properties of the SC, 
 including the number of nodes, edges, and higher-dimensional simplices.
 
 
 >>> from pytspl import read_csv
 >>>
+>>> # define the file path and the columns
 >>> PAPER_DATA_FOLDER = "pytspl/data/paper_data"
->>>
 >>> filename = f"{PAPER_DATA_FOLDER}/edges.csv"
 >>> delimiter = " "
 >>> src_col = "Source"
@@ -34,6 +36,7 @@ including the number of nodes, edges, and higher-dimensional simplices.
 >>>        feature_cols=feature_cols
 >>>    ).to_simplicial_complex(condition="all")
 >>>
+>>> # print the summary
 >>> sc.print_summary()
 Num. of nodes: 7
 Num. of edges: 10
@@ -51,6 +54,16 @@ The data can be directly loaded from incidence matrices :math:`\textbf{B}_1`
 and :math:`\textbf{B}_2`. The triangles (2-simplices) are extracted from 
 the :math:`\textbf{B}_2` matrix.
 
+
+An incidence matrix is a matrix that shows the relationship between 
+two classes of objects. In the context of simplicial complexes, the 
+incidence matrix :math:`\textbf{B}_1` represents the relationship 
+between vertices and edges, that is, its is a node-to edge incidence
+matrix. 
+
+Similarly, the incidence matrix :math:`\textbf{B}_2` represents the 
+relationship between edges and triangles (2-simplices), that is, its
+is an edge-to-triangle incidence matrix.
 
 >>> from pytspl import read_B1_B2
 >>>
@@ -77,17 +90,17 @@ Max Dimension: 2
 Building a simplicial complex
 -----------------------------
 
-There are several ways to build a SC using ``PyTSPL``. The first way 
-is to find all the triangles in the graph and consider them as 2-simplices. 
-This method is triangle-based. The second way is to find all the triangles 
-and only keep the ones where the distance between the nodes is less than a 
-threshold :math:`\epsilon`. This method is distance-based. By default, when 
-we load a dataset using the :func:`load_dataset` function, the SC is built 
-using the triangle-based method.
+The *triangle-based* method finds all the triangles in the graph and 
+considers them as 2-simplices. The *distance-based*
+method finds all the triangles and only keeps the ones where 
+the distance between the nodes is less than a threshold :math:`\epsilon`. 
+By default, when we load a dataset using the :func:`load_dataset`
+function, the SC is built using the triangle-based method. 
 
 In this first example, we build the SC by finding all the 
-triangles considering them as 2-simplices.
+triangles and consider them as 2-simplices.
 
+>>> # build a SC using the triangle-based method
 >>> sc = read_csv(
 >>>        filename=filename,
 >>>        delimiter=delimiter,
@@ -106,6 +119,7 @@ Max Dimension: 2
 In the second example, we build a SC using the distance-based method
 and define :math:`\epsilon`. In this case, we get one less triangle (2-simplex).
 
+>>> # build a SC using the distance-based method
 >>> sc = read_csv(
 >>>        filename=filename,
 >>>        delimiter=delimiter,
@@ -129,13 +143,16 @@ Max Dimension: 2
 Loading coordinates and edge flow from data
 -------------------------------------------
 
-We can also load coordinates and edge flow from custom datasets.
+We can also load coordinates the coordinates of the nodes
+and the edge flow data from custom datasets. The following example
+shows how to load the coordinates of the nodes
+
 
 >>> from pytspl.io.network_reader import read_coordinates, read_flow
 >>>
->>> # load coordinates
 >>> coordinates_path = f"{PAPER_DATA_FOLDER}/coordinates.csv"
 >>>
+>>> # load the coordinates
 >>> coordinates = read_coordinates(
 >>>     filename=coordinates_path,
 >>>     node_id_col="Id",
@@ -150,8 +167,12 @@ We can also load coordinates and edge flow from custom datasets.
 
 
 To load the edge flow data, we can use the :func:`read_flow` function.
+Here we define the source, target and, columns and the delimiter used
+in the dataset file.
 
+>>> # load the edge flow data
 >>> flow_path = f"{PAPER_DATA_FOLDER}/flow.csv"
+>>>
 >>> flow = read_flow(
 >>>     filename=flow_path,
 >>>     src_col="Source",

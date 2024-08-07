@@ -90,7 +90,8 @@ class HodgeGPTrainer:
             to be considered zero. Defaults to 1e-3.
 
         Returns:
-            list(torch.tensor): The eigenpairs of the Laplacian matrices.
+            list(torch.tensor): The eigenpairs of the Laplacian matrices
+            for the harmonic, gradient, and curl components.
         """
         h_eigenvecs, h_eigenvals = self.sc.get_component_eigenpair(
             component="harmonic", tolerance=tolerance
@@ -136,8 +137,9 @@ class HodgeGPTrainer:
             y (torch.tensor): The target values.
 
         Returns:
-            tuple(torch.tensor, torch.tensor, torch.tensor): The normalized
-            target values.
+            torch.tensor: The normalized training target values.
+            torch.tensor: The normalized testing target values.
+            torch.tensor: The normalized target values.
         """
         orig_mean, orig_std = torch.mean(y_train), torch.std(y_train)
 
@@ -164,8 +166,12 @@ class HodgeGPTrainer:
             seed (int, optional): The random seed. Defaults to 4.
 
         Returns:
-            tuple(torch.tensor, torch.tensor, torch.tensor, torch.tensor,
-            torch.tensor, torch.tensor): The training and testing data.
+            torch.tensor: The training input data.
+            torch.tensor: The training target data.
+            torch.tensor: The testing input data.
+            torch.tensor: The testing target data.
+            torch.tensor: The input data.
+            torch.tensor: The target data.
         """
 
         B1 = self.sc.incidence_matrix(rank=1).toarray()
@@ -258,6 +264,8 @@ class HodgeGPTrainer:
             )
             optimizer.step()
 
+        self.model = model
+
     def predict(
         self,
         model: gpytorch.models,
@@ -306,3 +314,87 @@ class HodgeGPTrainer:
         print(f"Test NLPD: {nlpd}")
 
         return predictions
+
+    def get_model_parameters(self):
+        if self.model is None:
+            raise ValueError(
+                "Model is not trained yet. Please train the model first."
+            )
+
+        base_kernel = self.model.covar_module.base_kernel
+
+        parameters = {
+            "raw_noise": self.model.likelihood.noise_covar.noise.item(),
+            "raw_mu": base_kernel.mu.item(),
+            "raw_mu_down": base_kernel.mu_down.item(),
+            "raw_mu_up": base_kernel.mu_up.item(),
+            "raw_kappa": base_kernel.kappa.item(),
+            "raw_kappa_down": base_kernel.kappa_down.item(),
+            "raw_kappa_up": base_kernel.kappa_up.item(),
+            "raw_h": base_kernel.h.item(),
+            "raw_h_down": base_kernel.h_down.item(),
+            "raw_h_up": base_kernel.h_up.item(),
+            "raw_outputscale": self.model.covar_module.outputscale.item(),
+        }
+
+        return parameters
+
+    def build_matern_kernel(self):
+        if self.model is None:
+            raise ValueError(
+                "Model is not trained yet. Please train the model first."
+            )
+
+        parameters = self.get_model_parameters()
+        print(parameters)
+
+        mu = parameters["raw_mu"]
+        mu_down = parameters["raw_mu_down"]
+        mu_up = parameters["raw_mu_up"]
+        kappa = parameters["raw_kappa"]
+        kappa_down = parameters["raw_kappa_down"]
+        kappa_up = parameters["raw_kappa_up"]
+        h = parameters["raw_h"]
+        h_down = parameters["raw_h_down"]
+        h_up = parameters["raw_h_up"]
+        scale = parameters["raw_outputscale"]
+
+        eigenvecs_h, eigenvals_h = self.sc.get_component_eigenpair(
+            component="harmonic"
+        )
+        eigenvecs_g, eigenvals_g = self.sc.get_component_eigenpair(
+            component="gradient"
+        )
+        eigenvecs_c, eigenvals_c = self.sc.get_component_eigenpair(
+            component="curl"
+        )
+
+        # harmonic edge gp
+        k0 = np.power(2 * mu / kappa / kappa + eigenvals_h, -mu)
+        k0[:] = mu
+
+        # gradient edge gp
+        k1 = np.power(
+            2 * mu_down / kappa_down / kappa_down + eigenvals_g, -mu_down
+        )
+
+        # curl edge gp
+        k2 = np.power(2 * mu_up / kappa_up / kappa_up + eigenvals_c, -mu_up)
+
+        K0 = eigenvecs_h * k0 @ eigenvecs_h.T
+        K1 = eigenvecs_g * k1 @ eigenvecs_g.T
+        K2 = eigenvecs_c * k2 @ eigenvecs_c.T
+
+        K = scale * (h * K0 + h_down * K1 + h_up * K2)
+
+        # variance
+        variance = np.diag(K)
+
+        # vmin, vmax
+        vmin = variance.min()
+        vmax = variance.max()
+
+        if np.isclose(vmin, vmax):
+            variance = 0.0
+
+        return K, variance

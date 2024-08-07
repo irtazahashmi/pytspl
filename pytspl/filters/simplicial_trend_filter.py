@@ -40,27 +40,6 @@ class SimplicialTrendFilter(BaseFilter):
             "curl": self.sc.get_curl,
         }
 
-    @staticmethod
-    def _corr(A: np.ndarray, B: np.ndarray) -> np.ndarray:
-        """Compute the correlation between two arrays."""
-        corr = np.corrcoef(A, B)[0, 1]
-        return corr
-
-    @staticmethod
-    def _solver(
-        num_edges: int, f_noisy: np.ndarray, shift_operator: np.ndarray
-    ) -> cp.Variable:
-        """Least squares solver."""
-        f_opt = cp.Variable(num_edges)
-        shifted_edge_flow = shift_operator @ f_opt
-        objective = cp.Minimize(
-            1 * cp.norm(f_noisy - f_opt, p=2)
-            + 0.5 * cp.norm(shifted_edge_flow, p=1)
-        )
-        prob = cp.Problem(objective)
-        prob.solve()
-        return f_opt
-
     def set_history(
         self,
         filter: np.ndarray,
@@ -87,28 +66,113 @@ class SimplicialTrendFilter(BaseFilter):
         self.history["errors"] = errors.astype(float)
         self.history["correlations"] = correlations.astype(float)
 
-    def get_power_noise(
-        self, flow: np.ndarray, component: str, snr_db: np.ndarray
-    ) -> tuple:
+    @staticmethod
+    def _solver(
+        num_edges: int,
+        f_noisy: np.ndarray,
+        shift_operator: np.ndarray,
+        mu: float = 0.5,
+    ) -> cp.Variable:
+        """Solve the SFT equation."""
+        f_opt = cp.Variable(num_edges)
+        shifted_edge_flow = shift_operator @ f_opt
+        objective = cp.Minimize(
+            1 * cp.norm(f_noisy - f_opt) + mu * cp.norm(shifted_edge_flow, p=1)
+        )
+        prob = cp.Problem(objective)
+        prob.solve()
+        return f_opt
+
+    @staticmethod
+    def _calculate_correlation(A: np.ndarray, B: np.ndarray) -> np.ndarray:
+        """Compute the correlation between two arrays."""
+        corr = np.corrcoef(A, B)[0, 1]
+        return corr
+
+    @staticmethod
+    def _calculate_snr(snr_db: np.ndarray) -> np.ndarray:
+        """Calculate the signal to noise ratio (SNR)."""
+        return 10 ** (snr_db / 10)
+
+    def get_power_noise(self, flow: np.ndarray, snr_db: np.ndarray) -> tuple:
         """
         Get the power noise and the signal to noise ratio.
 
         Args:
             flow (np.ndarray): The flow of the simplicial complex.
-            component (str): The component to regularize. Choose between
-            'divergence' and 'curl'.
             snr_db (np.ndarray): The signal to noise ratio in dB.
 
         Returns:
             tuple: The power noise and the signal to noise ratio.
         """
-        num_edges = len(self.sc.edges)
         # signal to noise ratio
-        snr = 10 ** (snr_db / 10)
+        snr = self._calculate_snr(snr_db)
+
         # noise variance
+        num_edges = len(self.sc.edges)
         power_flow = norm(flow, 2)
         power_noise = power_flow / snr / num_edges
         return power_noise, snr
+
+    def get_shift_operator(self, component: str, order: int) -> np.ndarray:
+        """
+        Return the shift operator for the divergence or the curl using
+        the specified order of STF.
+
+        Args:
+            component (str): The component to regularize. Choose between
+            'divergence' and 'curl'.
+            order (int): The order of the STF filter.
+
+        Returns:
+            np.ndarray: The shift operator.
+        """
+        if order < 0:
+            raise ValueError(
+                "The STF order must be greater than or equal to 0."
+            )
+
+        # divergence
+        if component == "divergence":
+            B1 = self.sc.incidence_matrix(rank=1)
+
+            if order == 0:
+                # B1
+                shift_operator = B1
+
+            elif order % 2 == 0:
+                # if the order is even
+                L1l = self.sc.lower_laplacian_matrix(rank=1)
+                L1l = L1l ** (order // 2)
+                shift_operator = B1 @ L1l
+
+            else:
+                # if the order is odd
+                L1l = self.sc.lower_laplacian_matrix(rank=1)
+                L1l = L1l ** ((order + 1) // 2)
+                shift_operator = L1l
+
+        else:
+            # curl
+            B2 = self.sc.incidence_matrix(rank=2)
+
+            if order == 0:
+                # B2.T
+                shift_operator = B2.T
+
+            elif order % 2 == 0:
+                # if the order is even
+                L1u = self.sc.upper_laplacian_matrix(rank=1)
+                L1u = L1u ** (order // 2)
+                shift_operator = B2.T @ L1u
+
+            else:
+                # if the order is odd
+                L1u = self.sc.upper_laplacian_matrix(rank=1)
+                L1u = L1u ** ((order + 1) // 2)
+                shift_operator = L1u
+
+        return shift_operator
 
     def denoising_l2_regularizer(
         self,
@@ -139,12 +203,11 @@ class SimplicialTrendFilter(BaseFilter):
                 "Invalid component. Choose between 'divergence' and 'curl'."
             )
 
-        num_edges = len(self.sc.edges)
-        power_noise, snr = self.get_power_noise(
-            flow=flow, component=component, snr_db=snr_db
-        )
+        # compute the noise variance
+        power_noise, snr = self.get_power_noise(flow=flow, snr_db=snr_db)
 
         L1l = self.sc.lower_laplacian_matrix(rank=1)
+        num_edges = len(self.sc.edges)
         # identity matrix
         I = np.eye(num_edges)
 
@@ -184,13 +247,15 @@ class SimplicialTrendFilter(BaseFilter):
                 )
 
                 # compute the correlation
-                corrs[i, j] = self._corr(flow, frequency_responses[:, i, j])
+                corrs[i, j] = self._calculate_correlation(
+                    flow, frequency_responses[:, i, j]
+                )
 
             print(
-                f"SNR: {snr[i]} dB - "
-                + f"error noisy: {np.mean(errors_noisy[i:,])} - "
-                + f"l2 error: {np.mean(errors[i, :])}"
-                + f" - corr: {np.mean(corrs[i, :])}"
+                f"SNR: {np.round(snr[i], 4)} dB - "
+                + f"error noisy: {np.round(np.mean(errors_noisy[i:,]), 4)} - "
+                + f"l2 error: {np.round(np.mean(errors[i, :]), 4)} - "
+                + f"corr:  {np.round(np.mean(corrs[i, :]), 4)}"
             )
 
         errors_mean = np.mean(errors, axis=1)
@@ -208,10 +273,11 @@ class SimplicialTrendFilter(BaseFilter):
     def denoising_l1_regularizer(
         self,
         flow: np.ndarray,
-        shift_operator: np.ndarray,
         component: str,
         num_realizations: int,
         snr_db: np.ndarray,
+        order: int = 0,
+        regularization: float = 0.5,
     ) -> None:
         """
         Simplicial trend filter developed by regularizing the the total
@@ -219,12 +285,17 @@ class SimplicialTrendFilter(BaseFilter):
 
         Args:
             flow (np.ndarray): The flow of the simplicial complex.
+            noisy_flow (np.ndarray): The noisy flow of the simplicial complex.
             shift_operator (np.ndarray): The shift operator used in the
             optimization problem.
             component (str): The component to regularize. Choose between
             'divergence' and 'curl'.
             num_realizations (int): The number of realizations.
             snr_db (np.ndarray): The signal to noise ratio in dB.
+            order (int, optional): The order of the STF filter.
+            Defaults to 0.
+            regularization (float, optional): The regularization parameter
+            alpha/beta. Defaults to 0.5.
 
         Raises:
             ValueError: If the component is not 'divergence' or 'curl'.
@@ -234,18 +305,17 @@ class SimplicialTrendFilter(BaseFilter):
                 "Invalid component. Choose between 'divergence' and 'curl'."
             )
 
-        num_edges = len(self.sc.edges)
-        power_noise, snr = self.get_power_noise(
-            flow=flow, component=component, snr_db=snr_db
+        # get the shift operator using the specified order of STF
+        shift_operator = self.get_shift_operator(
+            component=component, order=order
         )
 
-        num_edges = len(self.sc.edges)
-        # signal to noise ratio
-        snr = 10 ** (snr_db / 10)
-        # noise variance
-        power_flow = norm(flow, 2)
-        power_noise = power_flow / snr / num_edges
+        # compute the noise variance
+        power_noise, snr = self.get_power_noise(flow=flow, snr_db=snr_db)
 
+        num_edges = len(self.sc.edges)
+
+        # initialize the variables
         frequency_responses = np.zeros((num_edges, len(snr), num_realizations))
         errors = np.zeros((len(snr), num_realizations))
         component_flow = np.zeros((len(snr), num_realizations))
@@ -263,7 +333,9 @@ class SimplicialTrendFilter(BaseFilter):
                     num_edges=num_edges,
                     f_noisy=f_noisy,
                     shift_operator=shift_operator,
+                    mu=regularization,
                 )
+
                 frequency_responses[:, i, j] = f_opt.value
 
                 # compute the error
@@ -279,13 +351,14 @@ class SimplicialTrendFilter(BaseFilter):
                 )
 
                 # compute the correlation
-                correlations[i, j] = self._corr(
+                correlations[i, j] = self._calculate_correlation(
                     flow, frequency_responses[:, i, j]
                 )
 
             print(
-                f"SNR: {snr[i]} dB - l1 error: {np.mean(errors[i, :])} - "
-                + f"corr: {np.mean(correlations[i, :])}"
+                f"SNR: {np.round(snr[i], 4)} dB - "
+                + f"l1 error: {np.round(np.mean(errors[i, :]), 4)} - "
+                + f"corr: {np.round(np.mean(correlations[i, :]), 4)}"
             )
 
         errors_mean = np.mean(errors, axis=1)
@@ -304,10 +377,11 @@ class SimplicialTrendFilter(BaseFilter):
     def interpolation_l1_regularizer(
         self,
         flow: np.ndarray,
-        shift_operator: np.ndarray,
         component: str,
         ratio: int,
         num_realizations: int,
+        order: int = 0,
+        regularization: float = 0.5,
     ) -> None:
         """
         Simplicial trend filter developed by regularizing the the total
@@ -315,12 +389,14 @@ class SimplicialTrendFilter(BaseFilter):
 
         Args:
             flow (np.ndarray): The flow of the simplicial complex.
-            shift_operator (np.ndarray): The shift operator used in the
-            optimization problem.
             component (str): The component to regularize. Choose between
             'divergence' and 'curl'.
             ratio (int): The ratio of the number of nonzero nodes.
             num_realizations (int): The number of realizations.
+            order (int, optional): The order of the STF filter.
+            Defaults to 0.
+            regularization (float, optional): The regularization parameter
+            alpha/beta. Defaults to 0.5.
 
         Raises:
             ValueError: If the component is not 'divergence' or 'curl'.
@@ -330,24 +406,33 @@ class SimplicialTrendFilter(BaseFilter):
                 "Invalid component. Choose between 'divergence' and 'curl'."
             )
 
+        # get the shift operator using the specified order of STF
+        shift_operator = self.get_shift_operator(
+            component=component, order=order
+        )
+
         num_edges = len(self.sc.edges)
 
         frequency_responses = np.zeros(
             (num_edges, len(ratio), num_realizations)
         )
+
         correlations = np.zeros((len(ratio), num_realizations))
         errors = np.zeros((len(ratio), num_realizations))
         component_flow = np.zeros((len(ratio), num_realizations))
 
         for i, r in enumerate(ratio):
+
             # the number of nonzero nodes
             M = np.floor(num_edges * r).astype(int)
 
             for j in range(num_realizations):
 
+                # create a sampling matrix
                 mask = np.zeros(num_edges)
                 mask[np.random.choice(num_edges, M, replace=False)] = 1
                 sampling_matrix = np.diag(mask)
+
                 # pick the rows that are not all zeros
                 sampling_matrix = sampling_matrix[
                     np.any(sampling_matrix, axis=1), :
@@ -361,8 +446,8 @@ class SimplicialTrendFilter(BaseFilter):
                 f_opt = cp.Variable(num_edges)
                 shifted_edge_flow = shift_operator @ f_opt
                 objective = cp.Minimize(
-                    1 * cp.norm(f_opt - f_in, p=2)
-                    + 0.5 * cp.norm(shifted_edge_flow, p=1)
+                    1 * cp.norm(f_opt - f_in)
+                    + regularization * cp.norm(shifted_edge_flow, p=1)
                 )
                 constraints = [
                     sampling_matrix @ f_opt == sampling_matrix @ f_in
@@ -370,6 +455,7 @@ class SimplicialTrendFilter(BaseFilter):
                 prob = cp.Problem(objective, constraints)
                 prob.solve()
 
+                # store the frequency response
                 frequency_responses[:, i, j] = f_opt.value
 
                 # compute the error
@@ -385,13 +471,14 @@ class SimplicialTrendFilter(BaseFilter):
                 )
 
                 # compute the correlation
-                correlations[i, j] = self._corr(
+                correlations[i, j] = self._calculate_correlation(
                     flow, frequency_responses[:, i, j]
                 )
 
             print(
-                f"Ratio: {r}  - error: {np.mean(errors[i, :])} - "
-                + f"corr: {np.mean(correlations[i, :])}"
+                f"Ratio: {r} - "
+                + f"error: {np.round(np.mean(errors[i, :]), 4)} - "
+                + f"corr: {np.round(np.mean(correlations[i, :]), 4)}"
             )
 
         errors_mean = np.mean(errors, axis=1)

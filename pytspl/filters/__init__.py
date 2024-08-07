@@ -1,4 +1,4 @@
-"""Filters module."""
+"""Filter module for filter designs."""
 
 from .chebyshev_filter_design import ChebyshevFilterDesign
 from .edge_flow_denoising import EdgeFlowDenoising

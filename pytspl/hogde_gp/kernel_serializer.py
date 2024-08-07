@@ -1,4 +1,5 @@
-"""Module for serializing a kernel using the kernel type and data name."""
+"""Module for serializing a kernel using the kernel type
+and dataset name."""
 
 import gpytorch
 import numpy as np
@@ -28,6 +29,20 @@ class KernelSerializer:
         return kernel_serializer(eigenpairs=eigenpairs)
 
     def _get_serializer(self, kernel_type: str, data_name: str):
+        """
+        Given the kernel type and data name, return the kernel serializer.
+
+        Args:
+            kernel_type (str): The kernel type.
+            data_name (str): The dataset name.
+
+        Raises:
+            ValueError: Invalid kernel type.
+            ValueError: Invalid data name.
+
+        Returns:
+            Callable: The kernel serializer
+        """
         kernel_names = Kernels.get_names()
 
         # check if the kernel type is valid

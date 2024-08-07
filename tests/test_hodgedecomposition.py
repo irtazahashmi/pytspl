@@ -1,8 +1,7 @@
 import numpy as np
 import pytest
 
-from pytspl.decomposition.hodgedecomposition import *
-from pytspl.io import read_csv
+from pytspl.decomposition.hodge_decomposition import *
 from pytspl.simplicial_complex import SimplicialComplex
 
 

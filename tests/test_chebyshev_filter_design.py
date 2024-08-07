@@ -50,7 +50,7 @@ class TestChebyshevFilterDesign:
     def test_logistic_function(self, chebyshev_filter: ChebyshevFilterDesign):
         cut_off_frequency = 0.01
         steep = 100
-        logistic_func = chebyshev_filter._logistic_function(
+        logistic_func = chebyshev_filter.logistic_function(
             cut_off_frequency, steep
         )
         # Test for a few sample values
@@ -88,7 +88,7 @@ class TestChebyshevFilterDesign:
         alpha_g = 2.74
 
         result = chebyshev_filter._chebyshev_filter_approximate(
-            P=L1L, coefficients=coeffs, alpha=alpha_g, k_trnc=1
+            P=L1L, coefficients=coeffs, alpha=alpha_g, order=1
         )
         assert isinstance(result, np.ndarray)
         assert np.allclose(result, np.eye(len(L1L)) * 0.9593, atol=1e-4)
@@ -99,7 +99,7 @@ class TestChebyshevFilterDesign:
 
         k, alpha_g = 2, 2.74
         g_cheb = chebyshev_filter.get_chebyshev_frequency_approx(
-            p_choice="L1L", coeffs=coeffs, alpha=alpha_g, k_trunc_order=k
+            p_choice="L1L", coeffs=coeffs, alpha=alpha_g, order=k
         )
         assert isinstance(g_cheb, np.ndarray)
 

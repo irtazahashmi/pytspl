@@ -10,6 +10,7 @@ class MaternKernelForex(Kernel):
         self, eigenpairs: list[torch.tensor], kappa_bounds=(1e-5, 1e8)
     ):
         super().__init__()
+
         (
             self.harm_eigvects,
             self.grad_eigvects,
@@ -61,7 +62,6 @@ class MaternKernelForex(Kernel):
         self.register_constraint("raw_h_down", Positive())
         self.register_constraint("raw_h_up", Positive())
 
-    # set up the actual parameters
     @property
     def kappa_down(self):
         return self.raw_kappa_down_constraint.transform(self.raw_kappa_down)
@@ -196,11 +196,7 @@ class MaternKernelForex(Kernel):
         )
 
     def _eval_covar_matrix(self):
-        """Define the full covariance matrix -- full kernel matrix as a
-        property to avoid repeative computation of the kernel matrix"""
-        k0 = self.mu.expand(
-            self.harm_eigvals.shape[0], -1
-        ).squeeze()  # equivalent to above
+        k0 = self.mu.expand(self.harm_eigvals.shape[0], -1).squeeze()
         k1 = torch.pow(
             2 * self.mu_down / self.kappa_down / self.kappa_down
             + self.grad_eigvals,
@@ -216,11 +212,12 @@ class MaternKernelForex(Kernel):
     def covar_matrix(self):
         return self._eval_covar_matrix()
 
+    # define the kernel function
     def forward(self, x1, x2=None, diag: Optional[bool] = False, **params):
         x1, x2 = x1.long(), x2.long()
         x1 = x1.squeeze(-1)
         x2 = x2.squeeze(-1)
-
+        # compute the kernel matrix
         if x2 is None:
             x2 = x1
 

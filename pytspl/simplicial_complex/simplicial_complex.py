@@ -1,4 +1,4 @@
-"""Module for analyzing simplicial complex data."""
+"""Data structure for a simplicial complex."""
 
 from itertools import combinations
 from typing import Hashable, Iterable
@@ -15,7 +15,7 @@ from pytspl.decomposition.eigendecomposition import (
     get_total_variance,
 )
 from pytspl.decomposition.frequency_component import FrequencyComponent
-from pytspl.decomposition.hodgedecomposition import (
+from pytspl.decomposition.hodge_decomposition import (
     get_curl_flow,
     get_gradient_flow,
     get_harmonic_flow,
@@ -23,7 +23,7 @@ from pytspl.decomposition.hodgedecomposition import (
 
 
 class SimplicialComplex:
-    """Class for the simplicial complex network."""
+    """Data structure class for a simplicial complex."""
 
     def __init__(
         self,
@@ -34,7 +34,7 @@ class SimplicialComplex:
         edge_features: dict = {},
     ):
         """
-        Create a simplicial complex network from edge list.
+        Create a simplicial complex from nodes, edges, and triangles.
 
         Args:
             nodes (list, optional): List of nodes. Defaults to [].
@@ -414,7 +414,7 @@ class SimplicialComplex:
 
         Returns:
             np.ndarray: Simplicial embeddings of the simplicial complex.
-            Harmonic, curl, and gradient basis.
+            Harmonic embedding, curl embedding, and gradient embedding.
         """
         k = 1
         L1 = self.hodge_laplacian_matrix(rank=k).toarray()
@@ -452,7 +452,8 @@ class SimplicialComplex:
             If the component is not one of 'harmonic', 'curl', or 'gradient'.
 
         Returns:
-            tuple: Eigenvectors and eigenvalues of the simplicial complex.
+            np.ndarray: Eigenvectors of the component.
+            np.ndarray: Eigenvalues of the component.
         """
         if component == FrequencyComponent.HARMONIC.value:
             L1 = self.hodge_laplacian_matrix(rank=1).toarray()
@@ -484,26 +485,26 @@ class SimplicialComplex:
 
     def get_divergence(self, flow: np.ndarray) -> np.ndarray:
         """
-        Get the divergence of a flow on a graph.
+        Get the divergence of the edge flow.
 
         Args:
-            flow (np.ndarray): The flow on the graph.
+            flow (np.ndarray): The edge flow defined over a SC.
 
         Returns:
-            np.ndarray: The divergence of the flow.
+            np.ndarray: The divergence of the edge flow.
         """
         B1 = self.incidence_matrix(rank=1)
         return get_divergence(B1, flow)
 
     def get_curl(self, flow: np.ndarray) -> np.ndarray:
         """
-        Get the curl of a flow on a graph.
+        Get the curl of the edge flow.
 
         Args:
-            flow (np.ndarray): The flow on the graph.
+            flow (np.ndarray): The edge flow defined over a SC.
 
         Returns:
-            np.ndarray: The curl of the flow.
+            np.ndarray: The curl of the edge flow.
         """
         B2 = self.incidence_matrix(rank=2)
         return get_curl(B2, flow)
@@ -517,11 +518,11 @@ class SimplicialComplex:
     ) -> np.ndarray:
         """
         Return the component flow of the simplicial complex
-        using the hodgedecomposition.
+        using the Hodge decomposition.
 
         Args:
             flow (np.ndarray): Flow on the simplicial complex.
-            component (str, optional): Component of the hodgedecomposition.
+            component (str, optional): Component of the Hodge decomposition.
             Defaults to FrequencyComponent.GRADIENT.value.
             round_fig (bool, optional): Round the hodgedecomposition to the
             Default to True.
@@ -529,7 +530,7 @@ class SimplicialComplex:
             Defaults to 2.
 
         Returns:
-            np.ndarray: Hodgedecomposition of the simplicial complex.
+            np.ndarray: Hodge decomposition of the edge flow.
         """
         B1 = self.incidence_matrix(rank=1)
         B2 = self.incidence_matrix(rank=2)

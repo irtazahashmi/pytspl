@@ -1,4 +1,4 @@
-"""Module for edge flow denoising."""
+"""Edge flow denoising with a low-pass filter H_P."""
 
 import numpy as np
 
@@ -89,6 +89,8 @@ class EdgeFlowDenoising(BaseFilter):
 
         plt.figure(figsize=(10, 6))
         plt.plot(eigenvalues, frequency_responses[-1])
-        plt.xlabel("Frequency", fontsize=12)
-        plt.ylabel("Frequency Response", fontsize=12)
-        plt.title("Desired Frequency Response", fontsize=14)
+        plt.xlabel("Frequency", fontsize=18)
+        plt.ylabel("Frequency Response", fontsize=18)
+        plt.title("Desired Frequency Response", fontsize=18)
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
