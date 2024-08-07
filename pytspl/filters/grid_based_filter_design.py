@@ -143,7 +143,7 @@ class GridBasedFilterDesign(BaseFilter):
             # frequency response of the filter
             frequency_responses[l] = np.diag(U.T @ H @ U)
 
-            print(f"Filter size: {l} - Error: {errors[l]}")
+            print(f"Filter size: {l} - Error: {np.round(errors[l], 4)}")
 
         return H, f_estimated, frequency_responses, errors
 
