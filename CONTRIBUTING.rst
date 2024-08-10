@@ -77,6 +77,10 @@ fill in the pull request template with all relevant details.
 Making a release
 ----------------
 
-Todo.
+Once your pull request has been merged, create a release using the format ``pytspl-vX.Y.Z``. 
+This will trigger a GitHub Action that will build the package and publish it to PyPI. Additionally,
+the documentation will be built and published to Read the Docs. The workflow is defined in 
+the ``.github/workflows/release.yml`` file.
+
 
 Thank you for contributing!

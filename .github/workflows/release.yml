@@ -1,7 +1,7 @@
 name: Release
 on:
   push:
-    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+    tags: ["pytspl-v[0-9]+.[0-9]+.[0-9]+"]
 
 jobs:
   CD:
