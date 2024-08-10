@@ -3,7 +3,7 @@
 It imports all the necessary modules and classes to be used by the user.
 """
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 
 # data reader module

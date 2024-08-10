@@ -64,7 +64,13 @@ reasonably cover the changes you've introduced. The coverage report can be gener
 
    $ poetry run coverage run -m pytest && poetry run coverage report -m
 
-10.   **Submit a pull request**: Go to the original repository on GitHub and submit a pull request. Ensure you 
+
+10. **Bump the version**: If you have made changes that affect the functionality of the package, you should
+bump the version number in the ``pyproject.toml`` file. The version number should follow the
+`Semantic Versioning <https://semver.org/>`_ guidelines. Additionally, bump the version in the ``pytspl/__init__.py`` 
+file.
+
+11. **Submit a pull request**: Go to the original repository on GitHub and submit a pull request. Ensure you 
 fill in the pull request template with all relevant details.
 
 Making a release
