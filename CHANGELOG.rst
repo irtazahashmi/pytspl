@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file. The format 
 `Semantic Versioning <https://semver.org/>`_.
 
 
+0.1.5 (2024-08-10)
+-------------------
+
+- Add CD pipeline
+- Add citations to the documentation.
+- Add latex formatting to the plots.
+- Add About Us page to the documentation.
+- Improve code documentation and tutorials.
+- Improve cell outputs for the tutorials.
+
 0.1.4 (2024-07-28)
 -------------------
 
