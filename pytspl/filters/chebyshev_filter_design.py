@@ -3,7 +3,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from chebpy import chebfun
 from pytspl.decomposition.eigendecomposition import get_eigendecomposition
 from pytspl.filters.base_filter import BaseFilter
 from pytspl.simplicial_complex import SimplicialComplex
@@ -40,6 +39,8 @@ class ChebyshevFilterDesign(BaseFilter):
         Returns:
             np.ndarray: The Chebyshev series.
         """
+        from chebpy import chebfun
+
         g_g = self.logistic_function(
             cut_off_frequency=cut_off_frequency, steep=steep
         )
@@ -254,9 +255,10 @@ class ChebyshevFilterDesign(BaseFilter):
             )
 
             print(
-                f"Filter size: {k} - Error: {extracted_comp_error[k]} - "
-                + f"Filter error: {errors_filter[k]} - "
-                + f"Error response: {errors_response[k]}"
+                f"Filter size: {k} - "
+                + f"Error: {np.round(extracted_comp_error[k], 4)} - "
+                + f"Filter error: {np.round(errors_filter[k], 4)} - "
+                + f"Error response: {np.round(errors_response[k], 4)}"
             )
 
         self.set_history(

@@ -75,7 +75,7 @@ class LSFilterDesign(BaseFilter):
             # filter frequency response (H_1_tilda)
             frequency_responses[l] = np.diag(U.T @ H @ U)
 
-            print(f"Filter size: {l} - Error: {errors[l]}")
+            print(f"Filter size: {l} - Error: {np.round(errors[l], 4)}")
 
         f_estimated = np.asarray(f_estimated)
 

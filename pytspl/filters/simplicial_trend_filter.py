@@ -6,7 +6,6 @@ signal is approximately either divergence-free or curl-free.
 The regularized filter l1 and l2 are implemented.
 """
 
-import cvxpy as cp
 import numpy as np
 from numpy.linalg import norm
 
@@ -72,8 +71,10 @@ class SimplicialTrendFilter(BaseFilter):
         f_noisy: np.ndarray,
         shift_operator: np.ndarray,
         mu: float = 0.5,
-    ) -> cp.Variable:
+    ):
         """Solve the SFT equation."""
+        import cvxpy as cp
+
         f_opt = cp.Variable(num_edges)
         shifted_edge_flow = shift_operator @ f_opt
         objective = cp.Minimize(
@@ -401,6 +402,8 @@ class SimplicialTrendFilter(BaseFilter):
         Raises:
             ValueError: If the component is not 'divergence' or 'curl'.
         """
+        import cvxpy as cp
+
         if component not in self.components.keys():
             raise ValueError(
                 "Invalid component. Choose between 'divergence' and 'curl'."

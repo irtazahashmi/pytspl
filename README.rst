@@ -26,7 +26,7 @@ PyTSPL: Topological Signal Processing and Learning in Python
   :alt: Python Version
 
 
-The PyTSPL python package is a library for Topological Signal Processing and Learning. It is a 
+The ``PyTSPL`` python package is a library for Topological Signal Processing and Learning. It is a 
 free software distributed under the MIT license and available on PyPI. The documentation is available
 on `Read the Docs <https://pytspl.readthedocs.io/en/latest/>`_ and development takes place on
 `GitHub <https://github.com/irtazahashmi/pytspl>`_.
@@ -35,10 +35,10 @@ on `Read the Docs <https://pytspl.readthedocs.io/en/latest/>`_ and development t
 The primary goal of ``PyTSPL`` is to provide a unified and comprehensive toolset for the analysis and
 visualization of higher-order interactions, currently centered towards simplicial complexes (SCs). The 
 functionalities of SCs are scattered and it’s difficult to use multiple functionalities together. By 
-integrating multiple functionalities within a single library and extending them, PyTSPL aims to facilitate 
+integrating multiple functionalities within a single library and extending them, ``PyTSPL`` aims to facilitate 
 research and practical applications in various domains.
 
-Currently, the PyTSPL facilitates the functionalities for SCs but the aim is to
+Currently, the ``PyTSPL`` facilitates the functionalities for SCs but the aim is to
 extend the library for additional topological learning functionalities. 
 
 
@@ -142,7 +142,7 @@ Let's go ahead and load a larger dataset and plot it:
 
 Installation
 ------------
-Before installing the PyTSPL, create a virtual environment and activate it.
+Before installing the ``PyTSPL``, create a virtual environment and activate it.
 
 .. code-block:: bash
 
@@ -175,8 +175,9 @@ See the guidelines for contributing in ``CONTRIBUTING.rst``.
 
 Acknowledgements
 ----------------
-The PyTSPL was started in 2024 as an academic open-source project for research purposes at 
-Delft University of Technology. 
+``PyTSPL`` was started in 2024 as an academic open-source project for research purposes by students 
+at Delft University of Technology. This project is still in project and will be updated with 
+additional functionalities in the future.
 
 
 Citations

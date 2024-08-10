@@ -6,6 +6,7 @@
    changelog
    contributing
    references
+   about_us/index
 
 
 .. include:: ../README.rst

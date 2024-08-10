@@ -59,7 +59,7 @@ class EdgeFlowDenoising(BaseFilter):
             # filter frequency response (H_1_tilda)
             frequency_responses[i] = np.diag(U1.T @ H @ U1)
 
-            print(f"mu: {mu}, error: {errors[i]}")
+            print(f"mu: {mu}, error: {np.round(errors[i], 4)}")
 
         # update the results
         f_estimated = np.asarray(f_estimated)
