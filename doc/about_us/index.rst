@@ -5,11 +5,8 @@ About Us
 Meet Our Contributors
 =====================
 
-We are a team of passionate individuals dedicated to advancing graph-based learning
-in an easy and simple way.
-
-
-Below are some key members of our contributing team:
+This is an ongoing project led by students at the Delft University of Technology in the group of Dr. Elvin Isufi. 
+Members contributing to this projects are listed below:
 
 
 **Irtaza Hashmi**
@@ -51,7 +48,7 @@ LinkedIn: `Maosheng <https://www.linkedin.com/in/maoshengyang203/>`_
    :align: left
 
 
-**Role**: Core contributor 
+**Role**: Supervisor
 
 **University**: TU Delft
 
